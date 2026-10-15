@@ -30,10 +30,10 @@ export const ACADEMY_CONFIG = {
     internalSubmissionEmail: 'kumardalaichandan803@gmail.com',
     email: 'info@antarikshacademy.com',
     
-    phoneDisplay: '+91 98765 43210',
-    phoneRaw: '+919876543210',
-    whatsappDisplay: '+91 98765 43210 (Admissions Desk)',
-    whatsappNumber: '919876543210',
+    phoneDisplay: '+91 90901 60793',
+    phoneRaw: '+919090160793',
+    whatsappDisplay: '+91 90901 60793 (Admissions Desk)',
+    whatsappNumber: '919090160793',
     
     officeHours: 'Monday – Saturday: 7:00 AM – 7:30 PM | Sunday: 8:00 AM – 1:00 PM (Doubt Sessions & Tests)',
   },

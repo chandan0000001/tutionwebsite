@@ -192,7 +192,7 @@ export const Navbar: React.FC = () => {
               className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:underline py-1"
             >
               <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
-              <span>WhatsApp Admissions: +91 98765 43210</span>
+              <span>WhatsApp Admissions: {ACADEMY_CONFIG.contact.phoneDisplay}</span>
             </a>
           </div>
         </div>

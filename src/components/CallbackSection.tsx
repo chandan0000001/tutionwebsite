@@ -148,7 +148,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                     className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-colors flex items-center gap-1.5 shadow-sm"
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
-                    <span>WhatsApp Admissions (+91 98765 43210)</span>
+                    <span>WhatsApp Admissions ({ACADEMY_CONFIG.contact.phoneDisplay})</span>
                   </a>
                 </div>
               </div>

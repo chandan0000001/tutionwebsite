@@ -120,7 +120,7 @@ export const ContactSection: React.FC = () => {
                     </a>
                   </div>
                   <span className="text-[10px] text-slate-400 block mt-2">
-                    Note: Official phone number is configured via academyConfig.ts.
+                    Direct counseling and batch inquiries available Monday through Saturday.
                   </span>
                 </div>
               </div>
