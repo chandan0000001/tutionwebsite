@@ -11,9 +11,9 @@ export const Navbar: React.FC = () => {
     { label: 'Home', path: '/' },
     { label: 'About Us', path: '/about' },
     { label: 'Courses', path: '/courses' },
-    { label: 'Faculty', path: '/faculty' },
+    { label: 'Our Teachers', path: '/faculty' },
     { label: 'Results', path: '/results' },
-    { label: 'Facilities', path: '/facilities' },
+    { label: 'Campus & Classrooms', path: '/facilities' },
     { label: 'Timetable', path: '/timetable' },
     { label: 'Contact', path: '/contact' },
   ];

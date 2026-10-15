@@ -14,7 +14,7 @@ export const Teachers: React.FC = () => {
             <span>Academic Leadership</span>
           </div>
           <h2 className="font-['Outfit',sans-serif] text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0F172A] tracking-tight mb-4">
-            Our Subject Mentors & Faculty Panel
+            Our Subject Mentors & Expert Teachers
           </h2>
           <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
             Our experienced multidisciplinary team guides students through crystal-clear theoretical fundamentals,

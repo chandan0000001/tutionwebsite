@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import {
   MapPin,
   Mail,
-  ArrowUp,
   ShieldCheck,
   Phone,
 } from 'lucide-react';
@@ -13,10 +12,6 @@ import { COURSES_DATA } from '../data/coursesData';
 const currentYear = new Date().getFullYear();
 
 export const Footer: React.FC = () => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
     <footer className="bg-[#0F172A] text-slate-300 border-t border-slate-800 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -123,7 +118,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/faculty" className="hover:text-[#FC1682] transition-colors">
-                  Faculty Profiles
+                  Our Teachers & Mentors
                 </Link>
               </li>
               <li>
@@ -133,7 +128,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/facilities" className="hover:text-[#FC1682] transition-colors">
-                  Classrooms & Facilities
+                  Classrooms & Campus
                 </Link>
               </li>
               <li>
@@ -225,7 +220,7 @@ export const Footer: React.FC = () => {
           </p>
         </div>
 
-        {/* Bottom Copyright & Back-to-Top Bar */}
+        {/* Bottom Copyright Bar */}
         <div className="pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center gap-1 text-center sm:text-left">
             <span>© {currentYear} {ACADEMY_CONFIG.legalName}. All rights reserved.</span>
@@ -235,14 +230,6 @@ export const Footer: React.FC = () => {
             <span className="text-[11px] text-slate-500">
               Bijipur, Brahmapur, Odisha 760001
             </span>
-            <button
-              onClick={scrollToTop}
-              className="p-2 rounded-lg bg-slate-800 hover:bg-[#FC1682] text-slate-300 hover:text-white transition-colors cursor-pointer"
-              aria-label="Scroll back to top"
-              title="Back to top"
-            >
-              <ArrowUp className="w-4 h-4" />
-            </button>
           </div>
         </div>
 

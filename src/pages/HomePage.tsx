@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -15,9 +15,16 @@ import {
   X,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   MessageCircle,
   Flame,
   Award,
+  Camera,
+  Sparkles,
+  Pause,
+  Play,
+  MapPin,
 } from 'lucide-react';
 import { COURSES_DATA } from '../data/coursesData';
 import { RESULTS_DATA } from '../data/resultsData';
@@ -35,8 +42,124 @@ export const HomePage: React.FC = () => {
   const [heroStatus, setHeroStatus] = useState<string | null>(null);
   const [isHeroSubmitting, setIsHeroSubmitting] = useState(false);
 
+  // Auto-Swiping Campus & Classroom Photo Album State
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isCarouselPaused, setIsCarouselPaused] = useState(false);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+
   // FAQ Accordion State
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+
+  // Curated Album Slides (Teachers, Classrooms, Mentorship, Testing & Facilities)
+  const albumSlides = [
+    {
+      id: 'album-faculty',
+      title: 'Our Dedicated Subject Teachers & Academic Mentors',
+      category: 'Our Expert Teachers',
+      tagline: '7 Senior Subject Mentors with 10+ Years Proven Teaching Legacy',
+      description:
+        'Official photograph from Antariksh Academy Berhampur representing the dedicated leadership and academic educators across Physics, Chemistry, Mathematics, and Biology.',
+      imageUrl: '/images/academy_faculty_fb.jpg',
+      badge: 'Official Academy Teachers',
+      location: 'Bijipur Big Street Campus • Brahmapur',
+      shortLabel: 'Our Teachers',
+    },
+    {
+      id: 'album-classroom',
+      title: 'Teacher-Led Interactive Board & Entrance Sessions',
+      category: 'Student Classrooms',
+      tagline: 'Strictly Capped 30-Student Batches for Uncompromised Individual Attention',
+      description:
+        'Engaged classroom atmosphere where theoretical concepts are derived step-by-step on the board, followed immediately by targeted entrance-level problem sets.',
+      imageUrl: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=1200&q=80',
+      badge: 'Concept Derivations',
+      location: 'Lecture Hall A • Air-Conditioned',
+      shortLabel: 'Classrooms',
+    },
+    {
+      id: 'album-dpp',
+      title: 'Focused Student Problem-Solving & Daily Practice Drills',
+      category: 'Student Practice',
+      tagline: 'Building Speed, Derivation Stamina & Precision Every Day',
+      description:
+        'Students actively solving Daily Practice Problem (DPP) sheets with faculty walking the aisles to clear micro-stumbling blocks in real time.',
+      imageUrl: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80',
+      badge: 'Daily DPP Hours',
+      location: 'Focused Practice Arena',
+      shortLabel: 'Student Drills',
+    },
+    {
+      id: 'album-doubt',
+      title: '1-on-1 Faculty Desks for Personal Doubt Clearance',
+      category: 'Personal Mentorship',
+      tagline: 'Zero Unanswered Doubts Before Heading Home',
+      description:
+        'Teachers stay on campus every evening so students can sit directly with them, ask hesitation-free questions, and master stubborn numerical topics.',
+      imageUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80',
+      badge: 'Evening Doubt Desks',
+      location: 'Faculty Consultation Room',
+      shortLabel: 'Doubt Desks',
+    },
+    {
+      id: 'album-testing',
+      title: 'Proctored Mock Test Hall & OMR Performance Drills',
+      category: 'Assessment Arena',
+      tagline: 'Simulating Actual CHSE Board & Entrance Exam Conditions',
+      description:
+        'Weekly invigilated test sessions mirroring the exact timing and negative marking constraints of CHSE, JEE Main, and NEET.',
+      imageUrl: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80',
+      badge: 'Weekly Testing Hall',
+      location: 'Simulated Examination Center',
+      shortLabel: 'Mock Tests',
+    },
+    {
+      id: 'album-library',
+      title: 'Quiet Reference Library & Self-Study Pods',
+      category: 'Campus Facilities',
+      tagline: 'Distraction-Free Environment for High-Focus Study',
+      description:
+        'Peaceful self-study area stocked with NCERT textbooks, standard entrance reference compendiums, and previous 10 years solved papers.',
+      imageUrl: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=80',
+      badge: 'Reference Library',
+      location: 'Campus Reading Pods',
+      shortLabel: 'Study Library',
+    },
+  ];
+
+  // Auto-swipe timer: advances slide every 3.8s when not hovered/paused
+  useEffect(() => {
+    if (isCarouselPaused) return;
+    const interval = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % albumSlides.length);
+    }, 3800);
+    return () => clearInterval(interval);
+  }, [isCarouselPaused, albumSlides.length]);
+
+  const handlePrevSlide = () => {
+    setActiveSlide((prev) => (prev > 0 ? prev - 1 : albumSlides.length - 1));
+  };
+
+  const handleNextSlide = () => {
+    setActiveSlide((prev) => (prev + 1) % albumSlides.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsCarouselPaused(true);
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    setIsCarouselPaused(false);
+    if (touchStartX === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+    if (diff > 45) {
+      handleNextSlide(); // Swiped left -> next slide
+    } else if (diff < -45) {
+      handlePrevSlide(); // Swiped right -> prev slide
+    }
+    setTouchStartX(null);
+  };
 
   const handleHeroLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -483,7 +606,210 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. BUSINESS DECISION MATRIX: "ANTARIKSH ACADEMY VS ORDINARY COACHING" */}
+      {/* 4. AUTO-SWIPING CAMPUS & CLASSROOM PHOTO ALBUM (High Business Engagement) */}
+      <section className="py-12 sm:py-20 bg-slate-900 text-white relative overflow-hidden border-b border-slate-800">
+        {/* Ambient Glows */}
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#FC1682]/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#00C8FF]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-pink-500/15 border border-pink-500/30 text-pink-300 text-xs font-bold uppercase tracking-wider mb-2 font-cinzel">
+                <Camera className="w-3.5 h-3.5 text-[#FC1682]" />
+                <span>Inside Antariksh Academy • Photo Album</span>
+              </div>
+              <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+                Our Teachers, Classrooms & Campus Life
+              </h2>
+              <p className="text-slate-400 text-xs sm:text-sm mt-1.5 max-w-2xl">
+                Experience the authentic teaching energy, disciplined small batches, and 1-on-1 mentorship at our Bijipur, Brahmapur center.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 self-start md:self-auto">
+              <button
+                type="button"
+                onClick={() => setIsCarouselPaused(!isCarouselPaused)}
+                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 flex items-center gap-1.5 border border-slate-700 transition-colors cursor-pointer"
+                aria-label={isCarouselPaused ? 'Resume auto-swiping' : 'Pause auto-swiping'}
+                title={isCarouselPaused ? 'Resume auto-swiping' : 'Pause auto-swiping'}
+              >
+                {isCarouselPaused ? (
+                  <>
+                    <Play className="w-3 h-3 text-emerald-400" />
+                    <span>Play</span>
+                  </>
+                ) : (
+                  <>
+                    <Pause className="w-3 h-3 text-[#FC1682]" />
+                    <span>Pause</span>
+                  </>
+                )}
+              </button>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handlePrevSlide}
+                  className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-[#FC1682] text-white flex items-center justify-center transition-all border border-slate-700 cursor-pointer active:scale-95"
+                  aria-label="Previous photo slide"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNextSlide}
+                  className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-[#FC1682] text-white flex items-center justify-center transition-all border border-slate-700 cursor-pointer active:scale-95"
+                  aria-label="Next photo slide"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Cinematic Auto-Swiping Carousel Stage */}
+          <div
+            className="relative rounded-3xl overflow-hidden bg-slate-950 border-2 border-slate-800 shadow-2xl h-[420px] sm:h-[480px] lg:h-[540px] group select-none"
+            onMouseEnter={() => setIsCarouselPaused(true)}
+            onMouseLeave={() => setIsCarouselPaused(false)}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {albumSlides.map((slide, idx) => {
+              const isCurrent = idx === activeSlide;
+              return (
+                <div
+                  key={slide.id}
+                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                    isCurrent ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                  }`}
+                >
+                  {/* Photo Background */}
+                  <img
+                    src={slide.imageUrl}
+                    alt={slide.title}
+                    className="w-full h-full object-cover transform duration-1000 ease-out group-hover:scale-105"
+                  />
+
+                  {/* Dark Vignette & Readability Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/20"></div>
+
+                  {/* Top Overlay Badges */}
+                  <div className="absolute top-4 sm:top-6 left-4 sm:left-6 right-4 sm:right-6 flex items-center justify-between z-20">
+                    <span className="px-3 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-pink-500/40 text-pink-300 font-extrabold text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md">
+                      <Sparkles className="w-3 h-3 text-[#FC1682]" />
+                      <span>{slide.category}</span>
+                    </span>
+
+                    <span className="px-3 py-1 rounded-full bg-slate-900/85 backdrop-blur-md border border-slate-700 text-slate-300 font-stat text-[11px] sm:text-xs font-bold flex items-center gap-1">
+                      <MapPin className="w-3 h-3 text-[#00C8FF]" />
+                      <span className="hidden sm:inline">{slide.location}</span>
+                      <span className="sm:hidden">{slide.badge}</span>
+                    </span>
+                  </div>
+
+                  {/* Bottom Captions & Content */}
+                  <div className="absolute bottom-16 sm:bottom-18 left-4 sm:left-8 right-4 sm:right-8 z-20 space-y-2 sm:space-y-3 text-left">
+                    <span className="inline-block px-2.5 py-0.5 rounded bg-[#FC1682] text-white text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider font-stat">
+                      {slide.badge}
+                    </span>
+
+                    <h3 className="font-display text-lg sm:text-2xl lg:text-3xl font-black text-white leading-tight max-w-3xl drop-shadow-md">
+                      {slide.title}
+                    </h3>
+
+                    <p className="font-serif-prestige italic text-xs sm:text-sm text-pink-200/90 font-medium max-w-2xl">
+                      {slide.tagline}
+                    </p>
+
+                    <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl line-clamp-2 sm:line-clamp-3">
+                      {slide.description}
+                    </p>
+                  </div>
+
+                </div>
+              );
+            })}
+
+            {/* Bottom Progress Bar & Direct Slide Switcher */}
+            <div className="absolute bottom-0 left-0 right-0 z-30 bg-slate-950/90 backdrop-blur-md border-t border-slate-800/80 px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-1 overflow-x-auto no-scrollbar">
+                {albumSlides.map((slide, idx) => (
+                  <button
+                    key={slide.id}
+                    onClick={() => setActiveSlide(idx)}
+                    className={`px-2.5 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
+                      activeSlide === idx
+                        ? 'bg-[#FC1682] text-white shadow-md'
+                        : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700'
+                    }`}
+                  >
+                    <span>{idx + 1}. {slide.shortLabel}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="text-right shrink-0">
+                <span className="font-stat text-xs sm:text-sm font-extrabold text-pink-400">
+                  0{activeSlide + 1}
+                </span>
+                <span className="text-slate-600 text-xs font-stat"> / 0{albumSlides.length}</span>
+              </div>
+            </div>
+
+            {/* Floating Left/Right Arrows on Desktop */}
+            <button
+              type="button"
+              onClick={handlePrevSlide}
+              className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-[#FC1682] text-white items-center justify-center backdrop-blur-md border border-white/20 transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-xl"
+              aria-label="Previous photo"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button
+              type="button"
+              onClick={handleNextSlide}
+              className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-[#FC1682] text-white items-center justify-center backdrop-blur-md border border-white/20 transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-xl"
+              aria-label="Next photo"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+          </div>
+
+          {/* Quick Action Navigation Links below the Carousel */}
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="text-slate-400 text-center sm:text-left">
+              <span>Swipe left or right on mobile to browse photos • Auto-swiping every 3.8s</span>
+            </div>
+
+            <div className="flex items-center gap-3 flex-wrap justify-center">
+              <Link
+                to="/faculty"
+                className="font-bold text-[#FC1682] hover:text-pink-400 flex items-center gap-1 transition-colors"
+              >
+                <span>Meet Our Teachers & Mentors</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+              <span className="text-slate-700">•</span>
+              <Link
+                to="/facilities"
+                className="font-bold text-[#00C8FF] hover:text-cyan-300 flex items-center gap-1 transition-colors"
+              >
+                <span>View Campus & Classrooms</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 5. BUSINESS DECISION MATRIX: "ANTARIKSH ACADEMY VS ORDINARY COACHING" */}
       <section className="py-12 sm:py-20 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -600,7 +926,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. TARGETED ACADEMIC PROGRAMS (Executive Program Grid) */}
+      {/* 6. TARGETED ACADEMIC PROGRAMS (Executive Program Grid) */}
       <section className="py-12 sm:py-20 bg-slate-50/70 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -675,7 +1001,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 6. 10-YEAR HALL OF FAME: VERIFIED RESULTS & ALUMNI SUCCESS */}
+      {/* 7. 10-YEAR HALL OF FAME: VERIFIED RESULTS & ALUMNI SUCCESS */}
       <section className="py-12 sm:py-20 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -753,7 +1079,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 7. THREE-STEP ADMISSION ROADMAP (Eliminating Friction) */}
+      {/* 8. THREE-STEP ADMISSION ROADMAP (Eliminating Friction) */}
       <section className="py-12 sm:py-20 bg-slate-50/70 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -820,7 +1146,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 8. PARENT & STUDENT VOICES (Institutional Social Proof) */}
+      {/* 9. PARENT & STUDENT VOICES (Institutional Social Proof) */}
       <section className="py-12 sm:py-20 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -875,7 +1201,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 9. INTERACTIVE FAQ ACCORDION (Overcoming Objections) */}
+      {/* 10. INTERACTIVE FAQ ACCORDION (Overcoming Objections) */}
       <section className="py-12 sm:py-20 bg-slate-50/70 border-b border-slate-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -919,7 +1245,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 10. HIGH-IMPACT CLOSING CONVERSION BANNER */}
+      {/* 11. HIGH-IMPACT CLOSING CONVERSION BANNER */}
       <section className="py-12 sm:py-20 bg-gradient-to-r from-[#0F172A] via-[#1E293B] to-[#0F172A] text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#FC1682]/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -963,7 +1289,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 11. MOBILE FLOATING QUICK-CONNECT WHATSAPP BUTTON (Mobile Smoothness) */}
+      {/* 12. MOBILE FLOATING QUICK-CONNECT WHATSAPP BUTTON (Mobile Smoothness) */}
       <div className="fixed bottom-5 right-4 z-40 sm:hidden">
         <a
           href={ACADEMY_CONFIG.contact.whatsappLink}

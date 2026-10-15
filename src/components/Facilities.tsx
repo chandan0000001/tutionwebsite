@@ -42,7 +42,7 @@ export const Facilities: React.FC = () => {
             <span>Infrastructure & Atmosphere</span>
           </div>
           <h2 className="font-['Outfit',sans-serif] text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0F172A] tracking-tight mb-4">
-            Classrooms & Learning Facilities
+            Classrooms & Campus Infrastructure
           </h2>
           <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
             A purposeful, distraction-free environment in Bijipur, Brahmapur designed for sustained concentration,
