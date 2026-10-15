@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --brand-pink: #fc1682;
+    --brand-pink-hover: #e00e70;
+    --brand-pink-subtle: #fdf2f8;
+    --brand-cyan: #00c8ff;
+    --brand-cyan-dark: #0284c7;
+    --brand-cyan-subtle: #f0f9ff;
+    --brand-dark: #0f172a;
+    --brand-slate: #1e293b;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  body {
+    background-color: #f8fafc;
+    color: #1e293b;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  #root {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Accessible focus indicators with brand color */
+  :focus-visible {
+    outline: 2px solid #fc1682;
+    outline-offset: 2px;
+  }
+}

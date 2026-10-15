@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="orbitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+  </defs>
+  <!-- Background Circle -->
+  <circle cx="50" cy="50" r="48" fill="#0B1938" stroke="#F59E0B" stroke-width="2.5" />
+  <!-- Orbit 1 -->
+  <ellipse cx="50" cy="50" rx="36" ry="14" transform="rotate(-28 50 50)" stroke="url(#orbitGrad)" stroke-width="2.5" stroke-dasharray="2 0" opacity="0.85" />
+  <!-- Orbit 2 -->
+  <ellipse cx="50" cy="50" rx="36" ry="14" transform="rotate(35 50 50)" stroke="url(#orbitGrad)" stroke-width="2.5" stroke-dasharray="2 0" opacity="0.85" />
+  <!-- Core Star / Spark -->
+  <path d="M50 24 L53.5 42.5 L72 46 L53.5 49.5 L50 68 L46.5 49.5 L28 46 L46.5 42.5 Z" fill="url(#goldGrad)" filter="drop-shadow(0 0 6px rgba(245, 158, 11, 0.7))" />
+  <!-- Letter A Monogram in center -->
+  <circle cx="50" cy="47" r="4.5" fill="#FFFFFF" />
+  <!-- Planet on orbit -->
+  <circle cx="76" cy="36" r="3.5" fill="#38BDF8" />
+  <circle cx="23" cy="62" r="3" fill="#F59E0B" />
+</svg>
