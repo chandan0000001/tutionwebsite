@@ -10,6 +10,7 @@ export const ACADEMY_CONFIG = {
   legalName: 'Antariksh Academy Coaching Institute',
   tagline: 'Your Future. Our Guidance. Your Success.',
   motto: 'Education for world stage',
+  websiteUrl: 'https://antarikshacademy.vercel.app',
   heroSubtitle:
     'Prepare for your +2 board examinations and competitive entrance exams with experienced faculty, structured learning, and personalised academic guidance at Antariksh Academy.',
   
