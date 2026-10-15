@@ -18,6 +18,8 @@
     width: 100%;
     max-width: 100%;
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
   }
 
   body {
@@ -28,6 +30,8 @@
     max-width: 100%;
     margin: 0;
     padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   #root {
@@ -40,6 +44,18 @@
   :focus-visible {
     outline: 2px solid #fc1682;
     outline-offset: 2px;
+  }
+
+  /* Prevent iOS mobile Safari and Android Chrome from auto-zooming inputs on focus */
+  @media screen and (max-width: 640px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+  }
+
+  /* Eliminate 300ms mobile tap delay */
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
