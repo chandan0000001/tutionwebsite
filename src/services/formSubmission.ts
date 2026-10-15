@@ -1,9 +1,22 @@
-// Dedicated submission service that sends enquiries directly to academy inbox
+/**
+ * Antariksh Academy - Form Submission Service
+ * 
+ * Secure, privacy-conscious transmission of admissions enquiries, consultation
+ * requests, and callback forms directly to the academy inbox via FormSubmit.
+ * 
+ * Destination Inbox: kumardalaichandan803@gmail.com
+ * 
+ * Architectural & Delivery Notice:
+ * 1. This service verifies HTTP responses and parses FormSubmit's JSON response contract.
+ * 2. It never reports success merely because a fetch was attempted.
+ * 3. Successful provider acceptance indicates that the third-party delivery provider
+ *    accepted the payload into its processing queue. It does not provide end-to-end
+ *    inbox receipt verification (which requires server-side webhooks or IMAP polling).
+ * 4. User data is never persisted in unencrypted browser localStorage.
+ * 5. Personal form contents are never logged to the browser console.
+ */
 
-// FormSubmit token for kumardalaichandan803@gmail.com (protects raw email address)
-const FORMSUBMIT_TOKEN = '9d82f52b7e026399c348f86a1a677a34';
-const FALLBACK_INBOX = 'kumardalaichandan803@gmail.com';
-const PRODUCTION_URL = 'https://antarikshacademy.vercel.app';
+import { ACADEMY_CONFIG } from '../config/academyConfig';
 
 export interface FormSubmissionPayload {
   formType: 'Callback Request' | 'Consultation Booking' | 'Course Enquiry' | 'General Contact';
@@ -16,30 +29,39 @@ export interface FormSubmissionPayload {
   preferredTime?: string;
   consultationType?: string;
   message?: string;
+  /** Anti-spam honeypot: should remain empty when submitted by legitimate users */
+  honeypot?: string;
 }
 
-export async function submitEnquiryToGmail(payload: FormSubmissionPayload): Promise<{ success: boolean; message: string }> {
-  // Always persist lead locally in browser localStorage as immediate safety backup
-  try {
-    const existing = JSON.parse(localStorage.getItem('antariksh_enquiries') || '[]');
-    existing.unshift({
-      ...payload,
-      id: `lead-${Date.now()}`,
-      timestamp: new Date().toISOString(),
-      formattedTime: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-      origin: typeof window !== 'undefined' ? window.location.origin : PRODUCTION_URL,
-    });
-    localStorage.setItem('antariksh_enquiries', JSON.stringify(existing.slice(0, 100)));
-  } catch {
-    // Ignore storage quota errors
+export interface FormSubmissionResult {
+  success: boolean;
+  status: 'accepted' | 'rejected' | 'network_error';
+  message: string;
+}
+
+export async function submitEnquiryToGmail(
+  payload: FormSubmissionPayload
+): Promise<FormSubmissionResult> {
+  // Anti-spam check: If honeypot is filled by an automated bot, reject silently on client
+  if (payload.honeypot && payload.honeypot.trim() !== '') {
+    return {
+      success: false,
+      status: 'rejected',
+      message: 'Automated submission detected and blocked.',
+    };
   }
 
-  const submissionBody = {
+  const productionOrigin = typeof window !== 'undefined' && window.location.origin
+    ? window.location.origin
+    : ACADEMY_CONFIG.websiteUrl;
+
+  const submissionBody: Record<string, string> = {
     _subject: `[Antariksh Academy] New ${payload.formType} - ${payload.fullName}`,
     _template: 'table',
     _captcha: 'false',
-    _url: PRODUCTION_URL,
-    'Website': PRODUCTION_URL,
+    _url: productionOrigin,
+    _honey: payload.honeypot || '', // Provider-level honeypot for spam bots
+    'Website': productionOrigin,
     'Form Type': payload.formType,
     'Full Name': payload.fullName,
     'Phone Number': payload.mobileNumber || 'Not provided',
@@ -50,12 +72,15 @@ export async function submitEnquiryToGmail(payload: FormSubmissionPayload): Prom
     'Preferred Time': payload.preferredTime || 'N/A',
     'Consultation Format': payload.consultationType || 'N/A',
     'Message / Query': payload.message || 'N/A',
-    'Submission Timestamp': new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+    'Submission Timestamp': new Date().toLocaleString('en-IN', { timeZone: ACADEMY_CONFIG.consultation.timeZone }),
   };
 
+  const primaryEndpoint = `${ACADEMY_CONFIG.formSubmit.endpoint}/${ACADEMY_CONFIG.formSubmit.token}`;
+  const fallbackEndpoint = `${ACADEMY_CONFIG.formSubmit.endpoint}/${ACADEMY_CONFIG.formSubmit.fallbackInbox}`;
+
   try {
-    // Try primary FormSubmit endpoint using token
-    let response = await fetch(`https://formsubmit.co/ajax/${FORMSUBMIT_TOKEN}`, {
+    // 1. Attempt delivery via primary FormSubmit token
+    let response = await fetch(primaryEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -64,9 +89,15 @@ export async function submitEnquiryToGmail(payload: FormSubmissionPayload): Prom
       body: JSON.stringify(submissionBody),
     });
 
-    // Fallback to inbox directly if token fails
-    if (!response.ok) {
-      response = await fetch(`https://formsubmit.co/ajax/${FALLBACK_INBOX}`, {
+    let data: { success?: string | boolean; message?: string } | null = null;
+
+    if (response.ok) {
+      data = await response.json().catch(() => null);
+    }
+
+    // 2. If primary token endpoint fails or returns error, attempt fallback to direct inbox
+    if (!response.ok || !data || (data.success !== 'true' && data.success !== true)) {
+      response = await fetch(fallbackEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,17 +105,37 @@ export async function submitEnquiryToGmail(payload: FormSubmissionPayload): Prom
         },
         body: JSON.stringify(submissionBody),
       });
+
+      if (response.ok) {
+        data = await response.json().catch(() => null);
+      }
     }
 
+    // 3. Strict verification of provider acceptance
+    if (response.ok && data && (data.success === 'true' || data.success === true)) {
+      return {
+        success: true,
+        status: 'accepted',
+        message:
+          'Your enquiry has been accepted by our admissions system. Our academic counselors will reach out to you shortly.',
+      };
+    }
+
+    // Provider explicitly rejected or returned unsuccessful HTTP response
     return {
-      success: true,
-      message: 'Your enquiry has been successfully delivered. Our academic counselors will reach out to you shortly.',
+      success: false,
+      status: 'rejected',
+      message:
+        'The admissions delivery service could not accept your request at this moment. Please call our admissions desk or connect via WhatsApp.',
     };
-  } catch (error) {
-    console.error('Submission notification note:', error);
+  } catch {
+    // Network exception (offline, DNS failure, CORS block, timeout)
+    // NOTE: Personal form contents are intentionally NOT logged to protect user privacy.
     return {
-      success: true,
-      message: 'Your enquiry details have been securely recorded. Our admissions team will connect with you soon.',
+      success: false,
+      status: 'network_error',
+      message:
+        'Unable to connect to the admissions service. Please check your internet connection or contact us directly via Phone or WhatsApp.',
     };
   }
 }

@@ -7,13 +7,14 @@
  * Google Meet video links or insert events into a private Google Calendar account
  * without an authenticated backend / OAuth 2.0 / Service Account integration.
  * 
- * This module adheres strictly to engineering accuracy:
- * 1. Demo Mode (Default): Simulates form validation, alerts the user transparently
- *    that this is a client demonstration, and provides an instant Google Calendar
- *    event-creator link that pre-fills the details on the user's personal Google Calendar,
- *    inviting the academy's official email (kumardalaichandan803@gmail.com).
- * 2. Production Integration Guide: Outlines the exact steps for deploying a serverless
- *    function or Google Cloud OAuth service account to automate true Google Meet generation.
+ * In this frontend-only version:
+ * 1. The consultation request is transmitted via the third-party FormSubmit service
+ *    directly to the academy admissions inbox (kumardalaichandan803@gmail.com).
+ * 2. An optional draft calendar reminder URL is generated for the user's personal Google
+ *    Calendar. This URL acts strictly as a draft reminder on the user's device, not a
+ *    confirmed autonomous booking or real-time Google Meet generator.
+ * 3. The official Google Meet link and final time confirmation are delivered by the
+ *    academy counselor after reviewing faculty schedules.
  * ============================================================================
  */
 
@@ -31,118 +32,91 @@ export interface ConsultationRequest {
 }
 
 export interface ConsultationSubmissionResult {
-  mode: 'demo' | 'production';
+  mode: 'frontend-only' | 'backend-service';
   success: boolean;
   message: string;
   googleCalendarUrl?: string;
-  meetLinkPlaceholder?: string;
   submissionTimestamp: string;
   details: ConsultationRequest;
 }
 
 /**
- * Builds a direct Google Calendar "Add Event" URL prefilled with details.
- * This allows the student/parent to open Google Calendar with 1-click and invite
- * the academy email (kumardalaichandan803@gmail.com).
+ * Parses preferred date (YYYY-MM-DD) and a 30-minute time slot (e.g. '10:30 AM - 11:00 AM')
+ * into ISO-like strings (YYYYMMDDTHHmmss) anchored to IST without local browser offset bugs.
  */
-export function buildGoogleCalendarUrl(request: ConsultationRequest): string {
-  const { fullName, email, studentClass, courseInterest, preferredDate, preferredTime, notes } = request;
+export function formatCalendarDates(
+  preferredDate: string,
+  preferredTime: string
+): { startStr: string; endStr: string } | null {
+  const dateMatch = preferredDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!dateMatch) return null;
+  const [, yyyy, mm, dd] = dateMatch;
 
-  const eventTitle = encodeURIComponent(`Antariksh Academy Consultation: ${fullName} (${courseInterest})`);
-  
-  const descriptionText = [
-    `Academic Consultation with Antariksh Academy (Berhampur)`,
-    `----------------------------------------------------`,
-    `Student/Parent Name: ${fullName}`,
-    `Email: ${email}`,
-    `Class: ${studentClass}`,
-    `Course of Interest: ${courseInterest}`,
-    `Requested Time Slot: ${preferredTime}`,
-    notes ? `Message/Queries: ${notes}` : '',
-    ``,
-    `Academy Center: ${ACADEMY_CONFIG.address.fullFormatted}`,
-    `Provisional Contact Email: ${ACADEMY_CONFIG.contact.email}`,
-    `WhatsApp / Phone: ${ACADEMY_CONFIG.contact.phoneRaw}`,
-    `----------------------------------------------------`,
-    `Note: This calendar invite was initiated via the Antariksh Academy portal.`,
-  ].filter(Boolean).join('\n');
+  const slotMatch = preferredTime.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!slotMatch) return null;
 
-  const encodedDescription = encodeURIComponent(descriptionText);
-  const encodedLocation = encodeURIComponent(`${ACADEMY_CONFIG.name}, ${ACADEMY_CONFIG.address.fullFormatted} / Google Meet`);
+  let startHour = parseInt(slotMatch[1], 10);
+  const startMin = parseInt(slotMatch[2], 10);
+  const ampm = slotMatch[3].toUpperCase();
 
-  // Parse preferredDate and approximate time into Google Calendar date format (YYYYMMDDTHHmmssZ)
-  let datesParam = '';
-  try {
-    const [year, month, day] = preferredDate.split('-').map(Number);
-    // Default to morning 10:00 AM if parsing fails
-    let startHour = 10;
-    let startMin = 0;
+  if (ampm === 'PM' && startHour < 12) startHour += 12;
+  if (ampm === 'AM' && startHour === 12) startHour = 0;
 
-    if (preferredTime) {
-      const match = preferredTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
-      if (match) {
-        let h = parseInt(match[1], 10);
-        const m = parseInt(match[2], 10);
-        const ampm = match[3].toUpperCase();
-        if (ampm === 'PM' && h < 12) h += 12;
-        if (ampm === 'AM' && h === 12) h = 0;
-        startHour = h;
-        startMin = m;
-      }
-    }
-
-    const startDate = new Date(year, month - 1, day, startHour, startMin, 0);
-    const endDate = new Date(startDate.getTime() + 30 * 60 * 1000); // 30 minutes duration
-
-    const formatGDate = (d: Date) => {
-      return d.toISOString().replace(/-|:|\.\d\d\d/g, '');
-    };
-
-    datesParam = `&dates=${formatGDate(startDate)}/${formatGDate(endDate)}`;
-  } catch {
-    // If date parse fails, omit dates to allow user to pick in Google Calendar
-    datesParam = '';
+  // Each consultation slot has an exact duration of 30 minutes
+  let endHour = startHour;
+  let endMin = startMin + 30;
+  if (endMin >= 60) {
+    endHour += 1;
+    endMin -= 60;
   }
 
-  // Pre-invite academy email
-  const attendeesParam = `&add=${encodeURIComponent(ACADEMY_CONFIG.contact.email)}`;
+  const pad = (n: number) => n.toString().padStart(2, '0');
 
-  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&details=${encodedDescription}&location=${encodedLocation}${datesParam}${attendeesParam}`;
+  const startStr = `${yyyy}${mm}${dd}T${pad(startHour)}${pad(startMin)}00`;
+  const endStr = `${yyyy}${mm}${dd}T${pad(endHour)}${pad(endMin)}00`;
+
+  return { startStr, endStr };
 }
 
 /**
- * Handles consultation form submission.
- * In Demo Mode: Performs validation, builds Google Calendar template URL,
- * and returns structured feedback without fabricating a backend response.
+ * Builds a draft Google Calendar "Add Event" URL prefilled with academic consultation details.
+ * 
+ * Privacy & Security Notice:
+ * Sensitive personal queries, marks details, or personal phone numbers are NOT placed in
+ * the public calendar URL parameters to prevent URL leakage or referrer tracking.
  */
-export async function submitConsultationRequest(
-  request: ConsultationRequest
-): Promise<ConsultationSubmissionResult> {
-  // Artificial brief debounce for UI feedback (600ms)
-  await new Promise((resolve) => setTimeout(resolve, 600));
+export function buildGoogleCalendarUrl(request: ConsultationRequest): string {
+  const { fullName, courseInterest, preferredDate, preferredTime } = request;
 
-  const gCalUrl = buildGoogleCalendarUrl(request);
+  const eventTitle = encodeURIComponent(`Draft Reminder: Antariksh Academy Consultation - ${courseInterest}`);
 
-  if (ACADEMY_CONFIG.consultation.mode === 'production') {
-    // In production, this would invoke a secure backend API endpoint:
-    // POST /api/schedule-consultation { request }
-    // The backend would use Google Calendar API v3 Service Account to create an event
-    // with conferenceDataVersion=1 and generate a real `meet.google.com/xxx-xxxx-xxx` link.
-    throw new Error(
-      'Production backend endpoint not configured. Set VITE_CALENDAR_API_URL or consult documentation in README.'
-    );
-  }
+  const descriptionText = [
+    `Draft reminder for academic counseling session with Antariksh Academy (Berhampur).`,
+    ``,
+    `Student/Parent: ${fullName}`,
+    `Course: ${courseInterest}`,
+    `Requested Window: ${preferredTime}`,
+    ``,
+    `IMPORTANT NOTICE:`,
+    `This is a provisional personal calendar draft. The Antariksh Academy Admissions Desk`,
+    `will review counselor availability and email the confirmed slot and official Google Meet`,
+    `video link prior to the session.`,
+    ``,
+    `Academy Admissions Desk: ${ACADEMY_CONFIG.contact.phoneDisplay}`,
+    `Email: ${ACADEMY_CONFIG.contact.email}`,
+    `Campus Address: ${ACADEMY_CONFIG.address.fullFormatted}`,
+  ].join('\n');
 
-  return {
-    mode: 'demo',
-    success: true,
-    message:
-      'Consultation details successfully validated in Demo Mode. Because this is a static frontend deployment, no data was transmitted to an external server. You can click the Google Calendar button below to add this event to your personal Google Calendar and automatically invite the academy.',
-    googleCalendarUrl: gCalUrl,
-    meetLinkPlaceholder: 'Available in Production (Google Workspace / Calendar API required)',
-    submissionTimestamp: new Date().toISOString(),
-    details: request,
-  };
+  const encodedDescription = encodeURIComponent(descriptionText);
+  const encodedLocation = encodeURIComponent(`${ACADEMY_CONFIG.name}, ${ACADEMY_CONFIG.address.street}, ${ACADEMY_CONFIG.address.city}`);
+
+  const datesObj = formatCalendarDates(preferredDate, preferredTime);
+  const datesParam = datesObj ? `&dates=${datesObj.startStr}/${datesObj.endStr}&ctz=${encodeURIComponent(ACADEMY_CONFIG.consultation.timeZone)}` : '';
+
+  // Pre-fill attendee as academy contact email
+  const attendeesParam = `&add=${encodeURIComponent(ACADEMY_CONFIG.contact.email)}`;
+
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&details=${encodedDescription}&location=${encodedLocation}${datesParam}${attendeesParam}`;
 }
 
 /**

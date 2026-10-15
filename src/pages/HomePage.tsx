@@ -39,6 +39,7 @@ export const HomePage: React.FC = () => {
   const [heroPhone, setHeroPhone] = useState('');
   const [heroTargetClass, setHeroTargetClass] = useState('+2 1st Year (Class 11)');
   const [heroCourse, setHeroCourse] = useState('Integrated Board + Entrance');
+  const [heroHoney, setHeroHoney] = useState('');
   const [heroStatus, setHeroStatus] = useState<string | null>(null);
   const [isHeroSubmitting, setIsHeroSubmitting] = useState(false);
 
@@ -176,19 +177,29 @@ export const HomePage: React.FC = () => {
     setIsHeroSubmitting(true);
     setHeroStatus(null);
 
-    await submitEnquiryToGmail({
+    const result = await submitEnquiryToGmail({
       formType: 'Callback Request',
       fullName: heroName.trim(),
       mobileNumber: heroPhone.trim(),
       studentClass: heroTargetClass,
       courseInterest: heroCourse,
       preferredTime: 'Immediate Admissions Callback Requested',
+      honeypot: heroHoney,
     });
 
     setIsHeroSubmitting(false);
-    setHeroStatus('SUCCESS: Callback request dispatched! Our senior academic counselor will call you within 15 minutes.');
-    setHeroName('');
-    setHeroPhone('');
+
+    if (result.success) {
+      setHeroStatus('SUCCESS: Callback request accepted! Our senior counselor will call you shortly.');
+      setHeroName('');
+      setHeroPhone('');
+      setHeroHoney('');
+    } else {
+      setHeroStatus(
+        result.message ||
+          'Submission unsuccessful. Please call our admissions desk at +91 90901 60793 or connect on WhatsApp.'
+      );
+    }
   };
 
   const toggleFaq = (index: number) => {
@@ -423,6 +434,20 @@ export const HomePage: React.FC = () => {
                 </p>
 
                 <form onSubmit={(e) => { void handleHeroLeadSubmit(e); }} className="space-y-3 sm:space-y-3.5">
+                  {/* Anti-spam honeypot */}
+                  <div className="hidden" aria-hidden="true">
+                    <label htmlFor="hero-honey">Leave this blank</label>
+                    <input
+                      id="hero-honey"
+                      type="text"
+                      name="_honey"
+                      value={heroHoney}
+                      onChange={(e) => setHeroHoney(e.target.value)}
+                      tabIndex={-1}
+                      autoComplete="off"
+                    />
+                  </div>
+
                   <div>
                     <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
                       Student / Parent Name <span className="text-[#FC1682]">*</span>
@@ -516,18 +541,38 @@ export const HomePage: React.FC = () => {
 
                 {heroStatus && (
                   <div
-                    className={`mt-3 p-3 rounded-xl text-xs text-center font-semibold flex items-center justify-center gap-2 ${
+                    className={`mt-3 p-3 rounded-xl text-xs text-center font-semibold space-y-2 ${
                       heroStatus.startsWith('SUCCESS')
                         ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                         : 'bg-rose-50 text-rose-700 border border-rose-200'
                     }`}
                   >
-                    {heroStatus.startsWith('SUCCESS') ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    ) : (
-                      <Phone className="w-4 h-4 text-rose-600 shrink-0" />
+                    <div className="flex items-center justify-center gap-2">
+                      {heroStatus.startsWith('SUCCESS') ? (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      ) : (
+                        <Phone className="w-4 h-4 text-rose-600 shrink-0" />
+                      )}
+                      <span>{heroStatus}</span>
+                    </div>
+                    {!heroStatus.startsWith('SUCCESS') && (
+                      <div className="flex items-center justify-center gap-2 pt-1">
+                        <a
+                          href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`}
+                          className="px-2.5 py-1 rounded-lg bg-slate-900 text-white font-bold text-[11px] hover:bg-slate-800 transition-colors"
+                        >
+                          Call Direct
+                        </a>
+                        <a
+                          href={ACADEMY_CONFIG.contact.whatsappLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold text-[11px] hover:bg-emerald-500 transition-colors"
+                        >
+                          WhatsApp Desk
+                        </a>
+                      </div>
                     )}
-                    <span>{heroStatus}</span>
                   </div>
                 )}
 

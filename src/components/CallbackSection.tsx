@@ -19,12 +19,20 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
   const [courseInterest, setCourseInterest] = useState(preselectedCourse || 'Integrated Board + Entrance Preparation');
   const [preferredTime, setPreferredTime] = useState('Morning (09:00 AM - 12:00 PM)');
   const [consent, setConsent] = useState(false);
+  const [honeypot, setHoneypot] = useState('');
 
   // Form State
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(null);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [lastSubmittedPhone, setLastSubmittedPhone] = useState('');
+  const [submittedData, setSubmittedData] = useState<{
+    fullName: string;
+    mobileNumber: string;
+    courseInterest: string;
+    preferredTime: string;
+  } | null>(null);
 
   const validateForm = (): boolean => {
     const errs: Record<string, string> = {};
@@ -59,28 +67,54 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    setSubmissionError(null);
 
     // Send directly to admissions inbox
-    await submitEnquiryToGmail({
+    const result = await submitEnquiryToGmail({
       formType: 'Callback Request',
       fullName: fullName.trim(),
       mobileNumber: mobileNumber.trim(),
       studentClass,
       courseInterest,
       preferredTime,
+      honeypot,
     });
 
     setIsSubmitting(false);
-    setSubmissionSuccess(true);
-    setLastSubmittedPhone(mobileNumber.trim());
+
+    if (result.success) {
+      setSubmittedData({
+        fullName: fullName.trim(),
+        mobileNumber: mobileNumber.trim(),
+        courseInterest,
+        preferredTime,
+      });
+      setSubmissionSuccess(true);
+      setLastSubmittedPhone(mobileNumber.trim());
+      // Reset form fields only after confirmed provider acceptance
+      setFullName('');
+      setMobileNumber('');
+      setConsent(false);
+      setHoneypot('');
+      setErrors({});
+    } else {
+      setSubmissionSuccess(false);
+      setSubmissionError(
+        result.message ||
+          'We were unable to transmit your callback request right now. Please call or WhatsApp our admissions desk directly.'
+      );
+    }
   };
 
   const handleReset = () => {
     setFullName('');
     setMobileNumber('');
     setConsent(false);
+    setHoneypot('');
     setErrors({});
     setSubmissionSuccess(null);
+    setSubmissionError(null);
+    setSubmittedData(null);
   };
 
   return (
@@ -125,9 +159,9 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                   Callback Request Submitted!
                 </h3>
                 <p className="text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
-                  Thank you, <span className="font-semibold text-slate-900">{fullName}</span>. Your details for{' '}
-                  <span className="text-[#FC1682] font-semibold">{courseInterest}</span> have been sent to our Berhampur admissions office.
-                  A counselor will call you at <span className="font-bold text-slate-900">+91 {mobileNumber}</span> during your preferred window ({preferredTime}).
+                  Thank you, <span className="font-semibold text-slate-900">{submittedData?.fullName || 'Student/Parent'}</span>. Your details for{' '}
+                  <span className="text-[#FC1682] font-semibold">{submittedData?.courseInterest}</span> have been sent to our Berhampur admissions office.
+                  A counselor will call you at <span className="font-bold text-slate-900">+91 {submittedData?.mobileNumber}</span> during your preferred window ({submittedData?.preferredTime}).
                 </p>
               </div>
 
@@ -142,7 +176,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                 </p>
                 <div className="pt-2 flex flex-wrap gap-2 text-[11px]">
                   <a
-                    href={`https://wa.me/${ACADEMY_CONFIG.contact.whatsappNumber}?text=${encodeURIComponent(`Hello Antariksh Academy, my name is ${fullName.trim() || 'a student/parent'}. I would like to enquire about +2 Science and ${courseInterest} batches.`)}`}
+                    href={`https://wa.me/${ACADEMY_CONFIG.contact.whatsappNumber}?text=${encodeURIComponent(`Hello Antariksh Academy, my name is ${submittedData?.fullName || 'a student/parent'}. I would like to enquire about +2 Science and ${submittedData?.courseInterest || 'Entrance'} batches.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-colors flex items-center gap-1.5 shadow-sm"
@@ -166,6 +200,50 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
             </div>
           ) : (
             <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(e); }} className="space-y-6" noValidate>
+              
+              {/* Anti-spam honeypot */}
+              <div className="hidden" aria-hidden="true">
+                <label htmlFor="cb-honey">Leave this field blank</label>
+                <input
+                  id="cb-honey"
+                  type="text"
+                  name="_honey"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
+
+              {submissionError && (
+                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm space-y-3">
+                  <div className="flex items-start gap-2.5">
+                    <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-rose-900">Submission Notice</p>
+                      <p className="mt-0.5 leading-relaxed text-rose-700">{submissionError}</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <a
+                      href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-pink-400" />
+                      <span>Call {ACADEMY_CONFIG.contact.phoneDisplay}</span>
+                    </a>
+                    <a
+                      href={ACADEMY_CONFIG.contact.whatsappLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      <span>Chat on WhatsApp</span>
+                    </a>
+                  </div>
+                </div>
+              )}
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {/* Full Name */}

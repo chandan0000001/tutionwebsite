@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   RefreshCw,
   Send,
+  Phone,
 } from 'lucide-react';
 import { ACADEMY_CONFIG } from '../config/academyConfig';
 import { buildGoogleCalendarUrl } from '../utils/googleCalendar';
@@ -50,12 +51,21 @@ export const ConsultationSection: React.FC<ConsultationSectionProps> = ({
   const [preferredTime, setPreferredTime] = useState<string>(ACADEMY_CONFIG.consultation.availableSlots[1]);
   const [consultationType, setConsultationType] = useState('Google Meet Video Call');
   const [specificQuery, setSpecificQuery] = useState('');
+  const [honeypot, setHoneypot] = useState('');
 
   // Form Validation & Status
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState<boolean>(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [calendarUrl, setCalendarUrl] = useState<string>('');
+  const [submittedData, setSubmittedData] = useState<{
+    fullName: string;
+    email: string;
+    courseInterest: string;
+    preferredDate: string;
+    preferredTime: string;
+  } | null>(null);
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
@@ -82,11 +92,16 @@ export const ConsultationSection: React.FC<ConsultationSectionProps> = ({
     if (!preferredDate) {
       errs.preferredDate = 'Please select a consultation date.';
     } else {
-      const selected = new Date(preferredDate);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (selected < today) {
-        errs.preferredDate = 'Consultation date cannot be in the past.';
+      const dateParts = preferredDate.split('-').map(Number);
+      if (dateParts.length !== 3 || dateParts.some(isNaN)) {
+        errs.preferredDate = 'Please select a valid date.';
+      } else {
+        const selected = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (selected < today) {
+          errs.preferredDate = 'Consultation date cannot be in the past.';
+        }
       }
     }
 
@@ -100,22 +115,10 @@ export const ConsultationSection: React.FC<ConsultationSectionProps> = ({
     if (!validate()) return;
 
     setIsSubmitting(true);
-
-    // Generate Google Calendar Link for user convenience
-    const calUrl = buildGoogleCalendarUrl({
-      fullName: fullName.trim(),
-      email: email.trim(),
-      phone: mobileNumber.trim() || undefined,
-      studentClass,
-      courseInterest,
-      preferredDate,
-      preferredTime,
-      notes: specificQuery.trim() || undefined,
-    });
-    setCalendarUrl(calUrl);
+    setSubmissionError(null);
 
     // Transmit directly to academy admissions inbox
-    await submitEnquiryToGmail({
+    const result = await submitEnquiryToGmail({
       formType: 'Consultation Booking',
       fullName: fullName.trim(),
       email: email.trim(),
@@ -126,10 +129,47 @@ export const ConsultationSection: React.FC<ConsultationSectionProps> = ({
       preferredTime,
       consultationType,
       message: specificQuery.trim() || undefined,
+      honeypot,
     });
 
     setIsSubmitting(false);
-    setSubmissionSuccess(true);
+
+    if (result.success) {
+      // Build draft calendar URL only upon verified request acceptance
+      const calUrl = buildGoogleCalendarUrl({
+        fullName: fullName.trim(),
+        email: email.trim(),
+        phone: mobileNumber.trim() || undefined,
+        studentClass,
+        courseInterest,
+        preferredDate,
+        preferredTime,
+        notes: specificQuery.trim() || undefined,
+      });
+
+      setCalendarUrl(calUrl);
+      setSubmittedData({
+        fullName: fullName.trim(),
+        email: email.trim(),
+        courseInterest,
+        preferredDate,
+        preferredTime,
+      });
+      setSubmissionSuccess(true);
+      // Reset form fields only after confirmed provider acceptance
+      setFullName('');
+      setEmail('');
+      setMobileNumber('');
+      setSpecificQuery('');
+      setHoneypot('');
+      setErrors({});
+    } else {
+      setSubmissionSuccess(false);
+      setSubmissionError(
+        result.message ||
+          'We were unable to transmit your consultation booking right now. Please call or WhatsApp our admissions desk directly.'
+      );
+    }
   };
 
   const handleReset = () => {
@@ -137,8 +177,11 @@ export const ConsultationSection: React.FC<ConsultationSectionProps> = ({
     setEmail('');
     setMobileNumber('');
     setSpecificQuery('');
+    setHoneypot('');
     setErrors({});
     setSubmissionSuccess(false);
+    setSubmissionError(null);
+    setSubmittedData(null);
     setCalendarUrl('');
   };
 
@@ -197,16 +240,16 @@ export const ConsultationSection: React.FC<ConsultationSectionProps> = ({
               </div>
 
               <div className="space-y-2">
-                <span className="text-xs uppercase font-extrabold tracking-wider px-3 py-1 rounded-full bg-pink-100 text-[#BE125A]">
-                  Consultation Request Dispatched
+                <span className="text-xs uppercase font-extrabold tracking-wider px-3.5 py-1 rounded-full bg-amber-50 border border-amber-300 text-amber-800">
+                  Status: Pending Counselor Confirmation
                 </span>
                 <h3 className="font-['Outfit',sans-serif] text-2xl sm:text-3xl font-extrabold text-[#0F172A] mt-2">
-                  We Have Received Your Slot Request!
+                  Consultation Request Received!
                 </h3>
                 <p className="text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
-                  Thank you, <span className="font-bold text-slate-900">{fullName}</span>. Your appointment request for{' '}
-                  <span className="font-bold text-[#FC1682]">{courseInterest}</span> on{' '}
-                  <span className="font-bold text-slate-900">{preferredDate}</span> ({preferredTime}) has been sent directly to the
+                  Thank you, <span className="font-bold text-slate-900">{submittedData?.fullName || 'Student/Parent'}</span>. Your appointment request for{' '}
+                  <span className="font-bold text-[#FC1682]">{submittedData?.courseInterest}</span> on{' '}
+                  <span className="font-bold text-slate-900">{submittedData?.preferredDate}</span> ({submittedData?.preferredTime}) has been transmitted to the
                   Antariksh Academy Admissions Desk.
                 </p>
               </div>
@@ -220,46 +263,97 @@ export const ConsultationSection: React.FC<ConsultationSectionProps> = ({
                 <ul className="space-y-2 text-slate-600 leading-relaxed">
                   <li className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#FC1682] shrink-0 mt-1.5"></span>
-                    <span>Our academic counselor will review faculty availability and confirm the slot.</span>
+                    <span>Our senior academic counselor will review mentor availability and verify your slot.</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#FC1682] shrink-0 mt-1.5"></span>
-                    <span>The secure Google Meet video link will be sent to <strong className="text-slate-800">{email}</strong> and WhatsApp.</span>
+                    <span>The confirmed Google Meet video link or centre appointment details will be sent to <strong className="text-slate-800">{submittedData?.email}</strong> and via WhatsApp.</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#FC1682] shrink-0 mt-1.5"></span>
-                    <span>Prepare any previous marks cards or specific question sets you would like the mentor to evaluate.</span>
+                    <span>Note: This submission is an appointment request. Confirmed timing and meeting link will be coordinated directly by our counselor.</span>
                   </li>
                 </ul>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                {calendarUrl && (
-                  <a
-                    href={calendarUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#D9146C] hover:from-[#E00E70] shadow-lg shadow-pink-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
-                  >
-                    <Calendar className="w-4 h-4 text-white" />
-                    <span>Save to My Google Calendar</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                )}
+              <div className="flex flex-col items-center justify-center gap-3 pt-2">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
+                  {calendarUrl && (
+                    <a
+                      href={calendarUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#D9146C] hover:from-[#E00E70] shadow-lg shadow-pink-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                    >
+                      <Calendar className="w-4 h-4 text-white" />
+                      <span>Add Draft Reminder to Google Calendar (Optional)</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  )}
 
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="w-full sm:w-auto px-5 py-3.5 rounded-xl font-bold text-xs sm:text-sm text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <RefreshCw className="w-4 h-4 text-[#FC1682]" />
-                  <span>Book Another Slot</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="w-full sm:w-auto px-5 py-3.5 rounded-xl font-bold text-xs sm:text-sm text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <RefreshCw className="w-4 h-4 text-[#FC1682]" />
+                    <span>Book Another Slot</span>
+                  </button>
+                </div>
+                {calendarUrl && (
+                  <p className="text-[11px] text-slate-500 max-w-md text-center">
+                    Note: Calendar link creates a provisional draft entry on your device's Google Calendar for your personal reminder. Final appointment confirmation is coordinated by our counseling desk.
+                  </p>
+                )}
               </div>
             </div>
           ) : (
             <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(e); }} className="space-y-6" noValidate>
+              
+              {/* Anti-spam honeypot */}
+              <div className="hidden" aria-hidden="true">
+                <label htmlFor="cs-honey">Leave this field blank</label>
+                <input
+                  id="cs-honey"
+                  type="text"
+                  name="_honey"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
+
+              {submissionError && (
+                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm space-y-3">
+                  <div className="flex items-start gap-2.5">
+                    <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-rose-900">Consultation Request Notice</p>
+                      <p className="mt-0.5 leading-relaxed text-rose-700">{submissionError}</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <a
+                      href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors"
+                    >
+                      <Phone className="w-3.5 h-3.5 text-pink-400" />
+                      <span>Call {ACADEMY_CONFIG.contact.phoneDisplay}</span>
+                    </a>
+                    <a
+                      href={ACADEMY_CONFIG.contact.whatsappLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors"
+                    >
+                      <Video className="w-3.5 h-3.5" />
+                      <span>Connect on WhatsApp</span>
+                    </a>
+                  </div>
+                </div>
+              )}
               
               {/* Row 1: Full Name and Email Address */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
