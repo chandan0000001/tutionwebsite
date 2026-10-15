@@ -142,7 +142,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                 </p>
                 <div className="pt-2 flex flex-wrap gap-2 text-[11px]">
                   <a
-                    href={`https://wa.me/${ACADEMY_CONFIG.contact.whatsappNumber}?text=Hello%20Antariksh%20Academy,%20my%20name%20is%20${encodeURIComponent(fullName)}.%20I%20enquired%20about%20${encodeURIComponent(courseInterest)}.`}
+                    href={`https://wa.me/${ACADEMY_CONFIG.contact.whatsappNumber}?text=${encodeURIComponent(`Hello Antariksh Academy, my name is ${fullName.trim() || 'a student/parent'}. I would like to enquire about +2 Science and ${courseInterest} batches.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-colors flex items-center gap-1.5 shadow-sm"

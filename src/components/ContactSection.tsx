@@ -75,19 +75,19 @@ export const ContactSection: React.FC = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-['Outfit',sans-serif] text-lg font-bold text-slate-900 mb-1">
-                    Email & Inquiries
+                    Email & Queries Desk
                   </h3>
                   <p className="text-xs text-slate-500 mb-2">
-                    Provisional contact address for consultations and admissions:
+                    Official inbox for student inquiries, batch details, and counseling:
                   </p>
                   <a
                     href={`mailto:${ACADEMY_CONFIG.contact.email}`}
-                    className="text-sm font-semibold text-slate-900 hover:text-[#FC1682] hover:underline block break-all mb-2"
+                    className="text-sm font-bold text-[#0284C7] hover:text-[#FC1682] hover:underline block break-all mb-2"
                   >
                     {ACADEMY_CONFIG.contact.email}
                   </a>
                   <span className="text-[11px] text-[#0284C7] bg-cyan-50 border border-cyan-200 px-2 py-0.5 rounded font-medium inline-block">
-                    Monitored daily by academic desk
+                    Admissions Desk Active Daily
                   </span>
                 </div>
               </div>
@@ -109,13 +109,13 @@ export const ContactSection: React.FC = () => {
                   
                   <div className="flex flex-wrap gap-2">
                     <a
-                      href={`https://wa.me/${ACADEMY_CONFIG.contact.whatsappNumber}?text=Hello%20Antariksh%20Academy,%20I%20would%20like%20to%20enquire%20about%20+2%20Science%20and%20Entrance%20batches.`}
+                      href={ACADEMY_CONFIG.contact.whatsappLink}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition-colors shadow-sm"
                     >
                       <MessageSquare className="w-3.5 h-3.5" />
-                      <span>WhatsApp Admissions</span>
+                      <span>WhatsApp Admissions (+2 Science)</span>
                       <ExternalLink className="w-3 h-3 opacity-80" />
                     </a>
                   </div>

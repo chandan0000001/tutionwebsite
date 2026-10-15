@@ -186,7 +186,7 @@ export const Navbar: React.FC = () => {
 
           <div className="mt-3 text-center">
             <a
-              href={`https://wa.me/${ACADEMY_CONFIG.contact.whatsappNumber}?text=Hello%20Antariksh%20Academy,%20I%20would%20like%20to%20enquire%20about%20admissions.`}
+              href={ACADEMY_CONFIG.contact.whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:underline py-1"

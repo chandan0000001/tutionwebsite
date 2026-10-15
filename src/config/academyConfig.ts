@@ -26,15 +26,17 @@ export const ACADEMY_CONFIG = {
 
   // Contact Information
   contact: {
-    // Official public email shown on website (protecting personal email)
-    publicEmail: 'info@antarikshacademy.com',
+    // Official public email for inquiries & admissions
+    publicEmail: 'kumardalaichandan803@gmail.com',
+    email: 'kumardalaichandan803@gmail.com',
     internalSubmissionEmail: 'kumardalaichandan803@gmail.com',
-    email: 'info@antarikshacademy.com',
     
     phoneDisplay: '+91 90901 60793',
     phoneRaw: '+919090160793',
     whatsappDisplay: '+91 90901 60793 (Admissions Desk)',
     whatsappNumber: '919090160793',
+    whatsappDefaultMessage: 'Hello Antariksh Academy, I would like to enquire about +2 Science and Entrance batches.',
+    whatsappLink: 'https://wa.me/919090160793?text=Hello%20Antariksh%20Academy%2C%20I%20would%20like%20to%20enquire%20about%20%2B2%20Science%20and%20Entrance%20batches.',
     
     officeHours: 'Monday – Saturday: 7:00 AM – 7:30 PM | Sunday: 8:00 AM – 1:00 PM (Doubt Sessions & Tests)',
   },

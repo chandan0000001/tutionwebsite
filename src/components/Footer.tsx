@@ -60,7 +60,12 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-[#00C8FF] shrink-0" />
-                <span>Inquiries: admissions@antarikshacademy.com</span>
+                <a
+                  href={`mailto:${ACADEMY_CONFIG.contact.email}`}
+                  className="hover:text-[#FC1682] transition-colors break-all"
+                >
+                  Email & Queries: {ACADEMY_CONFIG.contact.email}
+                </a>
               </div>
             </div>
 
@@ -84,11 +89,11 @@ export const Footer: React.FC = () => {
                 IG
               </a>
               <a
-                href={`https://wa.me/${ACADEMY_CONFIG.contact.whatsappNumber}`}
+                href={ACADEMY_CONFIG.contact.whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-emerald-600 text-white flex items-center justify-center transition-colors text-xs font-bold"
-                aria-label="WhatsApp"
+                aria-label="WhatsApp (+2 Science)"
               >
                 WA
               </a>
