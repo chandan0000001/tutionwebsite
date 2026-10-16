@@ -50,19 +50,19 @@ export const Lightbox: React.FC<LightboxProps> = ({
       className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 animate-in fade-in duration-200"
     >
       {/* Top Bar */}
-      <div className="flex items-center justify-between text-white border-b border-pink-500/20 pb-3">
+      <div className="flex items-center justify-between text-white border-b border-[#344054] pb-3">
         <div className="flex items-center gap-3">
-          <span className="text-xs uppercase font-bold tracking-wider px-2.5 py-1 rounded bg-[#0D1017] text-pink-300 border border-pink-500/35">
+          <span className="text-xs uppercase font-bold tracking-wider px-2.5 py-1 rounded bg-[#172033] text-[#F4C76B] border border-[#344054]">
             {current.category}
           </span>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-[#AAB4C3]">
             Image {currentIndex + 1} of {items.length}
           </span>
         </div>
 
         <button
           onClick={onClose}
-          className="p-2 rounded-full bg-[#141824] hover:bg-[#FC1682] text-slate-300 hover:text-white transition-colors cursor-pointer border border-pink-500/25"
+          className="p-2 rounded-full bg-[#172033] hover:bg-[#202B3D] text-[#AAB4C3] hover:text-white transition-colors cursor-pointer border border-[#344054] min-h-[44px] min-w-[44px] flex items-center justify-center"
           aria-label="Close Lightbox"
         >
           <X className="w-5 h-5" />
@@ -74,7 +74,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
         {/* Previous Button */}
         <button
           onClick={onPrev}
-          className="absolute left-2 sm:left-4 z-10 p-3 rounded-full bg-[#141824]/90 hover:bg-[#FC1682] text-white transition-all border border-pink-500/30 hover:border-[#FC1682] cursor-pointer shadow-lg shadow-black/50"
+          className="absolute left-2 sm:left-4 z-10 p-3 rounded-full bg-[#172033]/90 hover:bg-[#202B3D] text-white transition-all border border-[#344054] hover:border-[#F4C76B] cursor-pointer shadow-lg shadow-black/50 min-h-[44px] min-w-[44px] flex items-center justify-center"
           aria-label="Previous image"
         >
           <ChevronLeft className="w-6 h-6" />
@@ -85,14 +85,14 @@ export const Lightbox: React.FC<LightboxProps> = ({
           <img
             src={current.imageUrl}
             alt={current.title}
-            className="max-h-[65vh] max-w-full object-contain rounded-xl shadow-2xl border border-pink-500/30"
+            className="max-h-[65vh] max-w-full object-contain rounded-xl shadow-2xl border border-[#344054]"
           />
         </div>
 
         {/* Next Button */}
         <button
           onClick={onNext}
-          className="absolute right-2 sm:right-4 z-10 p-3 rounded-full bg-[#141824]/90 hover:bg-[#FC1682] text-white transition-all border border-pink-500/30 hover:border-[#FC1682] cursor-pointer shadow-lg shadow-black/50"
+          className="absolute right-2 sm:right-4 z-10 p-3 rounded-full bg-[#172033]/90 hover:bg-[#202B3D] text-white transition-all border border-[#344054] hover:border-[#F4C76B] cursor-pointer shadow-lg shadow-black/50 min-h-[44px] min-w-[44px] flex items-center justify-center"
           aria-label="Next image"
         >
           <ChevronRight className="w-6 h-6" />
@@ -100,7 +100,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
       </div>
 
       {/* Bottom Caption & Attribution Bar */}
-      <div className="bg-[#141824] border border-pink-500/25 rounded-xl p-4 max-w-4xl mx-auto w-full text-white">
+      <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-4 max-w-4xl mx-auto w-full text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
           <h4 className="text-base font-bold text-white font-['Outfit',sans-serif]">
             {current.title}
@@ -117,11 +117,11 @@ export const Lightbox: React.FC<LightboxProps> = ({
           )}
         </div>
 
-        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-2">
+        <p className="text-xs sm:text-sm text-[#AAB4C3] leading-relaxed mb-2">
           {current.description}
         </p>
 
-        <div className="text-[11px] text-slate-400 border-t border-pink-500/20 pt-1.5 flex items-center justify-between">
+        <div className="text-[11px] text-slate-400 border-t border-[#344054] pt-1.5 flex items-center justify-between">
           <span>{current.attributionNote}</span>
           <span className="hidden sm:inline text-slate-500">Press ESC to exit</span>
         </div>

@@ -51,8 +51,8 @@ export const HomePage: React.FC = () => {
   const [isCarouselPaused, setIsCarouselPaused] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
-  // FAQ Accordion State
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  // FAQ Accordion State - Default closed on mobile and desktop
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   // Curated Album Slides (Teachers, Classrooms, Mentorship, Testing & Facilities)
   const albumSlides = [
@@ -269,8 +269,8 @@ export const HomePage: React.FC = () => {
   return (
     <div className="flex flex-col w-full font-body overflow-x-hidden bg-[#111827] text-[#F3F4F6]">
       
-      {/* 1. TOP URGENT ANNOUNCEMENT TICKER */}
-      <div className="bg-[#0B0F19] text-[#D1D5DB] py-2 px-3 sm:px-4 border-b border-[#1F2937] text-xs">
+      {/* 1. TOP URGENT ANNOUNCEMENT TICKER (Hidden on mobile to save vertical height) */}
+      <div className="hidden sm:block bg-[#0E1420] text-[#D1D5DB] py-2 px-3 sm:px-4 border-b border-[#243042] text-xs">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2 text-center sm:text-left">
           <div className="flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 flex-wrap">
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#F4C76B] text-[#0F172A] text-[10px] font-extrabold uppercase tracking-wider shrink-0">
@@ -292,30 +292,30 @@ export const HomePage: React.FC = () => {
       </div>
 
       {/* 2. EXECUTIVE BUSINESS HERO & DUAL JOURNEY CTAS */}
-      <section className="relative w-full py-8 sm:py-14 lg:py-18 bg-[#111827] text-[#F3F4F6] overflow-hidden border-b border-[#243042]">
+      <section className="relative w-full py-4 sm:py-12 lg:py-16 bg-[#111827] text-[#F3F4F6] overflow-hidden border-b border-[#243042]">
         {/* Restrained Ambient Glows */}
         <div className="absolute top-0 left-1/3 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-[#F4C76B]/5 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-0 right-5 sm:right-10 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] bg-[#38BDF8]/5 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center">
             
             {/* Left Strategic Copy Column */}
-            <div className="lg:col-span-7 space-y-5 sm:space-y-6 text-left">
+            <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-left">
               
               {/* Institutional Authority Seal Badge */}
-              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 py-1.5 rounded-full bg-[#202B3D] border border-[#344054] shadow-xs max-w-full">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-[#202B3D] border border-[#344054] shadow-xs max-w-full">
                 <span className="w-2 h-2 rounded-full bg-[#F4C76B] animate-ping shrink-0"></span>
                 <span className="font-cinzel text-[10px] sm:text-xs font-bold text-[#F4C76B] tracking-wider uppercase truncate">
-                  Antariksh Academy • Established 2017
+                  Antariksh Academy • Estd. 2017
                 </span>
                 <span className="text-[#344054]">|</span>
                 <span className="text-[10px] sm:text-[11px] font-semibold text-[#AAB4C3] truncate">Bijipur, Brahmapur</span>
               </div>
 
               {/* Main Headline */}
-              <div className="space-y-1.5 sm:space-y-2">
-                <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight leading-[1.14] text-[#F3F4F6]">
+              <div className="space-y-1 sm:space-y-2">
+                <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight leading-[1.16] text-[#F3F4F6]">
                   Empowering{' '}
                   <span className="font-serif-prestige italic font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#F4C76B] via-[#FDE68A] to-[#38BDF8]">
                     +2 Science
@@ -323,22 +323,54 @@ export const HomePage: React.FC = () => {
                   <br className="hidden sm:inline" />
                   & Competitive Aspirants to Excel.
                 </h1>
-                <p className="font-serif-prestige italic text-sm sm:text-lg text-[#D1D5DB] font-medium leading-snug">
+                <p className="font-serif-prestige italic text-xs sm:text-base text-[#D1D5DB] font-medium leading-snug">
                   Where rigorous concept mastery meets disciplined mentorship.
                 </p>
               </div>
 
-              {/* Business Description */}
+              {/* Business Description - Concise on mobile to eliminate vertical bloat */}
               <p className="text-[#AAB4C3] text-xs sm:text-base leading-relaxed max-w-2xl font-normal">
-                Prepare for your Odisha CHSE Council Board examinations alongside national competitive entrance exams
-                (JEE Main & Advanced, NEET-UG, NDA). With small 30-student batches, dedicated 1-on-1 daily faculty doubt desks,
-                and personalized test analytics, we ensure zero student gets left behind.
+                Odisha CHSE Council Board preparation alongside national competitive exams (JEE Main & Adv, NEET-UG, NDA).
+                Strict 30-student batch capacity, dedicated 1-on-1 daily faculty doubt desks, and 10 consecutive years of proven excellence in Brahmapur.
               </p>
 
-              {/* 3 Core Value Guarantees */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-1">
-                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-3 shadow-xs flex items-start gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-[#F4C76B]/15 text-[#F4C76B] flex items-center justify-center shrink-0 mt-0.5">
+              {/* Mobile-First: Dual Action Buttons Shown Immediately Above-The-Fold */}
+              <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
+                {/* Primary Action: Explore Courses */}
+                <a
+                  href="#courses"
+                  className="px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl font-extrabold text-xs sm:text-sm text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 shadow-md shadow-amber-500/10 transition-all flex items-center justify-center gap-2 text-center font-display min-h-[44px] active:scale-[0.98]"
+                >
+                  <BookOpen className="w-4 h-4 shrink-0 text-[#0F172A]" />
+                  <span>Explore Courses</span>
+                  <ArrowRight className="w-4 h-4 shrink-0 text-[#0F172A]" />
+                </a>
+
+                {/* Secondary Action: 30-min Google Meet Booking */}
+                <Link
+                  to="/consultation"
+                  className="px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm text-[#F3F4F6] hover:text-white bg-[#202B3D] hover:bg-[#26334A] border border-[#344054] hover:border-[#F4C76B]/50 shadow-xs transition-all flex items-center justify-center gap-2 text-center font-display min-h-[44px] active:scale-[0.98]"
+                >
+                  <Calendar className="w-4 h-4 text-[#F4C76B] shrink-0" />
+                  <span>Book Free Consultation</span>
+                </Link>
+              </div>
+
+              {/* Compact Callback Link */}
+              <div className="pt-0.5 flex items-center gap-1.5 text-xs text-[#AAB4C3] flex-wrap">
+                <span>Prefer a phone conversation or campus visit?</span>
+                <Link
+                  to="/contact"
+                  className="text-[#F4C76B] hover:text-[#FDE68A] font-bold transition-colors inline-flex items-center gap-0.5 underline underline-offset-2"
+                >
+                  <span>Request a Callback →</span>
+                </Link>
+              </div>
+
+              {/* 3 Core Value Guarantees (Stacked cleanly below CTAs) */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 pt-2">
+                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-2.5 sm:p-3 shadow-xs flex items-center sm:items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-[#F4C76B]/15 text-[#F4C76B] flex items-center justify-center shrink-0">
                     <Users className="w-4 h-4 text-[#F4C76B]" />
                   </div>
                   <div>
@@ -347,8 +379,8 @@ export const HomePage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-3 shadow-xs flex items-start gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-[#38BDF8]/15 text-[#38BDF8] flex items-center justify-center shrink-0 mt-0.5">
+                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-2.5 sm:p-3 shadow-xs flex items-center sm:items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-[#38BDF8]/15 text-[#38BDF8] flex items-center justify-center shrink-0">
                     <BookOpen className="w-4 h-4 text-[#38BDF8]" />
                   </div>
                   <div>
@@ -357,8 +389,8 @@ export const HomePage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-3 shadow-xs flex items-start gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-2.5 sm:p-3 shadow-xs flex items-center sm:items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
                     <Trophy className="w-4 h-4 text-emerald-400" />
                   </div>
                   <div>
@@ -369,11 +401,11 @@ export const HomePage: React.FC = () => {
               </div>
 
               {/* Social Proof Trust Ticker */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-4 pt-2 pb-1 border-t border-[#344054]/70">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 pt-1 sm:pt-2 pb-1 border-t border-[#344054]/70">
                 <div className="flex items-center gap-1.5">
                   <div className="flex text-[#F4C76B]">
                     {[1, 2, 3, 4, 5].map((s) => (
-                      <Star key={s} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-[#F4C76B]" />
+                      <Star key={s} className="w-3.5 h-3.5 fill-[#F4C76B]" />
                     ))}
                   </div>
                   <span className="text-xs font-bold text-[#F3F4F6] font-stat">4.9 / 5.0</span>
@@ -388,32 +420,10 @@ export const HomePage: React.FC = () => {
                 </span>
               </div>
 
-              {/* Dual Action Buttons: Clear Option A & Option B */}
-              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
-                {/* Option A: Google Meet 30-min booking */}
-                <Link
-                  to="/consultation"
-                  className="px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl font-extrabold text-xs sm:text-sm text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#BE125A] hover:from-[#FF2D92] hover:to-[#FC1682] shadow-lg shadow-pink-600/30 border border-pink-400/40 transition-all flex items-center justify-center gap-2 text-center font-display min-h-[46px] active:scale-[0.98]"
-                >
-                  <Calendar className="w-4 h-4 shrink-0 text-white" />
-                  <span>Book Free Consultation (Google Meet)</span>
-                  <ArrowRight className="w-4 h-4 shrink-0 text-white" />
-                </Link>
-
-                {/* Option B: Manual callback */}
-                <a
-                  href="#callback-widget"
-                  className="px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm text-slate-200 hover:text-white bg-[#141824] hover:bg-[#1C2232] border border-pink-500/25 hover:border-pink-500/50 shadow-xs transition-all flex items-center justify-center gap-2 text-center min-h-[46px] active:scale-[0.98]"
-                >
-                  <Phone className="w-4 h-4 text-[#38BDF8] shrink-0" />
-                  <span>Request Callback / Meeting</span>
-                </a>
-              </div>
-
             </div>
 
-            {/* Right Column: OPTION B LEAD WIDGET ("Request a Parent Meeting or Callback") */}
-            <div id="callback-widget" className="lg:col-span-5 relative w-full">
+            {/* Right Column: OPTION B LEAD WIDGET ("Request a Parent Meeting or Callback") - Preserved side-by-side on desktop (hidden on mobile to prevent early form stacking) */}
+            <div id="callback-widget" className="hidden lg:block lg:col-span-5 relative w-full">
               <div className="relative rounded-2xl sm:rounded-3xl bg-[#202B3D] border-2 border-[#344054] p-4 sm:p-7 shadow-2xl overflow-hidden">
                 {/* Visual Top Header Accent */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F4C76B] via-[#38BDF8] to-[#F4C76B]"></div>
@@ -694,20 +704,20 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* 4. AUTO-SWIPING CAMPUS & CLASSROOM PHOTO ALBUM */}
-      <section className="py-12 sm:py-20 bg-[#111827] text-[#F3F4F6] relative overflow-hidden border-b border-[#243042]">
+      <section className="py-8 sm:py-16 bg-[#111827] text-[#F3F4F6] relative overflow-hidden border-b border-[#243042]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#202B3D] border border-[#344054] text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-2 font-cinzel">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#202B3D] border border-[#344054] text-[#F4C76B] text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-2 font-cinzel">
                 <Camera className="w-3.5 h-3.5 text-[#F4C76B]" />
                 <span>Inside Antariksh Academy • Photo Album</span>
               </div>
-              <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#F3F4F6] tracking-tight">
+              <h2 className="font-display text-xl sm:text-3xl lg:text-4xl font-extrabold text-[#F3F4F6] tracking-tight">
                 Our Teachers, Classrooms & Campus Life
               </h2>
-              <p className="text-[#AAB4C3] text-xs sm:text-sm mt-1.5 max-w-2xl">
+              <p className="text-[#AAB4C3] text-xs sm:text-sm mt-1 max-w-2xl">
                 Experience the authentic teaching energy, disciplined small batches, and 1-on-1 mentorship at our Bijipur, Brahmapur center.
               </p>
             </div>
@@ -737,26 +747,26 @@ export const HomePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handlePrevSlide}
-                  className="w-9 h-9 rounded-xl bg-[#202B3D] hover:bg-[#F4C76B] hover:text-[#0F172A] text-white flex items-center justify-center transition-all border border-[#344054] cursor-pointer active:scale-95"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#202B3D] hover:bg-[#F4C76B] hover:text-[#0F172A] text-white flex items-center justify-center transition-all border border-[#344054] cursor-pointer active:scale-95"
                   aria-label="Previous photo slide"
                 >
-                  <ChevronLeft className="w-5 h-5" />
+                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
                 <button
                   type="button"
                   onClick={handleNextSlide}
-                  className="w-9 h-9 rounded-xl bg-[#202B3D] hover:bg-[#F4C76B] hover:text-[#0F172A] text-white flex items-center justify-center transition-all border border-[#344054] cursor-pointer active:scale-95"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#202B3D] hover:bg-[#F4C76B] hover:text-[#0F172A] text-white flex items-center justify-center transition-all border border-[#344054] cursor-pointer active:scale-95"
                   aria-label="Next photo slide"
                 >
-                  <ChevronRight className="w-5 h-5" />
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Cinematic Auto-Swiping Carousel Stage */}
+          {/* Cinematic Carousel Stage with Responsive Height */}
           <div
-            className="relative rounded-3xl overflow-hidden bg-[#0B0F19] border-2 border-[#344054] shadow-2xl h-[420px] sm:h-[480px] lg:h-[540px] group select-none"
+            className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#0B0F19] border-2 border-[#344054] shadow-2xl h-[290px] sm:h-[400px] lg:h-[480px] group select-none"
             onMouseEnter={() => setIsCarouselPaused(true)}
             onMouseLeave={() => setIsCarouselPaused(false)}
             onTouchStart={handleTouchStart}
@@ -779,16 +789,16 @@ export const HomePage: React.FC = () => {
                   />
 
                   {/* Dark Vignette & Readability Gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19] via-[#0B0F19]/60 to-[#0B0F19]/25"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19] via-[#0B0F19]/65 to-[#0B0F19]/25"></div>
 
                   {/* Top Overlay Badges */}
-                  <div className="absolute top-4 sm:top-6 left-4 sm:left-6 right-4 sm:right-6 flex items-center justify-between z-20">
-                    <span className="px-3 py-1 rounded-full bg-[#111827]/90 backdrop-blur-md border border-[#F4C76B]/40 text-[#F4C76B] font-extrabold text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md">
+                  <div className="absolute top-3 sm:top-5 left-3 sm:left-6 right-3 sm:right-6 flex items-center justify-between z-20">
+                    <span className="px-2.5 sm:px-3 py-1 rounded-full bg-[#111827]/90 backdrop-blur-md border border-[#F4C76B]/40 text-[#F4C76B] font-extrabold text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md">
                       <Sparkles className="w-3 h-3 text-[#F4C76B]" />
                       <span>{slide.category}</span>
                     </span>
 
-                    <span className="px-3 py-1 rounded-full bg-[#111827]/90 backdrop-blur-md border border-[#344054] text-[#D1D5DB] font-stat text-[11px] sm:text-xs font-bold flex items-center gap-1">
+                    <span className="px-2.5 sm:px-3 py-1 rounded-full bg-[#111827]/90 backdrop-blur-md border border-[#344054] text-[#D1D5DB] font-stat text-[10px] sm:text-xs font-bold flex items-center gap-1">
                       <MapPin className="w-3 h-3 text-[#38BDF8]" />
                       <span className="hidden sm:inline">{slide.location}</span>
                       <span className="sm:hidden">{slide.badge}</span>
@@ -796,20 +806,20 @@ export const HomePage: React.FC = () => {
                   </div>
 
                   {/* Bottom Captions & Content */}
-                  <div className="absolute bottom-16 sm:bottom-18 left-4 sm:left-8 right-4 sm:right-8 z-20 space-y-2 sm:space-y-3 text-left">
-                    <span className="inline-block px-2.5 py-0.5 rounded bg-[#F4C76B] text-[#0F172A] text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider font-stat">
+                  <div className="absolute bottom-13 sm:bottom-16 left-3 sm:left-8 right-3 sm:right-8 z-20 space-y-1.5 sm:space-y-2.5 text-left">
+                    <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded bg-[#F4C76B] text-[#0F172A] text-[9.5px] sm:text-[11px] font-extrabold uppercase tracking-wider font-stat">
                       {slide.badge}
                     </span>
 
-                    <h3 className="font-display text-lg sm:text-2xl lg:text-3xl font-black text-white leading-tight max-w-3xl drop-shadow-md">
+                    <h3 className="font-display text-base sm:text-2xl lg:text-3xl font-black text-white leading-tight max-w-3xl drop-shadow-md">
                       {slide.title}
                     </h3>
 
-                    <p className="font-serif-prestige italic text-xs sm:text-sm text-[#FDE68A] font-medium max-w-2xl">
+                    <p className="font-serif-prestige italic text-[11px] sm:text-sm text-[#FDE68A] font-medium max-w-2xl hidden sm:block">
                       {slide.tagline}
                     </p>
 
-                    <p className="text-[#D1D5DB] text-xs sm:text-sm leading-relaxed max-w-2xl line-clamp-2 sm:line-clamp-3">
+                    <p className="text-[#D1D5DB] text-xs sm:text-sm leading-relaxed max-w-2xl line-clamp-2">
                       {slide.description}
                     </p>
                   </div>
@@ -819,13 +829,13 @@ export const HomePage: React.FC = () => {
             })}
 
             {/* Bottom Progress Bar & Direct Slide Switcher */}
-            <div className="absolute bottom-0 left-0 right-0 z-30 bg-[#0B0F19]/90 backdrop-blur-md border-t border-[#344054] px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-1 overflow-x-auto no-scrollbar">
+            <div className="absolute bottom-0 left-0 right-0 z-30 bg-[#0B0F19]/90 backdrop-blur-md border-t border-[#344054] px-3 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-1 sm:gap-2 flex-1 overflow-x-auto no-scrollbar">
                 {albumSlides.map((slide, idx) => (
                   <button
                     key={slide.id}
                     onClick={() => setActiveSlide(idx)}
-                    className={`px-2.5 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
+                    className={`px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                       activeSlide === idx
                         ? 'bg-[#F4C76B] text-[#0F172A] shadow-md font-extrabold'
                         : 'bg-[#202B3D] text-[#AAB4C3] hover:text-[#F3F4F6] hover:bg-[#263449]'
@@ -1008,21 +1018,21 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* 6. TARGETED ACADEMIC PROGRAMS */}
-      <section className="py-12 sm:py-20 bg-[#111827] border-b border-[#243042]">
+      <section id="courses" className="py-8 sm:py-16 bg-[#111827] border-b border-[#243042]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
             <div>
               <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#F4C76B] bg-[#202B3D] border border-[#344054] px-3.5 py-1 rounded-full">
                 Curated Academic Pathways
               </span>
-              <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#F3F4F6] tracking-tight mt-3">
+              <h2 className="font-display text-xl sm:text-3xl lg:text-4xl font-extrabold text-[#F3F4F6] tracking-tight mt-2.5">
                 Comprehensive Coaching Programs
               </h2>
             </div>
             <Link
               to="/courses"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-[#F3F4F6] bg-[#202B3D] hover:bg-[#263449] border border-[#344054] hover:border-[#F4C76B]/50 transition-colors shrink-0"
+              className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-[#F3F4F6] bg-[#202B3D] hover:bg-[#26334A] border border-[#344054] hover:border-[#F4C76B]/50 transition-colors shrink-0"
             >
               <span>Explore All Course Syllabus & Batches</span>
               <ArrowRight className="w-4 h-4 text-[#F4C76B]" />
@@ -1033,43 +1043,43 @@ export const HomePage: React.FC = () => {
             {COURSES_DATA.slice(0, 4).map((course) => (
               <div
                 key={course.id}
-                className="bg-[#141824] border border-pink-500/25 rounded-2xl p-5 sm:p-6 shadow-md hover:shadow-xl hover:border-pink-500/60 transition-all flex flex-col justify-between group"
+                className="bg-[#202B3D] border border-[#344054] rounded-2xl p-4 sm:p-5 shadow-md hover:shadow-xl hover:border-[#F4C76B]/50 transition-all flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                    <span className="text-[10px] sm:text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#0D1017] text-pink-300 border border-pink-500/35 uppercase tracking-wider">
+                    <span className="text-[10px] sm:text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#172033] text-[#F4C76B] border border-[#F4C76B]/30 uppercase tracking-wider">
                       {course.badge}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-400 font-stat shrink-0">
+                    <span className="text-[10px] font-bold text-[#AAB4C3] font-stat shrink-0">
                       Batch: 30 Max
                     </span>
                   </div>
 
-                  <h3 className="font-display text-lg sm:text-xl font-bold text-white group-hover:text-pink-300 transition-colors mb-2">
+                  <h3 className="font-display text-base sm:text-lg font-bold text-white group-hover:text-[#F4C76B] transition-colors mb-1.5">
                     {course.title}
                   </h3>
 
-                  <p className="text-xs text-slate-300 leading-relaxed mb-4 line-clamp-3">
+                  <p className="text-xs text-[#AAB4C3] leading-relaxed mb-3 line-clamp-2 sm:line-clamp-3">
                     {course.shortDescription}
                   </p>
 
-                  <div className="space-y-2 border-t border-pink-500/20 pt-3 mb-4">
+                  <div className="space-y-1.5 border-t border-[#344054]/70 pt-2.5 mb-3">
                     {course.keyBenefits.slice(0, 2).map((benefit, i) => (
                       <div key={i} className="flex items-start gap-1.5 text-xs text-slate-200 leading-snug">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#FC1682] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                         <span>{benefit}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-pink-500/20 space-y-3">
-                  <div className="flex items-center justify-between text-[11px] text-slate-400">
+                <div className="pt-3 border-t border-[#344054]/70 space-y-2.5">
+                  <div className="flex items-center justify-between text-[11px] text-[#AAB4C3]">
                     <span className="font-medium">{course.batchType}</span>
                   </div>
                   <Link
                     to="/consultation"
-                    className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#BE125A] hover:from-[#FF2D92] hover:to-[#FC1682] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-center min-h-[42px] shadow-md shadow-pink-600/25 border border-pink-400/30"
+                    className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] text-[#0F172A] font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all text-center min-h-[42px] shadow-sm"
                   >
                     <span>Meet on Google Meet</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -1079,6 +1089,34 @@ export const HomePage: React.FC = () => {
             ))}
           </div>
 
+        </div>
+      </section>
+
+      {/* 6.5 DEDICATED PARENT MEETING OR CALLBACK DISCOVERY BANNER (Placed right after Course Discovery) */}
+      <section className="py-6 sm:py-10 bg-[#172033] border-b border-[#243042]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-[#202B3D] border border-[#344054] rounded-2xl p-5 sm:p-7 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="space-y-1 text-left">
+              <span className="font-cinzel text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#F4C76B] block">
+                Direct Admissions & Faculty Desks
+              </span>
+              <h3 className="font-display text-base sm:text-xl font-bold text-[#F3F4F6]">
+                Prefer a Phone Conversation or In-Person Center Visit?
+              </h3>
+              <p className="text-xs sm:text-sm text-[#AAB4C3] max-w-xl">
+                Would you prefer a phone callback or a face-to-face meeting with our academic team at our Bijipur, Brahmapur center? Share your details and our team will follow up.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto shrink-0">
+              <Link
+                to="/contact"
+                className="px-5 py-3 rounded-xl bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] text-[#0F172A] font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all min-h-[44px]"
+              >
+                <Phone className="w-4 h-4 text-[#0F172A]" />
+                <span>Request Callback / Parent Meeting</span>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1110,32 +1148,32 @@ export const HomePage: React.FC = () => {
             {topResults.map((item) => (
               <div
                 key={item.id}
-                className="bg-[#141824] border border-pink-500/25 rounded-2xl p-4 sm:p-5 shadow-md hover:border-pink-500/60 transition-all flex flex-col justify-between h-full group"
+                className="bg-[#202B3D] border border-[#344054] rounded-2xl p-4 sm:p-5 shadow-sm hover:border-[#F4C76B]/40 transition-all flex flex-col justify-between h-full group"
               >
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-1.5 mb-3">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-[#0D1017] text-white border border-pink-500/30 font-stat">
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-[#172033] text-white border border-[#344054] font-stat">
                         Session {item.year}
                       </span>
                       <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-700/50 px-1.5 py-0.5 rounded">
                         Verified
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#0D1017] text-pink-300 border border-pink-500/30 font-cinzel">
+                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#172033] text-[#F4C76B] border border-[#F4C76B]/30 font-cinzel">
                       {item.category}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 rounded-full overflow-hidden bg-[#0D1017] border-2 border-[#FC1682]/60 shrink-0 shadow-sm shadow-pink-600/20">
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-[#172033] border-2 border-[#F4C76B]/40 shrink-0 shadow-sm">
                       <img src={item.photoUrl} alt={item.studentName} className="w-full h-full object-cover" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h4 className="font-display text-sm font-bold text-white break-words">
                         {item.studentName}
                       </h4>
-                      <div className="text-xs font-extrabold text-[#FC1682] font-stat break-words">
+                      <div className="text-xs font-extrabold text-[#F4C76B] font-stat break-words">
                         {item.scoreOrRank}
                       </div>
                       <div className="text-[10px] text-slate-300 break-words leading-tight mt-0.5">
@@ -1144,12 +1182,12 @@ export const HomePage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="text-xs text-slate-200 italic bg-[#0C0F17] border-l-2 border-[#FC1682] pl-3 pr-2 py-2.5 rounded-r-lg break-words leading-relaxed mb-3">
+                  <div className="text-xs text-slate-200 italic bg-[#172033] border-l-2 border-[#F4C76B] pl-3 pr-2 py-2.5 rounded-r-lg break-words leading-relaxed mb-3">
                     "{item.storyQuote}"
                   </div>
                 </div>
 
-                <div className="mt-auto pt-3 border-t border-pink-500/20 text-[11px] text-slate-300 flex items-start gap-1.5">
+                <div className="mt-auto pt-3 border-t border-[#344054]/70 text-[11px] text-slate-300 flex items-start gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                   <span className="font-medium break-words leading-snug">{item.achievementSummary}</span>
                 </div>
@@ -1161,7 +1199,7 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* 8. THREE-STEP ADMISSION ROADMAP */}
-      <section className="py-12 sm:py-20 bg-[#111827] border-b border-[#243042]">
+      <section className="py-8 sm:py-16 bg-[#111827] border-b border-[#243042]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
@@ -1327,21 +1365,21 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* 11. HIGH-IMPACT CLOSING CONVERSION BANNER */}
-      <section className="py-12 sm:py-20 bg-gradient-to-r from-[#111827] via-[#172033] to-[#111827] text-[#F3F4F6] relative overflow-hidden">
+      <section className="py-8 sm:py-16 bg-gradient-to-r from-[#111827] via-[#172033] to-[#111827] text-[#F3F4F6] relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4 sm:space-y-6 relative">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#202B3D] text-[#F4C76B] text-xs font-bold uppercase tracking-wider border border-[#344054] font-cinzel">
             <Calendar className="w-3.5 h-3.5 text-[#F4C76B]" />
             <span>Admissions Desk 2026–27</span>
           </div>
 
-          <h2 className="font-display text-2xl sm:text-5xl font-black text-[#F3F4F6] tracking-tight leading-tight">
+          <h2 className="font-display text-xl sm:text-4xl lg:text-5xl font-black text-[#F3F4F6] tracking-tight leading-tight">
             Give Your Child the Advantage of{' '}
             <span className="font-serif-prestige italic text-transparent bg-clip-text bg-gradient-to-r from-[#F4C76B] via-[#FDE68A] to-[#38BDF8]">
               Disciplined Academic Mentorship.
             </span>
           </h2>
 
-          <p className="text-slate-300 text-xs sm:text-base max-w-xl mx-auto leading-relaxed">
+          <p className="text-[#AAB4C3] text-xs sm:text-base max-w-xl mx-auto leading-relaxed">
             Small batches fill up quickly. Choose an available slot online or request a callback / parents meeting today.
           </p>
 
@@ -1349,16 +1387,16 @@ export const HomePage: React.FC = () => {
             {/* Option A */}
             <Link
               to="/consultation"
-              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 rounded-xl font-extrabold text-xs sm:text-base text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#BE125A] hover:from-[#FF2D92] hover:to-[#FC1682] shadow-lg shadow-pink-600/30 border border-pink-400/40 transition-all text-center font-display min-h-[46px] flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 rounded-xl font-extrabold text-xs sm:text-base text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 shadow-md shadow-amber-500/10 transition-all text-center font-display min-h-[46px] flex items-center justify-center gap-2"
             >
-              <Calendar className="w-4 h-4 text-white" />
+              <Calendar className="w-4 h-4 text-[#0F172A]" />
               <span>Book Free Consultation (Google Meet)</span>
             </Link>
 
             {/* Option B */}
             <Link
               to="/contact"
-              className="w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl font-bold text-xs sm:text-base text-slate-200 hover:text-white bg-[#141824] hover:bg-[#1C2232] border border-pink-500/25 transition-colors text-center font-display flex items-center justify-center gap-2 min-h-[46px]"
+              className="w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl font-bold text-xs sm:text-base text-[#F3F4F6] hover:text-white bg-[#202B3D] hover:bg-[#26334A] border border-[#344054] hover:border-[#F4C76B]/40 transition-colors text-center font-display flex items-center justify-center gap-2 min-h-[46px]"
             >
               <Phone className="w-4 h-4 text-[#38BDF8]" />
               <span>Request Parent Meeting / Callback</span>
@@ -1371,17 +1409,16 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 12. MOBILE FLOATING QUICK-CONNECT WHATSAPP BUTTON */}
-      <div className="fixed bottom-5 right-4 z-40 sm:hidden">
+      {/* 12. MOBILE FLOATING QUICK-CONNECT WHATSAPP BUTTON (Compact Circular FAB) */}
+      <div className="fixed bottom-4 right-4 z-40 sm:hidden">
         <a
           href={ACADEMY_CONFIG.contact.whatsappLink}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Chat with Admissions on WhatsApp"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-2xl active:scale-95 transition-all border border-emerald-400/40"
+          className="w-12 h-12 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-2xl active:scale-95 transition-all border border-emerald-400/50"
         >
-          <MessageCircle className="w-4 h-4 fill-white" />
-          <span>Chat on WhatsApp</span>
+          <MessageCircle className="w-6 h-6 fill-white" />
         </a>
       </div>
 
