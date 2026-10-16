@@ -192,12 +192,18 @@
 .animate-stairs-cover {
   animation-name: stairsCoverKeyframe;
   transform: translate3d(0, -100%, 0);
+  animation-fill-mode: both;
   will-change: transform;
 }
 
 .animate-stairs-reveal {
   animation-name: stairsRevealKeyframe;
   transform: translate3d(0, 0%, 0);
+  animation-fill-mode: both;
   will-change: transform;
+}
+
+.stairs-covered {
+  transform: translate3d(0, 0%, 0) !important;
 }
 

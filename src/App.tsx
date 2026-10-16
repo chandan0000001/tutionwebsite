@@ -1,23 +1,21 @@
-import { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
-import { PageLoader } from './components/PageLoader';
 import { ScrollToTop } from './components/ScrollToTop';
 import { StairsTransition } from './components/StairsTransition';
 import { ThemeProvider } from './context/ThemeContext';
 
-// Code-split pages for high performance and on-demand section loading
-const HomePage = lazy(() => import('./pages/HomePage'));
-const AboutPage = lazy(() => import('./pages/AboutPage'));
-const CoursesPage = lazy(() => import('./pages/CoursesPage'));
-const FacultyPage = lazy(() => import('./pages/FacultyPage'));
-const ResultsPage = lazy(() => import('./pages/ResultsPage'));
-const FacilitiesPage = lazy(() => import('./pages/FacilitiesPage'));
-const TimetablePage = lazy(() => import('./pages/TimetablePage'));
-const ConsultationPage = lazy(() => import('./pages/ConsultationPage'));
-const ContactPage = lazy(() => import('./pages/ContactPage'));
-const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+// Statically import all pages to eliminate lazy-chunk network roundtrips during page transitions
+import HomePage from './pages/HomePage';
+import AboutPage from './pages/AboutPage';
+import CoursesPage from './pages/CoursesPage';
+import FacultyPage from './pages/FacultyPage';
+import ResultsPage from './pages/ResultsPage';
+import FacilitiesPage from './pages/FacilitiesPage';
+import TimetablePage from './pages/TimetablePage';
+import ConsultationPage from './pages/ConsultationPage';
+import ContactPage from './pages/ContactPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 
 export function App() {
   return (
@@ -29,9 +27,8 @@ export function App() {
           {/* Sticky Global Navigation */}
           <Navbar />
 
-        {/* Dynamic Route Content with Instant Suspense Transition */}
-        <main className="flex-1">
-          <Suspense fallback={<PageLoader />}>
+          {/* Dynamic Route Content - Instant swap synchronized with StairsTransition */}
+          <main className="flex-1">
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/about" element={<AboutPage />} />
@@ -47,8 +44,7 @@ export function App() {
               {/* Catch-all route defaults back to Home */}
               <Route path="*" element={<HomePage />} />
             </Routes>
-          </Suspense>
-        </main>
+          </main>
 
         {/* Global Footer */}
         <Footer />

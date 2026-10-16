@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Courses } from '../components/Courses';
 import { CourseModal } from '../components/CourseModal';
+import { navigateWithTransition } from '../components/StairsTransition';
 import type { Course } from '../data/coursesData';
 
 export const CoursesPage: React.FC = () => {
-  const navigate = useNavigate();
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSelectCourseForEnquiry = (courseTitle: string) => {
-    navigate('/contact', { state: { preselectedCourse: courseTitle } });
+    navigateWithTransition('/contact', { preselectedCourse: courseTitle });
   };
 
   const handleViewCourseDetails = (course: Course) => {
