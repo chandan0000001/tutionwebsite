@@ -167,3 +167,34 @@
 .dark .academic-card:hover {
   box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4);
 }
+
+/* ------------------------------------------------------------- */
+/* 🪜 STAIRCASE PAGE TRANSITION KEYFRAMES                        */
+/* ------------------------------------------------------------- */
+@keyframes stairsCoverKeyframe {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+
+@keyframes stairsRevealKeyframe {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-stairs-cover {
+  animation-name: stairsCoverKeyframe;
+  transform: translateY(-100%);
+}
+
+.animate-stairs-reveal {
+  animation-name: stairsRevealKeyframe;
+  transform: translateY(0%);
+}

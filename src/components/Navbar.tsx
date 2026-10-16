@@ -75,7 +75,7 @@ export const Navbar: React.FC = () => {
           {/* Logo with official Antariksh Academy graphic */}
           <Link
             to="/"
-            className="flex items-center gap-2 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] rounded-lg min-w-0"
+            className="flex items-center gap-2 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] rounded-lg shrink-0"
           >
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-100 dark:bg-[#202B3D] p-1 flex items-center justify-center border-2 border-[#C6922E]/40 dark:border-[#F4C76B]/40 shadow-xs group-hover:scale-105 transition-transform shrink-0">
               <img
@@ -84,18 +84,18 @@ export const Navbar: React.FC = () => {
                 className="w-full h-full object-contain"
               />
             </div>
-            <div className="flex flex-col text-left min-w-0">
-              <span className="font-display font-black text-[13.5px] xs:text-[15px] sm:text-xl lg:text-2xl tracking-tight text-[#17365D] dark:text-white group-hover:text-[#C6922E] dark:group-hover:text-[#F4C76B] transition-colors leading-none whitespace-nowrap">
+            <div className="flex flex-col text-left shrink-0">
+              <span className="font-display font-black text-sm xs:text-base sm:text-xl lg:text-2xl tracking-tight text-[#17365D] dark:text-white group-hover:text-[#C6922E] dark:group-hover:text-[#F4C76B] transition-colors leading-none whitespace-nowrap">
                 ANTARIKSH <span className="gold-gradient-text">ACADEMY</span>
               </span>
-              <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-300 tracking-wider uppercase font-semibold mt-1 hidden sm:block whitespace-nowrap">
+              <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-300 tracking-wider uppercase font-semibold mt-1 hidden 2xl:block whitespace-nowrap">
                 Bijipur, Brahmapur • +2 Science & Entrances
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden xl:flex items-center gap-0.5 2xl:gap-1">
+          <div className="hidden xl:flex items-center gap-0.5 2xl:gap-1 shrink-0">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (
@@ -115,7 +115,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Desktop Action Buttons + Theme Toggle */}
-          <div className="hidden xl:flex items-center gap-2 shrink-0">
+          <div className="hidden xl:flex items-center gap-1.5 2xl:gap-2 shrink-0">
             {/* Theme Toggle Button */}
             <button
               type="button"
@@ -131,10 +131,10 @@ export const Navbar: React.FC = () => {
               )}
             </button>
 
-            {/* Option B: Manual callback */}
+            {/* Option B: Manual callback - shown on large desktop (2xl:), while top bar already provides callback for 1280-1440px laptops */}
             <Link
               to="/contact"
-              className="px-3 py-1.5 2xl:px-3.5 2xl:py-2 text-xs font-bold text-slate-700 hover:text-[#17365D] bg-white hover:bg-slate-50 dark:text-slate-200 dark:hover:text-white dark:bg-[#202B3D] dark:hover:bg-[#26334A] border border-slate-300 dark:border-[#344054] hover:border-[#17365D]/40 dark:hover:border-[#F4C76B]/40 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
+              className="hidden 2xl:flex px-3 py-1.5 2xl:px-3.5 2xl:py-2 text-xs font-bold text-slate-700 hover:text-[#17365D] bg-white hover:bg-slate-50 dark:text-slate-200 dark:hover:text-white dark:bg-[#202B3D] dark:hover:bg-[#26334A] border border-slate-300 dark:border-[#344054] hover:border-[#17365D]/40 dark:hover:border-[#F4C76B]/40 rounded-xl transition-all items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
             >
               <Phone className="w-3.5 h-3.5 text-[#0284C7] dark:text-[#38BDF8] shrink-0" />
               <span>Request Callback</span>
@@ -143,7 +143,7 @@ export const Navbar: React.FC = () => {
             {/* Option A: 30-min Google Meet Booking */}
             <Link
               to="/consultation"
-              className="px-3.5 py-1.5 2xl:px-4 2xl:py-2 text-xs font-extrabold text-white bg-gradient-to-r from-[#17365D] via-[#1E4273] to-[#17365D] hover:brightness-105 border border-[#17365D] shadow-sm dark:text-[#0F172A] dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:border-[#F4C76B]/40 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap transform hover:-translate-y-0.5"
+              className="px-3 py-1.5 2xl:px-4 2xl:py-2 text-xs font-extrabold text-white bg-gradient-to-r from-[#17365D] via-[#1E4273] to-[#17365D] hover:brightness-105 border border-[#17365D] shadow-sm dark:text-[#0F172A] dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:border-[#F4C76B]/40 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap transform hover:-translate-y-0.5"
             >
               <Calendar className="w-3.5 h-3.5 text-[#FDE68A] dark:text-[#0F172A] shrink-0" />
               <span>Book Free Consultation</span>
