@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ArrowRight,
   Calendar,
@@ -34,6 +34,16 @@ import { sanitizeMobileInput, getMobileValidationError } from '../utils/validati
 import { ACADEMY_CONFIG } from '../config/academyConfig';
 
 export const HomePage: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Redirect hash #courses to the dedicated /courses page immediately
+  useEffect(() => {
+    if (location.hash === '#courses') {
+      navigate('/courses', { replace: true });
+    }
+  }, [location.hash, navigate]);
+
   // Option B: Above-the-fold Parent Meeting or Callback Lead Form State
   const [heroName, setHeroName] = useState('');
   const [heroPhone, setHeroPhone] = useState('');
@@ -336,15 +346,15 @@ export const HomePage: React.FC = () => {
 
               {/* Mobile-First: Dual Action Buttons Shown Immediately Above-The-Fold */}
               <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
-                {/* Primary Action: Explore Courses */}
-                <a
-                  href="#courses"
+                {/* Primary Action: Explore Courses (Dedicated Page) */}
+                <Link
+                  to="/courses"
                   className="px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl font-extrabold text-xs sm:text-sm text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 shadow-md shadow-amber-500/10 transition-all flex items-center justify-center gap-2 text-center font-display min-h-[44px] active:scale-[0.98]"
                 >
                   <BookOpen className="w-4 h-4 shrink-0 text-[#0F172A]" />
                   <span>Explore Courses</span>
                   <ArrowRight className="w-4 h-4 shrink-0 text-[#0F172A]" />
-                </a>
+                </Link>
 
                 {/* Secondary Action: 30-min Google Meet Booking */}
                 <Link
@@ -1021,75 +1031,99 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* 6. TARGETED ACADEMIC PROGRAMS */}
-      <section id="courses" className="py-8 sm:py-16 bg-[#111827] border-b border-[#243042]">
+      <section id="courses" className="py-6 sm:py-16 bg-[#111827] border-b border-[#243042]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
-            <div>
-              <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#F4C76B] bg-[#202B3D] border border-[#344054] px-3.5 py-1 rounded-full">
-                Curated Academic Pathways
-              </span>
-              <h2 className="font-display text-xl sm:text-3xl lg:text-4xl font-extrabold text-[#F3F4F6] tracking-tight mt-2.5">
-                Comprehensive Coaching Programs
-              </h2>
-            </div>
+          {/* Mobile Streamlined Teaser Card (< md) - Eliminates Home Page Bloat & Directs to Dedicated /courses Page */}
+          <div className="md:hidden bg-[#172033] border border-[#344054] rounded-2xl p-5 text-center space-y-3">
+            <span className="font-cinzel text-[10px] font-bold uppercase tracking-widest text-[#F4C76B] bg-[#202B3D] border border-[#344054] px-3 py-1 rounded-full inline-block">
+              Curated Academic Pathways
+            </span>
+            <h2 className="font-display text-lg font-bold text-white">
+              Targeted Science & Entrance Programs
+            </h2>
+            <p className="text-xs text-[#AAB4C3] leading-relaxed">
+              Odisha CHSE +2 Science, JEE Main/Adv, NEET-UG & NDA batches with dedicated daily doubt desks and 30-student batch capacity.
+            </p>
             <Link
               to="/courses"
-              className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-[#F3F4F6] bg-[#202B3D] hover:bg-[#26334A] border border-[#344054] hover:border-[#F4C76B]/50 transition-colors shrink-0"
+              className="w-full py-3 px-4 rounded-xl font-extrabold text-xs text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] flex items-center justify-center gap-2 shadow-sm min-h-[44px]"
             >
-              <span>Explore All Course Syllabus & Batches</span>
-              <ArrowRight className="w-4 h-4 text-[#F4C76B]" />
+              <BookOpen className="w-4 h-4 text-[#0F172A]" />
+              <span>Explore All Courses on Dedicated Page</span>
+              <ArrowRight className="w-4 h-4 text-[#0F172A]" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {COURSES_DATA.slice(0, 4).map((course) => (
-              <div
-                key={course.id}
-                className="bg-[#202B3D] border border-[#344054] rounded-2xl p-4 sm:p-5 shadow-md hover:shadow-xl hover:border-[#F4C76B]/50 transition-all flex flex-col justify-between group"
-              >
-                <div>
-                  <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                    <span className="text-[10px] sm:text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#172033] text-[#F4C76B] border border-[#F4C76B]/30 uppercase tracking-wider">
-                      {course.badge}
-                    </span>
-                    <span className="text-[10px] font-bold text-[#AAB4C3] font-stat shrink-0">
-                      Batch: 30 Max
-                    </span>
-                  </div>
-
-                  <h3 className="font-display text-base sm:text-lg font-bold text-white group-hover:text-[#F4C76B] transition-colors mb-1.5">
-                    {course.title}
-                  </h3>
-
-                  <p className="text-xs text-[#AAB4C3] leading-relaxed mb-3 line-clamp-2 sm:line-clamp-3">
-                    {course.shortDescription}
-                  </p>
-
-                  <div className="space-y-1.5 border-t border-[#344054]/70 pt-2.5 mb-3">
-                    {course.keyBenefits.slice(0, 2).map((benefit, i) => (
-                      <div key={i} className="flex items-start gap-1.5 text-xs text-slate-200 leading-snug">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                        <span>{benefit}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t border-[#344054]/70 space-y-2.5">
-                  <div className="flex items-center justify-between text-[11px] text-[#AAB4C3]">
-                    <span className="font-medium">{course.batchType}</span>
-                  </div>
-                  <Link
-                    to="/consultation"
-                    className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] text-[#0F172A] font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all text-center min-h-[42px] shadow-sm"
-                  >
-                    <span>Meet on Google Meet</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
+          {/* Desktop Full Course Discovery Grid (>= md) */}
+          <div className="hidden md:block">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
+              <div>
+                <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#F4C76B] bg-[#202B3D] border border-[#344054] px-3.5 py-1 rounded-full">
+                  Curated Academic Pathways
+                </span>
+                <h2 className="font-display text-xl sm:text-3xl lg:text-4xl font-extrabold text-[#F3F4F6] tracking-tight mt-2.5">
+                  Comprehensive Coaching Programs
+                </h2>
               </div>
-            ))}
+              <Link
+                to="/courses"
+                className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-[#F3F4F6] bg-[#202B3D] hover:bg-[#26334A] border border-[#344054] hover:border-[#F4C76B]/50 transition-colors shrink-0"
+              >
+                <span>Explore All Course Syllabus & Batches</span>
+                <ArrowRight className="w-4 h-4 text-[#F4C76B]" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {COURSES_DATA.slice(0, 4).map((course) => (
+                <div
+                  key={course.id}
+                  className="bg-[#202B3D] border border-[#344054] rounded-2xl p-4 sm:p-5 shadow-md hover:shadow-xl hover:border-[#F4C76B]/50 transition-all flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                      <span className="text-[10px] sm:text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#172033] text-[#F4C76B] border border-[#F4C76B]/30 uppercase tracking-wider">
+                        {course.badge}
+                      </span>
+                      <span className="text-[10px] font-bold text-[#AAB4C3] font-stat shrink-0">
+                        Batch: 30 Max
+                      </span>
+                    </div>
+
+                    <h3 className="font-display text-base sm:text-lg font-bold text-white group-hover:text-[#F4C76B] transition-colors mb-1.5">
+                      {course.title}
+                    </h3>
+
+                    <p className="text-xs text-[#AAB4C3] leading-relaxed mb-3 line-clamp-2 sm:line-clamp-3">
+                      {course.shortDescription}
+                    </p>
+
+                    <div className="space-y-1.5 border-t border-[#344054]/70 pt-2.5 mb-3">
+                      {course.keyBenefits.slice(0, 2).map((benefit, i) => (
+                        <div key={i} className="flex items-start gap-1.5 text-xs text-slate-200 leading-snug">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                          <span>{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#344054]/70 space-y-2.5">
+                    <div className="flex items-center justify-between text-[11px] text-[#AAB4C3]">
+                      <span className="font-medium">{course.batchType}</span>
+                    </div>
+                    <Link
+                      to="/consultation"
+                      className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] text-[#0F172A] font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all text-center min-h-[42px] shadow-sm"
+                    >
+                      <span>Meet on Google Meet</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
         </div>
