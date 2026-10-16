@@ -1,15 +1,13 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { About } from '../components/About';
+import { navigateWithTransition } from '../components/StairsTransition';
 
 export const AboutPage: React.FC = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="w-full">
       <About
-        onLearnMoreCourses={() => navigate('/courses')}
-        onOpenConsultation={() => navigate('/consultation')}
+        onLearnMoreCourses={() => navigateWithTransition('/courses')}
+        onOpenConsultation={() => navigateWithTransition('/consultation')}
       />
     </div>
   );

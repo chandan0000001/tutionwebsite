@@ -1,17 +1,33 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+/**
+ * Global helper to trigger page navigation through the staircase transition
+ */
+export const navigateWithTransition = (path: string) => {
+  window.dispatchEvent(
+    new CustomEvent('page-transition-navigate', { detail: { path } })
+  );
+};
 
 /**
  * 🪜 STAIRCASE PAGE TRANSITION LOADER
- * Inspired by modern motion designs (as requested from reference video):
- * 5 vertical columns slide down with a staggered delay to cover the screen,
- * and then slide down out of view with the same stagger to reveal the newly loaded page.
+ *
+ * Behavior:
+ * 1. User clicks a link to switch pages.
+ * 2. Current page stays visible while 5 columns cascade down in staircase steps to cover the screen.
+ * 3. Only when fully covered, the route is changed (navigate) and page scrolls to top.
+ * 4. The 5 columns cascade away downwards, revealing the freshly loaded page.
+ * 5. Minimalist floating brand icon - NO bulky cards or modal boxes on mobile or desktop.
  */
 export const StairsTransition: React.FC = () => {
   const location = useLocation();
-  // Status: 'idle' | 'covering' | 'covered' | 'revealing'
-  const [status, setStatus] = useState<'idle' | 'covering' | 'covered' | 'revealing'>('covering');
-  const prevPathRef = useRef<string>(location.pathname);
+  const navigate = useNavigate();
+
+  // Status: 'idle' | 'covering' | 'revealing'
+  // On initial site load, reveal the page cleanly
+  const [status, setStatus] = useState<'idle' | 'covering' | 'revealing'>('revealing');
+  const isNavigatingRef = useRef(false);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const clearAllTimeouts = () => {
@@ -19,58 +35,127 @@ export const StairsTransition: React.FC = () => {
     timeoutsRef.current = [];
   };
 
-  const runTransition = () => {
-    clearAllTimeouts();
-    setStatus('covering');
-
-    // After columns cover the screen (~580ms)
-    const t1 = setTimeout(() => {
-      setStatus('covered');
-      window.scrollTo({ top: 0, behavior: 'instant' });
-
-      // Start revealing the new page after a brief pause
-      const t2 = setTimeout(() => {
-        setStatus('revealing');
-
-        // Finish transition and set to idle
-        const t3 = setTimeout(() => {
-          setStatus('idle');
-        }, 600);
-        timeoutsRef.current.push(t3);
-      }, 120);
-      timeoutsRef.current.push(t2);
-    }, 580);
-    timeoutsRef.current.push(t1);
-  };
-
-  // Run on initial mount
+  // Initial site load reveal
   useEffect(() => {
-    const t1 = setTimeout(() => {
-      setStatus('covered');
-      window.scrollTo({ top: 0, behavior: 'instant' });
-
-      const t2 = setTimeout(() => {
-        setStatus('revealing');
-
-        const t3 = setTimeout(() => {
-          setStatus('idle');
-        }, 600);
-        timeoutsRef.current.push(t3);
-      }, 120);
-      timeoutsRef.current.push(t2);
-    }, 580);
-    timeoutsRef.current.push(t1);
+    const t = setTimeout(() => {
+      setStatus('idle');
+    }, 480);
+    timeoutsRef.current.push(t);
 
     return () => clearAllTimeouts();
   }, []);
 
-  // Run on subsequent route changes
+  const startTransition = useCallback(
+    (targetPath: string) => {
+      if (isNavigatingRef.current) return;
+      if (targetPath === location.pathname) return;
+
+      isNavigatingRef.current = true;
+      clearAllTimeouts();
+      setStatus('covering');
+
+      // 1. Wait for all 5 columns to cascade down and cover the screen (approx 480ms)
+      // (Column 0: 0.32s, Col 4: 0.16s delay + 0.32s = 0.48s)
+      const tCover = setTimeout(() => {
+        // 2. WHILE FULLY COVERED: Navigate to the target page!
+        navigate(targetPath);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+
+        // 3. Small buffer to allow the new route component to mount
+        const tMount = setTimeout(() => {
+          setStatus('revealing');
+
+          // 4. Wait for columns to exit downwards (480ms)
+          const tReveal = setTimeout(() => {
+            setStatus('idle');
+            isNavigatingRef.current = false;
+          }, 480);
+          timeoutsRef.current.push(tReveal);
+        }, 80);
+        timeoutsRef.current.push(tMount);
+      }, 480);
+      timeoutsRef.current.push(tCover);
+    },
+    [location.pathname, navigate]
+  );
+
+  // Intercept all internal navigation link clicks
   useEffect(() => {
-    if (prevPathRef.current !== location.pathname) {
-      prevPathRef.current = location.pathname;
-      runTransition();
-    }
-  }, [location.pathname]);
+    const handleLinkClick = (e: MouseEvent) => {
+      // Find closest anchor tag
+      const link = (e.target as HTMLElement).closest('a');
+      if (!link) return;
+
+      const href = link.getAttribute('href');
+      const target = link.getAttribute('target');
+
+      // Ignore external, blank, hash, tel, mailto, or download links
+      if (
+        !href ||
+        target === '_blank' ||
+        href.startsWith('http://') ||
+        href.startsWith('https://') ||
+        href.startsWith('//') ||
+        href.startsWith('#') ||
+        href.startsWith('tel:') ||
+        href.startsWith('mailto:') ||
+        link.hasAttribute('download')
+      ) {
+        return;
+      }
+
+      // Ignore if user is opening in new tab via modifier keys or middle click
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0) {
+        return;
+      }
+
+      // If it's an internal route starting with '/'
+      if (href.startsWith('/')) {
+        // Same route
+        if (href === location.pathname) {
+          e.preventDefault();
+          return;
+        }
+
+        e.preventDefault();
+        startTransition(href);
+      }
+    };
+
+    // Custom programmatic navigation event listener
+    const handleCustomNav = (e: Event) => {
+      const customEvent = e as CustomEvent<{ path: string }>;
+      if (customEvent.detail?.path) {
+        startTransition(customEvent.detail.path);
+      }
+    };
+
+    document.addEventListener('click', handleLinkClick, { capture: true });
+    window.addEventListener('page-transition-navigate', handleCustomNav);
+
+    return () => {
+      document.removeEventListener('click', handleLinkClick, { capture: true });
+      window.removeEventListener('page-transition-navigate', handleCustomNav);
+    };
+  }, [location.pathname, startTransition]);
+
+  // Handle browser Back / Forward navigation (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      setStatus('covering');
+      const t = setTimeout(() => {
+        setStatus('revealing');
+        const tEnd = setTimeout(() => {
+          setStatus('idle');
+        }, 480);
+        timeoutsRef.current.push(tEnd);
+      }, 200);
+      timeoutsRef.current.push(t);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   if (status === 'idle') {
     return null;
@@ -80,18 +165,19 @@ export const StairsTransition: React.FC = () => {
 
   return (
     <div
-      className={`fixed inset-0 z-[99999] overflow-hidden pointer-events-none select-none`}
+      className="fixed inset-0 z-[999999] overflow-hidden select-none"
+      style={{
+        pointerEvents: status === 'covering' ? 'auto' : 'none',
+      }}
       aria-hidden="true"
     >
-      {/* 5 Vertical Staircase Columns */}
+      {/* 5 Cascading Staircase Columns */}
       {columns.map((index) => {
-        const delay = index * 0.055; // 0s, 0.055s, 0.11s, 0.165s, 0.22s
+        const delay = index * 0.04; // 0s, 0.04s, 0.08s, 0.12s, 0.16s
 
         let animationClass = '';
         if (status === 'covering') {
           animationClass = 'animate-stairs-cover';
-        } else if (status === 'covered') {
-          animationClass = 'translate-y-0';
         } else if (status === 'revealing') {
           animationClass = 'animate-stairs-reveal';
         }
@@ -99,12 +185,12 @@ export const StairsTransition: React.FC = () => {
         return (
           <div
             key={index}
-            className={`absolute top-0 bottom-0 h-full bg-[#0F172A] dark:bg-[#090D16] border-r border-slate-800/40 shadow-2xl transition-transform ${animationClass}`}
+            className={`absolute top-0 bottom-0 h-full bg-white dark:bg-[#0B1120] border-r border-slate-200/80 dark:border-slate-800/40 border-b-4 border-b-[#C6922E] dark:border-b-[#F4C76B] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] dark:shadow-2xl ${animationClass}`}
             style={{
               left: `${index * 20}%`,
-              width: '20.2%', // slight overlap to prevent subpixel hairline gap
+              width: '20.2%', // slight overlap prevents subpixel hairline gap
               animationDelay: `${delay}s`,
-              animationDuration: '0.38s',
+              animationDuration: '0.32s',
               animationFillMode: 'forwards',
               animationTimingFunction: 'cubic-bezier(0.76, 0, 0.24, 1)',
             }}
@@ -112,34 +198,18 @@ export const StairsTransition: React.FC = () => {
         );
       })}
 
-      {/* Central Brand Badge during Cover */}
+      {/* Floating Center Brand Emblem - Adapts to light/dark mode without any bulky card box */}
       <div
-        className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-300 z-10 ${
-          status === 'covering' || status === 'covered'
-            ? 'opacity-100 scale-100'
-            : 'opacity-0 scale-95 pointer-events-none'
+        className={`absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-200 z-10 pointer-events-none ${
+          status === 'covering' ? 'opacity-100' : 'opacity-0'
         }`}
       >
-        <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-[#172033]/90 dark:bg-[#111827]/90 border border-[#C6922E]/40 dark:border-[#F4C76B]/40 shadow-2xl backdrop-blur-md">
-          <div className="w-14 h-14 rounded-full bg-slate-900/80 p-2 flex items-center justify-center border-2 border-[#C6922E] dark:border-[#F4C76B] shadow-lg animate-pulse">
-            <img
-              src="/logo_transparent.png"
-              alt="Antariksh Academy Logo"
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <div className="flex flex-col items-center text-center">
-            <span className="font-display font-black text-lg tracking-wider text-white">
-              ANTARIKSH <span className="gold-gradient-text">ACADEMY</span>
-            </span>
-            <span className="text-[10px] text-slate-300 dark:text-[#AAB4C3] tracking-widest uppercase font-semibold mt-1">
-              Bijipur, Brahmapur • Excellence in +2 & Entrances
-            </span>
-          </div>
-          {/* Subtle loading line */}
-          <div className="w-32 h-1 bg-slate-800 rounded-full overflow-hidden mt-1">
-            <div className="h-full bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] animate-pulse w-full"></div>
-          </div>
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white/95 dark:bg-slate-900/95 p-2 flex items-center justify-center border-2 border-[#C6922E] dark:border-[#F4C76B] shadow-xl shadow-amber-500/15 dark:shadow-amber-500/25 backdrop-blur-md animate-pulse">
+          <img
+            src="/logo_transparent.png"
+            alt="Antariksh Academy"
+            className="w-full h-full object-contain"
+          />
         </div>
       </div>
     </div>

@@ -1,13 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Timetable } from '../components/Timetable';
+import { navigateWithTransition } from '../components/StairsTransition';
 
 export const TimetablePage: React.FC = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="w-full">
-      <Timetable onContactForBatch={() => navigate('/contact')} />
+      <Timetable onContactForBatch={() => navigateWithTransition('/contact')} />
     </div>
   );
 };

@@ -173,28 +173,31 @@
 /* ------------------------------------------------------------- */
 @keyframes stairsCoverKeyframe {
   0% {
-    transform: translateY(-100%);
+    transform: translate3d(0, -100%, 0);
   }
   100% {
-    transform: translateY(0%);
+    transform: translate3d(0, 0%, 0);
   }
 }
 
 @keyframes stairsRevealKeyframe {
   0% {
-    transform: translateY(0%);
+    transform: translate3d(0, 0%, 0);
   }
   100% {
-    transform: translateY(100%);
+    transform: translate3d(0, 100%, 0);
   }
 }
 
 .animate-stairs-cover {
   animation-name: stairsCoverKeyframe;
-  transform: translateY(-100%);
+  transform: translate3d(0, -100%, 0);
+  will-change: transform;
 }
 
 .animate-stairs-reveal {
   animation-name: stairsRevealKeyframe;
-  transform: translateY(0%);
+  transform: translate3d(0, 0%, 0);
+  will-change: transform;
 }
+
