@@ -17,7 +17,6 @@ import {
   ChevronUp,
   ChevronLeft,
   ChevronRight,
-  MessageCircle,
   Flame,
   Award,
   Camera,
@@ -1445,20 +1444,6 @@ export const HomePage: React.FC = () => {
           </p>
         </div>
       </section>
-
-      {/* 12. MOBILE FLOATING QUICK-CONNECT WHATSAPP BUTTON (Compact Circular FAB) */}
-      <div className="fixed bottom-4 right-4 z-40 sm:hidden">
-        <a
-          href={ACADEMY_CONFIG.contact.whatsappLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Chat with Admissions on WhatsApp"
-          className="w-12 h-12 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center shadow-2xl active:scale-95 transition-all border border-emerald-400/50"
-        >
-          <MessageCircle className="w-6 h-6 fill-white" />
-        </a>
-      </div>
-
     </div>
   );
 };
