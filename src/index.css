@@ -2,17 +2,19 @@
 
 @layer base {
   :root {
-    --bg-main: #111827;
-    --bg-section: #172033;
-    --bg-card: #202B3D;
-    --bg-card-hover: #263449;
-    --border-card: #344054;
-    --border-subtle: #243042;
-    --text-primary: #F3F4F6;
-    --text-secondary: #AAB4C3;
-    --text-muted: #8592A3;
-    --accent-gold: #F4C76B;
-    --accent-gold-hover: #E5B555;
+    --bg-main: #08090D;
+    --bg-section: #0D1017;
+    --bg-card: #141824;
+    --bg-card-hover: #1A2030;
+    --border-card: #252D3D;
+    --border-subtle: #1C2331;
+    --border-pink: rgba(252, 22, 130, 0.28);
+    --text-primary: #FFFFFF;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
+    --accent-pink: #FC1682;
+    --accent-pink-hover: #FF2E93;
+    --accent-pink-deep: #D9146C;
     --accent-blue: #38BDF8;
     --accent-emerald: #34D399;
   }
@@ -25,14 +27,14 @@
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-text-size-adjust: 100%;
     touch-action: manipulation;
-    background-color: #111827;
-    color: #F3F4F6;
+    background-color: #08090D;
+    color: #FFFFFF;
     color-scheme: dark;
   }
 
   body {
-    background-color: #111827;
-    color: #F3F4F6;
+    background-color: #08090D;
+    color: #FFFFFF;
     overflow-x: hidden;
     width: 100%;
     max-width: 100%;
@@ -47,12 +49,12 @@
     width: 100%;
     max-width: 100%;
     min-height: 100vh;
-    background-color: #111827;
+    background-color: #08090D;
   }
 
-  /* Accessible focus indicators with gold accent */
+  /* Accessible focus indicators with pink accent */
   :focus-visible {
-    outline: 2px solid #F4C76B;
+    outline: 2px solid #FC1682;
     outline-offset: 2px;
   }
 
@@ -90,38 +92,51 @@
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
-/* Premium Dark Academic Glass & Surface Utilities */
-.dark-surface {
-  background-color: #202B3D;
-  border: 1px solid #344054;
+/* Premium Black, Pink & White Gradient Utilities */
+.pink-gradient-text {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FF80BF 45%, #FC1682 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.dark-surface-elevated {
-  background-color: #243147;
-  border: 1px solid #3E4D65;
+.white-pink-gradient-text {
+  background: linear-gradient(135deg, #FC1682 0%, #FF5FA7 40%, #FFFFFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.dark-glass-card {
-  background: rgba(32, 43, 61, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(52, 64, 84, 0.85);
+.white-gradient-text {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 50%, #CBD5E1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .gold-gradient-text {
-  background: linear-gradient(135deg, #F4C76B 0%, #FDE68A 50%, #D4AF37 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, #FF85C0 50%, #FC1682 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.blue-gradient-text {
-  background: linear-gradient(135deg, #38BDF8 0%, #60A5FA 50%, #818CF8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.dark-surface {
+  background-color: #141824;
+  border: 1px solid rgba(252, 22, 130, 0.2);
 }
 
-.luxury-gradient-text {
-  background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 50%, #9CA3AF 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.dark-surface-elevated {
+  background-color: #1A2030;
+  border: 1px solid rgba(252, 22, 130, 0.3);
+}
+
+.pink-glow-card {
+  background: linear-gradient(180deg, rgba(20, 24, 36, 0.96) 0%, rgba(13, 16, 23, 0.98) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(252, 22, 130, 0.22);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pink-glow-card:hover {
+  border-color: rgba(252, 22, 130, 0.55);
+  box-shadow: 0 12px 36px -10px rgba(252, 22, 130, 0.22);
+  transform: translateY(-2px);
 }

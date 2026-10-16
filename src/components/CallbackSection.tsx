@@ -87,9 +87,9 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
     setIsSubmitting(true);
     setSubmissionError(null);
 
-    // Send directly to admissions inbox (Option B flow: Manual follow-up, separate from Cal.com)
+    // Send directly to admissions inbox (Option B flow: Manual follow-up)
     const result = await submitEnquiryToGmail({
-      formType: contactMethod === 'Parents meeting at the academy' ? 'Callback Request' : 'Callback Request',
+      formType: contactMethod === 'Parents meeting at the academy' ? 'Parent Meeting Request' : 'Phone Callback Request',
       fullName: fullName.trim(),
       mobileNumber: mobileNumber.trim(),
       studentClass,
@@ -145,37 +145,40 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
       id="callback"
       className={`${
         isStandalonePage ? 'py-10 sm:py-16' : 'py-16 sm:py-20 md:py-24'
-      } bg-[#111827] text-[#F3F4F6] relative overflow-hidden border-b border-[#243042]`}
+      } bg-[#08090D] text-white relative overflow-hidden border-b border-pink-500/20`}
     >
-      {/* Restrained Ambient Glows */}
-      <div className="absolute top-0 right-0 w-80 sm:w-96 h-80 sm:h-96 bg-[#F4C76B]/5 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-80 sm:w-96 h-80 sm:h-96 bg-[#38BDF8]/5 rounded-full blur-3xl pointer-events-none"></div>
+      {/* Ambient Gradient Glows */}
+      <div className="absolute top-0 right-0 w-80 sm:w-96 h-80 sm:h-96 bg-[#FC1682]/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-80 sm:w-96 h-80 sm:h-96 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         
         {/* Section Heading & Supporting Text (Option B: Dedicated Flow) */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#202B3D] border border-[#344054] text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-3 font-cinzel">
-            <Phone className="w-3.5 h-3.5 text-[#F4C76B]" />
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#141824] border border-pink-500/30 text-pink-300 text-xs font-bold uppercase tracking-wider mb-3 font-cinzel">
+            <Phone className="w-3.5 h-3.5 text-[#FC1682]" />
             <span>Option B: Direct Academy Follow-Up</span>
           </div>
 
-          <h2 className="font-display text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#F3F4F6] tracking-tight mb-3">
-            Request a Parent Meeting or Callback
+          <h2 className="font-display text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight mb-3">
+            Request a{' '}
+            <span className="bg-gradient-to-r from-white via-pink-200 to-[#FC1682] bg-clip-text text-transparent">
+              Parent Meeting or Callback
+            </span>
           </h2>
 
-          <p className="text-[#AAB4C3] text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+          <p className="text-slate-300 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
             Would you prefer a phone conversation or an in-person meeting with our academic team?
             Share your details and our team will follow up.
           </p>
         </div>
 
         {/* Elevated Form Card Container */}
-        <div className="bg-[#202B3D] border-2 border-[#344054] rounded-3xl p-6 sm:p-10 shadow-xl relative backdrop-blur-xl">
+        <div className="bg-[#141824] border-2 border-pink-500/30 rounded-3xl p-6 sm:p-10 shadow-2xl relative backdrop-blur-xl">
           
           {submissionSuccess ? (
             <div className="text-center py-8 space-y-6 animate-in fade-in duration-300">
-              <div className="w-16 h-16 bg-[#172033] border-2 border-emerald-500/40 rounded-full flex items-center justify-center mx-auto text-emerald-400">
+              <div className="w-16 h-16 bg-[#0D1017] border-2 border-emerald-500/40 rounded-full flex items-center justify-center mx-auto text-emerald-400 shadow-md shadow-emerald-500/20">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
 
@@ -183,22 +186,22 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                 <span className="text-xs uppercase font-extrabold tracking-wider px-3.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
                   Request Dispatched to Admissions Desk
                 </span>
-                <h3 className="text-2xl font-bold font-display text-[#F3F4F6] mt-2">
+                <h3 className="text-2xl font-bold font-display text-white mt-2">
                   Thank You, {submittedData?.fullName || 'Student/Parent'}!
                 </h3>
-                <p className="text-sm text-[#AAB4C3] max-w-lg mx-auto leading-relaxed">
+                <p className="text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
                   We have received your preference for{' '}
-                  <span className="text-[#F4C76B] font-bold">{submittedData?.contactMethod}</span> regarding{' '}
-                  <span className="text-[#F3F4F6] font-semibold">{submittedData?.courseInterest}</span>. Our senior counselor
-                  will connect with you at <strong className="text-[#F3F4F6]">+91 {submittedData?.mobileNumber}</strong> during your
+                  <span className="text-[#FC1682] font-bold">{submittedData?.contactMethod}</span> regarding{' '}
+                  <span className="text-white font-semibold">{submittedData?.courseInterest}</span>. Our senior counselor
+                  will connect with you at <strong className="text-white">+91 {submittedData?.mobileNumber}</strong> during your
                   requested window ({submittedData?.preferredTime}).
                 </p>
               </div>
 
               {/* Direct Instant Connect Options */}
-              <div className="bg-[#172033] border border-[#344054] rounded-2xl p-4 text-xs text-[#AAB4C3] text-left max-w-lg mx-auto space-y-2">
-                <div className="flex items-center gap-2 text-[#F4C76B] font-bold">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-[#F4C76B]" />
+              <div className="bg-[#0D1017] border border-pink-500/20 rounded-2xl p-4 text-xs text-slate-300 text-left max-w-lg mx-auto space-y-2">
+                <div className="flex items-center gap-2 text-pink-300 font-bold">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-[#FC1682]" />
                   <span>Need Immediate Assistance?</span>
                 </div>
                 <p className="leading-relaxed">
@@ -223,7 +226,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="px-5 py-2.5 text-xs font-bold text-[#AAB4C3] hover:text-[#F4C76B] bg-[#172033] hover:bg-[#263449] border border-[#344054] rounded-xl transition-colors flex items-center gap-1.5 mx-auto cursor-pointer"
+                  className="px-5 py-2.5 text-xs font-bold text-slate-300 hover:text-white bg-[#0D1017] hover:bg-[#1A2030] border border-pink-500/30 rounded-xl transition-colors flex items-center gap-1.5 mx-auto cursor-pointer"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   <span>Submit Another Request</span>
@@ -260,9 +263,9 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                   <div className="flex flex-wrap gap-2 pt-1">
                     <a
                       href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#111827] hover:bg-black text-[#F3F4F6] font-bold text-xs border border-[#344054] transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#08090D] hover:bg-black text-white font-bold text-xs border border-pink-500/30 transition-colors"
                     >
-                      <Phone className="w-3.5 h-3.5 text-[#F4C76B]" />
+                      <Phone className="w-3.5 h-3.5 text-[#FC1682]" />
                       <span>Call {ACADEMY_CONFIG.contact.phoneDisplay}</span>
                     </a>
                     <a
@@ -280,15 +283,15 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
 
               {/* Preferred Contact Method Selection */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-2 font-display">
-                  Preferred Contact Method <span className="text-[#F4C76B]">*</span>
+                <label className="block text-xs font-bold uppercase tracking-wider text-white mb-2 font-display">
+                  Preferred Contact Method <span className="text-[#FC1682]">*</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <label
                     className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
                       contactMethod === 'Phone callback'
-                        ? 'bg-[#172033] border-[#F4C76B] text-[#F3F4F6] shadow-sm'
-                        : 'bg-[#172033]/60 border-[#344054] text-[#AAB4C3] hover:border-[#4B5E7D]'
+                        ? 'bg-[#0D1017] border-[#FC1682] text-white shadow-sm shadow-pink-600/10'
+                        : 'bg-[#0D1017]/70 border-pink-500/20 text-slate-300 hover:border-pink-500/40'
                     }`}
                   >
                     <input
@@ -297,14 +300,14 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                       value="Phone callback"
                       checked={contactMethod === 'Phone callback'}
                       onChange={() => setContactMethod('Phone callback')}
-                      className="mt-1 h-4 w-4 text-[#F4C76B] focus:ring-[#F4C76B] border-[#344054] bg-[#111827]"
+                      className="mt-1 h-4 w-4 text-[#FC1682] focus:ring-[#FC1682] border-pink-500/40 bg-[#08090D]"
                     />
                     <div>
-                      <span className="block text-xs font-bold text-[#F3F4F6] flex items-center gap-1.5">
-                        <Phone className="w-3.5 h-3.5 text-[#F4C76B]" />
+                      <span className="block text-xs font-bold text-white flex items-center gap-1.5">
+                        <Phone className="w-3.5 h-3.5 text-[#FC1682]" />
                         Phone Callback
                       </span>
-                      <span className="text-[11px] text-[#AAB4C3] leading-snug mt-0.5 block">
+                      <span className="text-[11px] text-slate-400 leading-snug mt-0.5 block">
                         Our counselor calls you at your preferred time window.
                       </span>
                     </div>
@@ -313,8 +316,8 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                   <label
                     className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
                       contactMethod === 'Parents meeting at the academy'
-                        ? 'bg-[#172033] border-[#F4C76B] text-[#F3F4F6] shadow-sm'
-                        : 'bg-[#172033]/60 border-[#344054] text-[#AAB4C3] hover:border-[#4B5E7D]'
+                        ? 'bg-[#0D1017] border-[#FC1682] text-white shadow-sm shadow-pink-600/10'
+                        : 'bg-[#0D1017]/70 border-pink-500/20 text-slate-300 hover:border-pink-500/40'
                     }`}
                   >
                     <input
@@ -323,14 +326,14 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                       value="Parents meeting at the academy"
                       checked={contactMethod === 'Parents meeting at the academy'}
                       onChange={() => setContactMethod('Parents meeting at the academy')}
-                      className="mt-1 h-4 w-4 text-[#F4C76B] focus:ring-[#F4C76B] border-[#344054] bg-[#111827]"
+                      className="mt-1 h-4 w-4 text-[#FC1682] focus:ring-[#FC1682] border-pink-500/40 bg-[#08090D]"
                     />
                     <div>
-                      <span className="block text-xs font-bold text-[#F3F4F6] flex items-center gap-1.5">
+                      <span className="block text-xs font-bold text-white flex items-center gap-1.5">
                         <Users className="w-3.5 h-3.5 text-[#38BDF8]" />
                         Parents Meeting at Academy
                       </span>
-                      <span className="text-[11px] text-[#AAB4C3] leading-snug mt-0.5 block">
+                      <span className="text-[11px] text-slate-400 leading-snug mt-0.5 block">
                         Meet faculty in person at Bijipur campus, Brahmapur.
                       </span>
                     </div>
@@ -341,8 +344,8 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
               {/* Row 1: Full Name and Mobile Number */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label htmlFor="cb-name" className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-1.5 font-display">
-                    Parent or Student Name <span className="text-[#F4C76B]">*</span>
+                  <label htmlFor="cb-name" className="block text-xs font-bold uppercase tracking-wider text-white mb-1.5 font-display">
+                    Parent or Student Name <span className="text-[#FC1682]">*</span>
                   </label>
                   <input
                     id="cb-name"
@@ -353,8 +356,8 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                       if (errors.fullName) setErrors((prev) => ({ ...prev, fullName: '' }));
                     }}
                     placeholder="e.g. Ramesh Chandra Das"
-                    className={`w-full px-4 py-3 rounded-xl bg-[#172033] border text-[#F3F4F6] placeholder-[#8592A3] text-sm focus:outline-none focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B] transition-all ${
-                      errors.fullName ? 'border-rose-500 bg-rose-950/30' : 'border-[#344054]'
+                    className={`w-full px-4 py-3 rounded-xl bg-[#0D1017] border text-white placeholder-slate-500 text-sm focus:outline-none focus:border-[#FC1682] focus:ring-1 focus:ring-[#FC1682] transition-all ${
+                      errors.fullName ? 'border-rose-500 bg-rose-950/30' : 'border-pink-500/25'
                     }`}
                   />
                   {errors.fullName && (
@@ -366,11 +369,11 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                 </div>
 
                 <div>
-                  <label htmlFor="cb-mobile" className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-1.5 font-display">
-                    Mobile Number (10 Digits) <span className="text-[#F4C76B]">*</span>
+                  <label htmlFor="cb-mobile" className="block text-xs font-bold uppercase tracking-wider text-white mb-1.5 font-display">
+                    Mobile Number (10 Digits) <span className="text-[#FC1682]">*</span>
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-3.5 text-xs font-bold text-[#8592A3] pointer-events-none">
+                    <span className="absolute left-3.5 top-3.5 text-xs font-bold text-slate-500 pointer-events-none">
                       +91
                     </span>
                     <input
@@ -386,11 +389,11 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                       }}
                       placeholder="9876543210"
                       maxLength={10}
-                      className={`w-full pl-12 pr-16 py-3 rounded-xl bg-[#172033] border text-[#F3F4F6] placeholder-[#8592A3] text-sm focus:outline-none focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B] transition-all font-mono tracking-wider ${
-                        errors.mobileNumber ? 'border-rose-500 bg-rose-950/30' : 'border-[#344054]'
+                      className={`w-full pl-12 pr-16 py-3 rounded-xl bg-[#0D1017] border text-white placeholder-slate-500 text-sm focus:outline-none focus:border-[#FC1682] focus:ring-1 focus:ring-[#FC1682] transition-all font-mono tracking-wider ${
+                        errors.mobileNumber ? 'border-rose-500 bg-rose-950/30' : 'border-pink-500/25'
                       }`}
                     />
-                    <span className="absolute right-3.5 top-3.5 text-[11px] font-semibold text-[#8592A3] pointer-events-none">
+                    <span className="absolute right-3.5 top-3.5 text-[11px] font-semibold text-slate-500 pointer-events-none">
                       {mobileNumber.length}/10
                     </span>
                   </div>
@@ -406,14 +409,14 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
               {/* Row 2: Class & Course Selection */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label htmlFor="cb-class" className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-1.5 font-display">
+                  <label htmlFor="cb-class" className="block text-xs font-bold uppercase tracking-wider text-white mb-1.5 font-display">
                     Student's Class
                   </label>
                   <select
                     id="cb-class"
                     value={studentClass}
                     onChange={(e) => setStudentClass(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-[#172033] border border-[#344054] text-[#F3F4F6] text-sm focus:outline-none focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B]"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0D1017] border border-pink-500/25 text-white text-sm focus:outline-none focus:border-[#FC1682] focus:ring-1 focus:ring-[#FC1682]"
                   >
                     <option value="+2 First Year (Class 11)">+2 First Year (Class 11 Science)</option>
                     <option value="+2 Second Year (Class 12)">+2 Second Year (Class 12 Science)</option>
@@ -423,14 +426,14 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                 </div>
 
                 <div>
-                  <label htmlFor="cb-course" className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-1.5 font-display">
+                  <label htmlFor="cb-course" className="block text-xs font-bold uppercase tracking-wider text-white mb-1.5 font-display">
                     Course or Exam Interest
                   </label>
                   <select
                     id="cb-course"
                     value={courseInterest}
                     onChange={(e) => setCourseInterest(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-[#172033] border border-[#344054] text-[#F3F4F6] text-sm focus:outline-none focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B]"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0D1017] border border-pink-500/25 text-white text-sm focus:outline-none focus:border-[#FC1682] focus:ring-1 focus:ring-[#FC1682]"
                   >
                     <option value="Integrated Board + Entrance Preparation">Integrated Board + Entrance Preparation</option>
                     <option value="JEE Main & JEE Advanced">JEE Main & JEE Advanced</option>
@@ -443,7 +446,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
 
               {/* Row 3: Preferred Time or Meeting Preference */}
               <div>
-                <label htmlFor="cb-time" className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-1.5 font-display">
+                <label htmlFor="cb-time" className="block text-xs font-bold uppercase tracking-wider text-white mb-1.5 font-display">
                   {contactMethod === 'Parents meeting at the academy'
                     ? 'Preferred Meeting Time at Bijipur Campus'
                     : 'Preferred Callback Time Window'}
@@ -452,7 +455,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                   id="cb-time"
                   value={preferredTime}
                   onChange={(e) => setPreferredTime(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-[#172033] border border-[#344054] text-[#F3F4F6] text-sm focus:outline-none focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B]"
+                  className="w-full px-4 py-3 rounded-xl bg-[#0D1017] border border-pink-500/25 text-white text-sm focus:outline-none focus:border-[#FC1682] focus:ring-1 focus:ring-[#FC1682]"
                 >
                   <option value="Morning (09:00 AM - 12:00 PM)">Morning (09:00 AM – 12:00 PM)</option>
                   <option value="Afternoon (12:00 PM - 04:00 PM)">Afternoon (12:00 PM – 04:00 PM)</option>
@@ -463,8 +466,8 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
 
               {/* Row 4: Optional Message */}
               <div>
-                <label htmlFor="cb-message" className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-1.5 font-display">
-                  Optional Message or Questions <span className="text-[#8592A3] font-normal">(Optional)</span>
+                <label htmlFor="cb-message" className="block text-xs font-bold uppercase tracking-wider text-white mb-1.5 font-display">
+                  Optional Message or Questions <span className="text-slate-400 font-normal">(Optional)</span>
                 </label>
                 <textarea
                   id="cb-message"
@@ -472,7 +475,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="e.g. Inquiring about hostel accommodation, fee installments, or current batch schedules."
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#172033] border border-[#344054] text-[#F3F4F6] placeholder-[#8592A3] text-sm focus:outline-none focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B] resize-y"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#0D1017] border border-pink-500/25 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-[#FC1682] focus:ring-1 focus:ring-[#FC1682] resize-y"
                 ></textarea>
               </div>
 
@@ -486,9 +489,9 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                       setConsent(e.target.checked);
                       if (errors.consent) setErrors((prev) => ({ ...prev, consent: '' }));
                     }}
-                    className="mt-1 h-4 w-4 rounded border-[#344054] bg-[#172033] text-[#F4C76B] focus:ring-[#F4C76B]"
+                    className="mt-1 h-4 w-4 rounded border-pink-500/40 bg-[#0D1017] text-[#FC1682] focus:ring-[#FC1682]"
                   />
-                  <span className="text-xs text-[#AAB4C3] group-hover:text-[#F3F4F6] transition-colors leading-relaxed">
+                  <span className="text-xs text-slate-300 group-hover:text-white transition-colors leading-relaxed">
                     I authorize Antariksh Academy counselors to contact me on the provided number solely regarding
                     academic guidance, fee structures, and batch admissions. We respect your privacy.
                   </span>
@@ -506,16 +509,16 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-4 px-6 rounded-xl font-bold text-sm sm:text-base text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 shadow-lg shadow-amber-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 font-display"
+                  className="w-full py-4 px-6 rounded-xl font-extrabold text-sm sm:text-base text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#BE125A] hover:from-[#FF2D92] hover:to-[#FC1682] shadow-lg shadow-pink-600/30 border border-pink-400/40 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 font-display"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-[#0F172A] border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Submitting Request...</span>
                     </>
                   ) : (
                     <>
-                      <Send className="w-4 h-4 text-[#0F172A]" />
+                      <Send className="w-4 h-4 text-white" />
                       <span>
                         {contactMethod === 'Parents meeting at the academy'
                           ? 'Request Parents Meeting at Academy'
@@ -527,7 +530,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
               </div>
 
               {/* Distinction Footnote */}
-              <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#8592A3] pt-2 border-t border-[#344054]/60 gap-2">
+              <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 pt-2 border-t border-pink-500/20 gap-2">
                 <span className="flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Manual follow-up by Antariksh Academy admissions team (Private & Confidential)</span>

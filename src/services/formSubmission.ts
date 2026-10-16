@@ -19,7 +19,13 @@
 import { ACADEMY_CONFIG } from '../config/academyConfig';
 
 export interface FormSubmissionPayload {
-  formType: 'Callback Request' | 'Consultation Booking' | 'Course Enquiry' | 'General Contact';
+  formType:
+    | 'Callback Request'
+    | 'Consultation Booking'
+    | 'Course Enquiry'
+    | 'General Contact'
+    | 'Parent Meeting Request'
+    | 'Phone Callback Request';
   fullName: string;
   mobileNumber?: string;
   email?: string;

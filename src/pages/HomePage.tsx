@@ -390,20 +390,20 @@ export const HomePage: React.FC = () => {
 
               {/* Dual Action Buttons: Clear Option A & Option B */}
               <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
-                {/* Option A: Cal.com 30-min booking */}
+                {/* Option A: Google Meet 30-min booking */}
                 <Link
                   to="/consultation"
-                  className="px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl font-extrabold text-xs sm:text-sm text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 shadow-lg shadow-amber-500/15 transition-all flex items-center justify-center gap-2 text-center font-display min-h-[46px] active:scale-[0.98]"
+                  className="px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl font-extrabold text-xs sm:text-sm text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#BE125A] hover:from-[#FF2D92] hover:to-[#FC1682] shadow-lg shadow-pink-600/30 border border-pink-400/40 transition-all flex items-center justify-center gap-2 text-center font-display min-h-[46px] active:scale-[0.98]"
                 >
-                  <Calendar className="w-4 h-4 shrink-0 text-[#0F172A]" />
-                  <span>Book Free Consultation (Cal.com)</span>
-                  <ArrowRight className="w-4 h-4 shrink-0 text-[#0F172A]" />
+                  <Calendar className="w-4 h-4 shrink-0 text-white" />
+                  <span>Book Free Consultation (Google Meet)</span>
+                  <ArrowRight className="w-4 h-4 shrink-0 text-white" />
                 </Link>
 
                 {/* Option B: Manual callback */}
                 <a
                   href="#callback-widget"
-                  className="px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm text-[#F3F4F6] bg-[#202B3D] hover:bg-[#263449] border border-[#344054] hover:border-[#F4C76B]/50 shadow-xs transition-all flex items-center justify-center gap-2 text-center min-h-[46px] active:scale-[0.98]"
+                  className="px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm text-slate-200 hover:text-white bg-[#141824] hover:bg-[#1C2232] border border-pink-500/25 hover:border-pink-500/50 shadow-xs transition-all flex items-center justify-center gap-2 text-center min-h-[46px] active:scale-[0.98]"
                 >
                   <Phone className="w-4 h-4 text-[#38BDF8] shrink-0" />
                   <span>Request Callback / Meeting</span>
@@ -621,9 +621,9 @@ export const HomePage: React.FC = () => {
                   </span>
                   <Link
                     to="/consultation"
-                    className="text-[#38BDF8] hover:text-[#F4C76B] font-bold transition-colors inline-flex items-center gap-1"
+                    className="text-pink-400 hover:text-white font-bold transition-colors inline-flex items-center gap-1"
                   >
-                    <span>Need instant Google Meet? Book via Cal.com →</span>
+                    <span>Need instant Google Meet? Book 1:1 Online Slot →</span>
                   </Link>
                 </div>
 
@@ -866,8 +866,8 @@ export const HomePage: React.FC = () => {
 
           {/* Quick Action Navigation Links below the Carousel */}
           <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <div className="text-[#AAB4C3] text-center sm:text-left">
-              <span>Swipe left or right on mobile to browse photos • Auto-swiping every 3.8s</span>
+            <div className="text-slate-400 text-center sm:text-left">
+              <span>Swipe or use arrows to view campus classrooms & facilities</span>
             </div>
 
             <div className="flex items-center gap-3 flex-wrap justify-center">
@@ -1033,45 +1033,45 @@ export const HomePage: React.FC = () => {
             {COURSES_DATA.slice(0, 4).map((course) => (
               <div
                 key={course.id}
-                className="bg-[#202B3D] border border-[#344054] rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl transition-all flex flex-col justify-between group hover:border-[#F4C76B]/60"
+                className="bg-[#141824] border border-pink-500/25 rounded-2xl p-5 sm:p-6 shadow-md hover:shadow-xl hover:border-pink-500/60 transition-all flex flex-col justify-between group"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#172033] text-[#F4C76B] border border-[#344054] uppercase tracking-wider">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <span className="text-[10px] sm:text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#0D1017] text-pink-300 border border-pink-500/35 uppercase tracking-wider">
                       {course.badge}
                     </span>
-                    <span className="text-[10px] font-bold text-[#AAB4C3] font-stat">
+                    <span className="text-[10px] font-bold text-slate-400 font-stat shrink-0">
                       Batch: 30 Max
                     </span>
                   </div>
 
-                  <h3 className="font-display text-lg sm:text-xl font-bold text-[#F3F4F6] group-hover:text-[#F4C76B] transition-colors mb-2">
+                  <h3 className="font-display text-lg sm:text-xl font-bold text-white group-hover:text-pink-300 transition-colors mb-2">
                     {course.title}
                   </h3>
 
-                  <p className="text-xs text-[#AAB4C3] leading-relaxed mb-4 line-clamp-3">
+                  <p className="text-xs text-slate-300 leading-relaxed mb-4 line-clamp-3">
                     {course.shortDescription}
                   </p>
 
-                  <div className="space-y-2 border-t border-[#344054]/60 pt-3 mb-4">
+                  <div className="space-y-2 border-t border-pink-500/20 pt-3 mb-4">
                     {course.keyBenefits.slice(0, 2).map((benefit, i) => (
-                      <div key={i} className="flex items-start gap-1.5 text-xs text-[#D1D5DB] leading-snug">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                      <div key={i} className="flex items-start gap-1.5 text-xs text-slate-200 leading-snug">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#FC1682] shrink-0 mt-0.5" />
                         <span>{benefit}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-[#344054]/60 space-y-3">
-                  <div className="flex items-center justify-between text-[11px] text-[#AAB4C3]">
+                <div className="pt-3 border-t border-pink-500/20 space-y-3">
+                  <div className="flex items-center justify-between text-[11px] text-slate-400">
                     <span className="font-medium">{course.batchType}</span>
                   </div>
                   <Link
                     to="/consultation"
-                    className="w-full py-2.5 px-3 rounded-xl bg-[#172033] hover:bg-[#F4C76B] hover:text-[#0F172A] text-[#F3F4F6] font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-center min-h-[42px] border border-[#344054]"
+                    className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#BE125A] hover:from-[#FF2D92] hover:to-[#FC1682] text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-center min-h-[42px] shadow-md shadow-pink-600/25 border border-pink-400/30"
                   >
-                    <span>Book Consultation via Cal.com</span>
+                    <span>Meet on Google Meet</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -1106,52 +1106,52 @@ export const HomePage: React.FC = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 items-stretch">
             {topResults.map((item) => (
               <div
                 key={item.id}
-                className="bg-[#202B3D] border border-[#344054] rounded-2xl p-4 sm:p-5 shadow-sm hover:border-[#F4C76B]/60 transition-all flex flex-col justify-between group"
+                className="bg-[#141824] border border-pink-500/25 rounded-2xl p-4 sm:p-5 shadow-md hover:border-pink-500/60 transition-all flex flex-col justify-between h-full group"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex flex-wrap items-center justify-between gap-1.5 mb-3">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-[#172033] text-[#F3F4F6] border border-[#344054] font-stat">
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-[#0D1017] text-white border border-pink-500/30 font-stat">
                         Session {item.year}
                       </span>
                       <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-700/50 px-1.5 py-0.5 rounded">
                         Verified
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#172033] text-[#F4C76B] border border-[#344054] font-cinzel">
+                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#0D1017] text-pink-300 border border-pink-500/30 font-cinzel">
                       {item.category}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-[#172033] border-2 border-[#F4C76B]/40 shrink-0">
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-[#0D1017] border-2 border-[#FC1682]/60 shrink-0 shadow-sm shadow-pink-600/20">
                       <img src={item.photoUrl} alt={item.studentName} className="w-full h-full object-cover" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="font-display text-sm font-bold text-[#F3F4F6] truncate">
+                      <h4 className="font-display text-sm font-bold text-white break-words">
                         {item.studentName}
                       </h4>
-                      <div className="text-xs font-extrabold text-[#F4C76B] font-stat">
+                      <div className="text-xs font-extrabold text-[#FC1682] font-stat break-words">
                         {item.scoreOrRank}
                       </div>
-                      <div className="text-[10px] text-[#AAB4C3] truncate">
+                      <div className="text-[10px] text-slate-300 break-words leading-tight mt-0.5">
                         {item.allotmentOrCollege}
                       </div>
                     </div>
                   </div>
 
-                  <p className="text-xs text-[#D1D5DB] italic bg-[#172033] border-l-2 border-[#F4C76B] pl-2.5 py-1.5 rounded-r-lg line-clamp-2">
+                  <div className="text-xs text-slate-200 italic bg-[#0C0F17] border-l-2 border-[#FC1682] pl-3 pr-2 py-2.5 rounded-r-lg break-words leading-relaxed mb-3">
                     "{item.storyQuote}"
-                  </p>
+                  </div>
                 </div>
 
-                <div className="mt-3 pt-2.5 border-t border-[#344054]/60 text-[11px] text-[#AAB4C3] flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span className="font-medium line-clamp-1">{item.achievementSummary}</span>
+                <div className="mt-auto pt-3 border-t border-pink-500/20 text-[11px] text-slate-300 flex items-start gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="font-medium break-words leading-snug">{item.achievementSummary}</span>
                 </div>
               </div>
             ))}
@@ -1181,34 +1181,34 @@ export const HomePage: React.FC = () => {
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#172033] border border-[#344054] text-[#F4C76B] flex items-center justify-center font-stat font-extrabold text-lg sm:text-xl mb-3 sm:mb-4">
                 01
               </div>
-              <h3 className="font-display text-base sm:text-lg font-bold text-[#F3F4F6] mb-1.5 sm:mb-2">
-                1. Book Free Consultation (Cal.com)
+              <h3 className="font-display text-base sm:text-lg font-bold text-white mb-1.5 sm:mb-2">
+                1. Book Free Consultation (Google Meet)
               </h3>
-              <p className="text-xs sm:text-sm text-[#AAB4C3] leading-relaxed">
-                Choose a 30-minute slot via Cal.com (Google Meet or phone) to assess baseline marks, target ranks, and syllabus roadmap.
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Choose a 30-minute online slot (Google Meet) to assess baseline marks, target ranks, and syllabus roadmap.
               </p>
             </div>
 
-            <div className="bg-[#202B3D] border-2 border-[#F4C76B]/40 rounded-2xl p-5 sm:p-8 shadow-md relative">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#F4C76B] text-[#0F172A] flex items-center justify-center font-stat font-extrabold text-lg sm:text-xl mb-3 sm:mb-4">
+            <div className="bg-[#141824] border-2 border-pink-500/50 rounded-2xl p-5 sm:p-8 shadow-md relative">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-r from-[#FC1682] to-[#E11D74] text-white flex items-center justify-center font-stat font-extrabold text-lg sm:text-xl mb-3 sm:mb-4 shadow-sm shadow-pink-600/30">
                 02
               </div>
-              <h3 className="font-display text-base sm:text-lg font-bold text-[#F3F4F6] mb-1.5 sm:mb-2">
+              <h3 className="font-display text-base sm:text-lg font-bold text-white mb-1.5 sm:mb-2">
                 2. Attend 2-Day Trial Classes
               </h3>
-              <p className="text-xs sm:text-sm text-[#AAB4C3] leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Sit inside our active classrooms. Experience our concept derivations, solve daily practice sheets, and interact directly with our mentors.
               </p>
             </div>
 
-            <div className="bg-[#202B3D] border border-[#344054] rounded-2xl p-5 sm:p-8 shadow-sm relative">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#172033] border border-[#344054] text-[#38BDF8] flex items-center justify-center font-stat font-extrabold text-lg sm:text-xl mb-3 sm:mb-4">
+            <div className="bg-[#141824] border border-pink-500/25 rounded-2xl p-5 sm:p-8 shadow-sm relative">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#0D1017] border border-pink-500/30 text-[#38BDF8] flex items-center justify-center font-stat font-extrabold text-lg sm:text-xl mb-3 sm:mb-4">
                 03
               </div>
-              <h3 className="font-display text-base sm:text-lg font-bold text-[#F3F4F6] mb-1.5 sm:mb-2">
+              <h3 className="font-display text-base sm:text-lg font-bold text-white mb-1.5 sm:mb-2">
                 3. Secure Batch Slot & Begin
               </h3>
-              <p className="text-xs sm:text-sm text-[#AAB4C3] leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Confirm your capped 30-student batch slot, receive official curriculum booklets and DPP modules, and begin your guided journey.
               </p>
             </div>
@@ -1217,9 +1217,9 @@ export const HomePage: React.FC = () => {
           <div className="mt-8 sm:mt-10 text-center">
             <Link
               to="/consultation"
-              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-extrabold text-xs sm:text-sm text-[#0F172A] bg-gradient-to-r from-[#F4C76B] to-[#E5B555] hover:brightness-105 shadow-md shadow-amber-500/15 transition-all font-display min-h-[46px]"
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-extrabold text-xs sm:text-sm text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#BE125A] hover:from-[#FF2D92] hover:to-[#FC1682] shadow-lg shadow-pink-600/30 border border-pink-400/40 transition-all font-display min-h-[46px]"
             >
-              <span>Schedule Step 1: Free Consultation (Cal.com)</span>
+              <span>Schedule Step 1: Free Consultation (Google Meet)</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -1341,24 +1341,24 @@ export const HomePage: React.FC = () => {
             </span>
           </h2>
 
-          <p className="text-[#AAB4C3] text-xs sm:text-base max-w-xl mx-auto leading-relaxed">
-            Small batches fill up quickly. Choose an available slot via Cal.com or request a callback / parents meeting today.
+          <p className="text-slate-300 text-xs sm:text-base max-w-xl mx-auto leading-relaxed">
+            Small batches fill up quickly. Choose an available slot online or request a callback / parents meeting today.
           </p>
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3">
             {/* Option A */}
             <Link
               to="/consultation"
-              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 rounded-xl font-extrabold text-xs sm:text-base text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 shadow-lg shadow-amber-500/15 transition-all text-center font-display min-h-[46px] flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 rounded-xl font-extrabold text-xs sm:text-base text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#BE125A] hover:from-[#FF2D92] hover:to-[#FC1682] shadow-lg shadow-pink-600/30 border border-pink-400/40 transition-all text-center font-display min-h-[46px] flex items-center justify-center gap-2"
             >
-              <Calendar className="w-4 h-4 text-[#0F172A]" />
-              <span>Book Free Consultation (Cal.com)</span>
+              <Calendar className="w-4 h-4 text-white" />
+              <span>Book Free Consultation (Google Meet)</span>
             </Link>
 
             {/* Option B */}
             <Link
               to="/contact"
-              className="w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl font-bold text-xs sm:text-base text-[#F3F4F6] bg-[#202B3D] hover:bg-[#263449] border border-[#344054] transition-colors text-center font-display flex items-center justify-center gap-2 min-h-[46px]"
+              className="w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl font-bold text-xs sm:text-base text-slate-200 hover:text-white bg-[#141824] hover:bg-[#1C2232] border border-pink-500/25 transition-colors text-center font-display flex items-center justify-center gap-2 min-h-[46px]"
             >
               <Phone className="w-4 h-4 text-[#38BDF8]" />
               <span>Request Parent Meeting / Callback</span>
