@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { PageLoader } from './components/PageLoader';
 import { ScrollToTop } from './components/ScrollToTop';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Code-split pages for high performance and on-demand section loading
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -18,11 +19,12 @@ const ContactPage = lazy(() => import('./pages/ContactPage'));
 
 export function App() {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <div className="min-h-screen bg-[#111827] flex flex-col font-['Plus_Jakarta_Sans',sans-serif] text-[#F3F4F6] antialiased selection:bg-[#F4C76B]/30 selection:text-white">
-        {/* Sticky Global Navigation */}
-        <Navbar />
+    <ThemeProvider>
+      <BrowserRouter>
+        <ScrollToTop />
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#111827] flex flex-col font-['Plus_Jakarta_Sans',sans-serif] text-slate-800 dark:text-[#F3F4F6] antialiased selection:bg-[#C6922E]/20 dark:selection:bg-[#F4C76B]/30 transition-colors duration-200">
+          {/* Sticky Global Navigation */}
+          <Navbar />
 
         {/* Dynamic Route Content with Instant Suspense Transition */}
         <main className="flex-1">
@@ -47,6 +49,7 @@ export function App() {
         <Footer />
       </div>
     </BrowserRouter>
+  </ThemeProvider>
   );
 }
 

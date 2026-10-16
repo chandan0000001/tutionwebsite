@@ -42,37 +42,37 @@ export const Courses: React.FC<CoursesProps> = ({
   const getCourseIcon = (iconName: Course['icon']) => {
     switch (iconName) {
       case 'Atom':
-        return <Atom className="w-6 h-6 text-[#FC1682]" />;
+        return <Atom className="w-6 h-6 text-[#17365D] dark:text-[#F4C76B]" />;
       case 'Stethoscope':
-        return <Stethoscope className="w-6 h-6 text-[#38BDF8]" />;
+        return <Stethoscope className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />;
       case 'BookOpen':
-        return <BookOpen className="w-6 h-6 text-[#38BDF8]" />;
+        return <BookOpen className="w-6 h-6 text-[#17365D] dark:text-[#38BDF8]" />;
       case 'GraduationCap':
-        return <GraduationCap className="w-6 h-6 text-[#FC1682]" />;
+        return <GraduationCap className="w-6 h-6 text-[#17365D] dark:text-[#F4C76B]" />;
       case 'ShieldCheck':
-        return <ShieldCheck className="w-6 h-6 text-[#38BDF8]" />;
+        return <ShieldCheck className="w-6 h-6 text-sky-600 dark:text-[#38BDF8]" />;
       default:
-        return <GraduationCap className="w-6 h-6 text-[#FC1682]" />;
+        return <GraduationCap className="w-6 h-6 text-[#17365D] dark:text-[#F4C76B]" />;
     }
   };
 
   return (
-    <section id="courses" className="py-10 sm:py-16 md:py-20 bg-[#111827] border-b border-[#344054]">
+    <section id="courses" className="py-10 sm:py-16 md:py-20 bg-[#F8FAFC] dark:bg-[#111827] border-b border-slate-200 dark:border-[#344054]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#172033] border border-[#344054] text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-3">
-            <Sparkles className="w-3.5 h-3.5 text-[#F4C76B]" />
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#172033] border border-slate-200 dark:border-[#344054] text-[#C6922E] dark:text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-3 shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B]" />
             <span>Academic Programs</span>
           </div>
-          <h2 className="font-['Outfit',sans-serif] text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight mb-3">
+          <h2 className="font-['Outfit',sans-serif] text-2xl sm:text-4xl md:text-5xl font-black text-[#172033] dark:text-white tracking-tight mb-3">
             Targeted Courses &{' '}
-            <span className="bg-gradient-to-r from-white via-amber-100 to-[#F4C76B] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#17365D] via-[#C6922E] to-[#0284C7] dark:from-white dark:via-amber-100 dark:to-[#F4C76B] bg-clip-text text-transparent">
               Examination Streams
             </span>
           </h2>
-          <p className="text-[#AAB4C3] text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-600 dark:text-[#AAB4C3] text-sm sm:text-base leading-relaxed">
             Designed specifically for Class 11 & 12 Science students to achieve top council scores alongside national
             entrance qualifications with zero confusion.
           </p>
@@ -83,8 +83,8 @@ export const Courses: React.FC<CoursesProps> = ({
               onClick={() => setActiveFilter('all')}
               className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[44px] ${
                 activeFilter === 'all'
-                  ? 'bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] text-[#0F172A] shadow-md shadow-amber-900/20 border border-amber-300/40'
-                  : 'bg-[#202B3D] text-[#AAB4C3] hover:text-white hover:bg-[#2A374D] border border-[#344054]'
+                  ? 'bg-[#17365D] text-white shadow-md dark:bg-gradient-to-r dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:text-[#0F172A]'
+                  : 'bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-xs dark:bg-[#202B3D] dark:text-[#AAB4C3] dark:hover:text-white dark:hover:bg-[#2A374D] dark:border-[#344054]'
               }`}
             >
               All Courses ({COURSES_DATA.length})
@@ -93,8 +93,8 @@ export const Courses: React.FC<CoursesProps> = ({
               onClick={() => setActiveFilter('entrance')}
               className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[44px] text-center max-w-full ${
                 activeFilter === 'entrance'
-                  ? 'bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] text-[#0F172A] shadow-md shadow-amber-900/20 border border-amber-300/40'
-                  : 'bg-[#202B3D] text-[#AAB4C3] hover:text-white hover:bg-[#2A374D] border border-[#344054]'
+                  ? 'bg-[#17365D] text-white shadow-md dark:bg-gradient-to-r dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:text-[#0F172A]'
+                  : 'bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-xs dark:bg-[#202B3D] dark:text-[#AAB4C3] dark:hover:text-white dark:hover:bg-[#2A374D] dark:border-[#344054]'
               }`}
             >
               Competitive Entrances (JEE, NEET, NDA)
@@ -103,8 +103,8 @@ export const Courses: React.FC<CoursesProps> = ({
               onClick={() => setActiveFilter('board')}
               className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[44px] text-center max-w-full ${
                 activeFilter === 'board'
-                  ? 'bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] text-[#0F172A] shadow-md shadow-amber-900/20 border border-amber-300/40'
-                  : 'bg-[#202B3D] text-[#AAB4C3] hover:text-white hover:bg-[#2A374D] border border-[#344054]'
+                  ? 'bg-[#17365D] text-white shadow-md dark:bg-gradient-to-r dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:text-[#0F172A]'
+                  : 'bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-xs dark:bg-[#202B3D] dark:text-[#AAB4C3] dark:hover:text-white dark:hover:bg-[#2A374D] dark:border-[#344054]'
               }`}
             >
               +2 Board & Integrated Programs
@@ -118,41 +118,41 @@ export const Courses: React.FC<CoursesProps> = ({
             return (
               <div
                 key={course.id}
-                className="bg-[#202B3D] border border-[#344054] rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:border-[#F4C76B]/40"
+                className="bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] rounded-2xl shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:border-[#17365D] dark:hover:border-[#F4C76B]/40"
               >
                 {/* Card Top / Header */}
                 <div className="p-6 pb-4">
                   <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-[#172033] border border-[#344054] flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform">
+                    <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-[#172033] border border-slate-200 dark:border-[#344054] flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
                       {getCourseIcon(course.icon)}
                     </div>
-                    <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-md bg-[#172033] text-[#F4C76B] border border-[#344054]">
+                    <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-md bg-amber-50 dark:bg-[#172033] text-[#C6922E] dark:text-[#F4C76B] border border-amber-200 dark:border-[#344054]">
                       {course.badge}
                     </span>
                   </div>
 
-                  <h3 className="font-['Outfit',sans-serif] text-xl font-bold text-white group-hover:text-[#F4C76B] transition-colors mb-2">
+                  <h3 className="font-['Outfit',sans-serif] text-xl font-bold text-slate-900 dark:text-white group-hover:text-[#0284C7] dark:group-hover:text-[#F4C76B] transition-colors mb-2">
                     {course.title}
                   </h3>
 
                   <div className="mb-3">
-                    <span className="text-xs font-semibold text-[#38BDF8] bg-[#38BDF8]/15 px-2.5 py-1 rounded-md border border-[#38BDF8]/30 inline-block break-words max-w-full leading-snug">
+                    <span className="text-xs font-semibold text-[#0284C7] bg-sky-50 dark:bg-[#38BDF8]/15 px-2.5 py-1 rounded-md border border-sky-200 dark:border-[#38BDF8]/30 dark:text-[#38BDF8] inline-block break-words max-w-full leading-snug">
                       Target: {course.targetStudents}
                     </span>
                   </div>
 
-                  <p className="text-[#AAB4C3] text-sm leading-relaxed mb-4">
+                  <p className="text-slate-600 dark:text-[#AAB4C3] text-sm leading-relaxed mb-4">
                     {course.shortDescription}
                   </p>
 
                   {/* Key Learning Benefits */}
-                  <div className="space-y-2 pt-2 border-t border-[#344054] mb-4">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-[#344054] mb-4">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       Key Program Features:
                     </span>
                     {course.keyBenefits.slice(0, 3).map((benefit, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-200">
-                        <CheckCircle className="w-3.5 h-3.5 text-[#F4C76B] shrink-0 mt-0.5" />
+                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-700 dark:text-slate-200">
+                        <CheckCircle className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B] shrink-0 mt-0.5" />
                         <span className="line-clamp-2">{benefit}</span>
                       </div>
                     ))}
@@ -160,16 +160,16 @@ export const Courses: React.FC<CoursesProps> = ({
                 </div>
 
                 {/* Card Bottom / Footer Actions */}
-                <div className="p-6 pt-0 bg-[#172033] border-t border-[#344054] flex flex-col gap-2.5">
-                  <div className="text-[11px] text-[#AAB4C3] flex items-center gap-1.5 py-1">
-                    <Info className="w-3.5 h-3.5 text-[#38BDF8]" />
+                <div className="p-6 pt-3 bg-slate-50 dark:bg-[#172033] border-t border-slate-200 dark:border-[#344054] flex flex-col gap-2.5">
+                  <div className="text-[11px] text-slate-500 dark:text-[#AAB4C3] flex items-center gap-1.5 py-1">
+                    <Info className="w-3.5 h-3.5 text-[#0284C7] dark:text-[#38BDF8]" />
                     <span>{course.batchType}</span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => onViewCourseDetails(course)}
-                      className="w-full py-2.5 px-3 text-xs font-bold text-slate-200 bg-[#202B3D] hover:bg-[#2A374D] border border-[#344054] hover:border-[#F4C76B]/40 hover:text-white rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer min-h-[44px]"
+                      className="w-full py-2.5 px-3 text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 hover:border-[#17365D] hover:text-[#17365D] dark:bg-[#202B3D] dark:hover:bg-[#2A374D] dark:border-[#344054] dark:hover:border-[#F4C76B]/40 dark:text-slate-200 dark:hover:text-white rounded-xl transition-colors flex items-center justify-center gap-1 cursor-pointer min-h-[44px] shadow-xs"
                     >
                       <span>Explore Course</span>
                       <ArrowRight className="w-3 h-3" />
@@ -177,9 +177,9 @@ export const Courses: React.FC<CoursesProps> = ({
 
                     <button
                       onClick={() => onSelectCourseForEnquiry(course.title)}
-                      className="w-full py-2.5 px-3 text-xs font-bold text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 rounded-xl shadow-md shadow-amber-900/20 border border-amber-300/40 transition-colors flex items-center justify-center gap-1 cursor-pointer min-h-[44px]"
+                      className="w-full py-2.5 px-3 text-xs font-bold text-white bg-[#17365D] hover:bg-[#102A43] dark:text-[#0F172A] dark:bg-gradient-to-r dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] hover:brightness-105 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1 cursor-pointer min-h-[44px]"
                     >
-                      <Calendar className="w-3 h-3 text-[#0F172A]" />
+                      <Calendar className="w-3 h-3 text-white dark:text-[#0F172A]" />
                       <span>Enquire Now</span>
                     </button>
                   </div>
@@ -190,8 +190,8 @@ export const Courses: React.FC<CoursesProps> = ({
         </div>
 
         {/* Operational Note */}
-        <div className="mt-10 sm:mt-12 bg-[#202B3D] border border-[#344054] rounded-xl p-4 text-center max-w-2xl mx-auto text-xs text-[#AAB4C3] shadow-md">
-          <p className="font-bold text-white mb-0.5">
+        <div className="mt-10 sm:mt-12 bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] rounded-xl p-4 text-center max-w-2xl mx-auto text-xs text-slate-600 dark:text-[#AAB4C3] shadow-xs">
+          <p className="font-bold text-slate-900 dark:text-white mb-0.5">
             Note on Batch Allocations & Timetables:
           </p>
           <p>

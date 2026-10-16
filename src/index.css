@@ -1,22 +1,62 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
-    --bg-main: #111827;
+    /* 🏛️ LIGHT THEME (DEFAULT) - Established Academic Prestige Palette */
+    --bg-page: #F8FAFC;
+    --bg-section: #F1F5F9;
+    --bg-card: #FFFFFF;
+    --bg-card-hover: #F8FAFC;
+    --bg-card-elevated: #FFFFFF;
+    --border-card: #E2E8F0;
+    --border-subtle: #CBD5E1;
+    --border-input: #CBD5E1;
+    
+    --text-primary: #0F172A;
+    --text-secondary: #334155;
+    --text-muted: #64748B;
+    
+    --brand-navy: #17365D;
+    --brand-navy-dark: #102A43;
+    --brand-gold: #C6922E;
+    --brand-gold-hover: #B47E1F;
+    --brand-gold-light: #FEF3C7;
+    
+    --accent-blue: #0284C7;
+    --accent-emerald: #059669;
+    --accent-red: #DC2626;
+
+    color-scheme: light;
+  }
+
+  .dark {
+    /* 🌌 DARK THEME (OPTIONAL) - Restrained Academic Slate & Gold */
+    --bg-page: #111827;
     --bg-section: #172033;
     --bg-card: #202B3D;
     --bg-card-hover: #26334A;
+    --bg-card-elevated: #26334A;
     --border-card: #344054;
     --border-subtle: #243042;
+    --border-input: #344054;
+    
     --text-primary: #F3F4F6;
     --text-secondary: #CBD5E1;
     --text-muted: #AAB4C3;
-    --accent-gold: #F4C76B;
-    --accent-gold-hover: #E5B555;
-    --accent-gold-deep: #D4A33B;
+    
+    --brand-navy: #38BDF8;
+    --brand-navy-dark: #7DD3FC;
+    --brand-gold: #F4C76B;
+    --brand-gold-hover: #E5B555;
+    --brand-gold-light: rgba(244, 199, 107, 0.15);
+    
     --accent-blue: #38BDF8;
-    --accent-pink: #FC1682;
     --accent-emerald: #34D399;
+    --accent-red: #F87171;
+
+    color-scheme: dark;
   }
 
   html {
@@ -27,14 +67,9 @@
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     -webkit-text-size-adjust: 100%;
     touch-action: manipulation;
-    background-color: #111827;
-    color: #F3F4F6;
-    color-scheme: dark;
   }
 
   body {
-    background-color: #111827;
-    color: #F3F4F6;
     overflow-x: hidden;
     width: 100%;
     max-width: 100%;
@@ -49,12 +84,11 @@
     width: 100%;
     max-width: 100%;
     min-height: 100vh;
-    background-color: #111827;
   }
 
-  /* Accessible focus indicators with gold accent */
+  /* Accessible focus indicators */
   :focus-visible {
-    outline: 2px solid #F4C76B;
+    outline: 2px solid var(--brand-gold);
     outline-offset: 2px;
   }
 
@@ -92,49 +126,44 @@
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
-/* Refined Dark Academic Theme Utilities */
+/* Academic Theme Typography & Brand Utility Classes */
 .gold-gradient-text {
+  background: linear-gradient(135deg, #B47E1F 0%, #C6922E 50%, #8A5B10 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark .gold-gradient-text {
   background: linear-gradient(135deg, #F4C76B 0%, #FDE68A 50%, #E5B555 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.white-gold-gradient-text {
-  background: linear-gradient(135deg, #FFFFFF 0%, #F3F4F6 40%, #F4C76B 100%);
+.academic-heading-gradient {
+  background: linear-gradient(135deg, #17365D 0%, #102A43 70%, #C6922E 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.white-gradient-text {
-  background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 50%, #CBD5E1 100%);
+.dark .academic-heading-gradient {
+  background: linear-gradient(135deg, #F4C76B 0%, #FDE68A 50%, #38BDF8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.pink-gradient-text {
-  background: linear-gradient(135deg, #FFFFFF 0%, #FDE68A 50%, #FC1682 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.dark-surface {
-  background-color: #202B3D;
-  border: 1px solid #344054;
-}
-
-.dark-surface-elevated {
-  background-color: #26334A;
-  border: 1px solid #475467;
-}
-
+/* Card surfaces */
 .academic-card {
-  background-color: #202B3D;
-  border: 1px solid #344054;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .academic-card:hover {
-  border-color: rgba(244, 199, 107, 0.4);
-  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.35);
+  border-color: var(--brand-gold);
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.08);
   transform: translateY(-2px);
+}
+
+.dark .academic-card:hover {
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4);
 }

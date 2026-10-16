@@ -64,62 +64,62 @@ export const About: React.FC<AboutProps> = ({ onLearnMoreCourses, onOpenConsulta
   ];
 
   return (
-    <section id="about" className="py-10 sm:py-16 md:py-20 bg-[#111827] border-b border-[#344054]">
+    <section id="about" className="py-10 sm:py-16 md:py-20 bg-[#F8FAFC] dark:bg-[#111827] border-b border-slate-200 dark:border-[#344054]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Heading */}
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#172033] border border-[#344054] text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-3">
-            <Shield className="w-3.5 h-3.5 text-[#F4C76B]" />
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#172033] border border-slate-200 dark:border-[#344054] text-[#C6922E] dark:text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-3 shadow-xs">
+            <Shield className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B]" />
             <span>10 Years of Academic Excellence • Educational Philosophy</span>
           </div>
-          <h2 className="font-['Outfit',sans-serif] text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight mb-3">
+          <h2 className="font-['Outfit',sans-serif] text-2xl sm:text-4xl md:text-5xl font-black text-[#172033] dark:text-white tracking-tight mb-3">
             A Balanced Approach to Board &{' '}
-            <span className="bg-gradient-to-r from-white via-amber-100 to-[#F4C76B] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#17365D] via-[#C6922E] to-[#0284C7] dark:from-white dark:via-amber-100 dark:to-[#F4C76B] bg-clip-text text-transparent">
               Competitive Mastery
             </span>
           </h2>
-          <p className="text-[#AAB4C3] text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-600 dark:text-[#AAB4C3] text-sm sm:text-base leading-relaxed">
             Founded in Bijipur, Brahmapur, Antariksh Academy was established to provide aspiring science students with
             thorough concept-oriented teaching, disciplined study habits, and personal guidance right here in Ganjam.
           </p>
         </div>
 
         {/* Narrative Feature Row: Mission and Context */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-12 sm:mb-16 bg-[#202B3D] border border-[#344054] rounded-3xl p-6 sm:p-10 shadow-2xl">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-12 sm:mb-16 bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] rounded-3xl p-6 sm:p-10 shadow-md dark:shadow-2xl">
           <div className="lg:col-span-7 space-y-4 text-left">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#F4C76B] bg-[#172033] border border-[#344054] px-2.5 py-1 rounded-md inline-block max-w-full break-words leading-relaxed">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#C6922E] dark:text-[#F4C76B] bg-amber-50 dark:bg-[#172033] border border-amber-200 dark:border-[#344054] px-2.5 py-1 rounded-md inline-block max-w-full break-words leading-relaxed">
               Bridging School & Entrance Examinations
             </span>
-            <h3 className="font-['Outfit',sans-serif] text-xl sm:text-3xl font-bold text-white">
+            <h3 className="font-['Outfit',sans-serif] text-xl sm:text-3xl font-bold text-[#172033] dark:text-white">
               Why We Prioritize Foundation Alongside Problem Solving
             </h3>
-            <p className="text-[#AAB4C3] leading-relaxed text-sm sm:text-base">
+            <p className="text-slate-600 dark:text-[#AAB4C3] leading-relaxed text-sm sm:text-base">
               Many students in Class 11 and 12 struggle when attempting to manage their +2 board examinations and high-stakes
               competitive exams like JEE Main, NEET-UG, or NDA separately. When taught in silos, students end up feeling
               fatigued and disoriented.
             </p>
-            <p className="text-[#AAB4C3] leading-relaxed text-sm sm:text-base">
+            <p className="text-slate-600 dark:text-[#AAB4C3] leading-relaxed text-sm sm:text-base">
               At Antariksh Academy, our curriculum brings the two streams into complete harmony. Every topic in Physics,
               Chemistry, Mathematics, and Biology is first taught with crystalline theoretical depth for the Odisha CHSE
               board syllabus, immediately followed by analytical problem-solving sets for entrance examinations.
             </p>
             
-            <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm font-semibold text-white">
+            <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm font-semibold text-slate-800 dark:text-white">
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-[#F4C76B] shrink-0" />
+                <CheckCircle className="w-4 h-4 text-[#C6922E] dark:text-[#F4C76B] shrink-0" />
                 <span>Zero duplicate preparation stress</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-[#F4C76B] shrink-0" />
+                <CheckCircle className="w-4 h-4 text-[#C6922E] dark:text-[#F4C76B] shrink-0" />
                 <span>Small batch size for direct mentoring</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-[#38BDF8] shrink-0" />
+                <CheckCircle className="w-4 h-4 text-[#0284C7] dark:text-[#38BDF8] shrink-0" />
                 <span>Accessible center in central Brahmapur</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-[#38BDF8] shrink-0" />
+                <CheckCircle className="w-4 h-4 text-[#0284C7] dark:text-[#38BDF8] shrink-0" />
                 <span>Ethical, transparent student guidance</span>
               </div>
             </div>
@@ -127,32 +127,32 @@ export const About: React.FC<AboutProps> = ({ onLearnMoreCourses, onOpenConsulta
             <div className="pt-4 flex flex-wrap gap-3">
               <button
                 onClick={onLearnMoreCourses}
-                className="px-5 py-2.5 bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 text-[#0F172A] rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-amber-900/20 border border-amber-300/40 min-h-[44px]"
+                className="px-5 py-2.5 bg-[#17365D] hover:bg-[#102A43] text-white dark:bg-gradient-to-r dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:text-[#0F172A] hover:brightness-105 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center gap-1.5 cursor-pointer shadow-md min-h-[44px]"
               >
                 <span>View Program Details</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
               <button
                 onClick={onOpenConsultation}
-                className="px-5 py-2.5 bg-[#172033] hover:bg-[#2A374D] text-white border border-[#344054] hover:border-[#F4C76B]/40 rounded-xl text-xs sm:text-sm font-bold transition-colors flex items-center gap-1.5 cursor-pointer min-h-[44px]"
+                className="px-5 py-2.5 bg-white hover:bg-slate-50 text-[#17365D] dark:bg-[#172033] dark:hover:bg-[#2A374D] dark:text-white border border-slate-300 dark:border-[#344054] hover:border-[#17365D] dark:hover:border-[#F4C76B]/40 rounded-xl text-xs sm:text-sm font-bold transition-colors flex items-center gap-1.5 cursor-pointer min-h-[44px] shadow-xs"
               >
-                <HeartHandshake className="w-4 h-4 text-[#F4C76B]" />
+                <HeartHandshake className="w-4 h-4 text-[#C6922E] dark:text-[#F4C76B]" />
                 <span>Book Free Consultation (Google Meet)</span>
               </button>
             </div>
           </div>
 
           <div className="lg:col-span-5 w-full">
-            <div className="relative rounded-2xl overflow-hidden border border-[#344054] shadow-lg">
+            <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-[#344054] shadow-lg">
               <img
                 src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80"
                 alt="Students studying science and mathematics with focused guidance"
                 className="w-full h-80 object-cover"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#111827]/95 via-[#111827]/30 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0B1524]/95 via-[#0B1524]/30 to-transparent"></div>
               <div className="absolute bottom-4 left-4 right-4 text-white">
-                <p className="text-xs font-bold text-[#F4C76B] uppercase tracking-wider">
+                <p className="text-xs font-bold text-amber-300 dark:text-[#F4C76B] uppercase tracking-wider">
                   Center Commitment
                 </p>
                 <p className="text-sm font-medium text-white mt-0.5">
@@ -165,7 +165,7 @@ export const About: React.FC<AboutProps> = ({ onLearnMoreCourses, onOpenConsulta
 
         {/* 6 Key Pillars Grid */}
         <div className="mb-4">
-          <h3 className="font-['Outfit',sans-serif] text-xl sm:text-3xl font-black text-white text-center mb-8">
+          <h3 className="font-['Outfit',sans-serif] text-xl sm:text-3xl font-black text-[#172033] dark:text-white text-center mb-8">
             The Six Pillars of Academic Learning at Antariksh Academy
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -174,17 +174,17 @@ export const About: React.FC<AboutProps> = ({ onLearnMoreCourses, onOpenConsulta
               return (
                 <div
                   key={idx}
-                  className="bg-[#202B3D] border border-[#344054] hover:border-[#F4C76B]/40 rounded-2xl p-6 shadow-md hover:shadow-xl transition-all group flex flex-col text-left"
+                  className="bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] hover:border-[#17365D] dark:hover:border-[#F4C76B]/40 rounded-2xl p-6 shadow-xs hover:shadow-md transition-all group flex flex-col text-left"
                 >
                   <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 border ${pillar.color} transition-transform group-hover:scale-105`}
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 border bg-slate-50 dark:bg-[#172033] border-slate-200 dark:border-[#344054] transition-transform group-hover:scale-105`}
                   >
-                    <Icon className="w-6 h-6" />
+                    <Icon className="w-6 h-6 text-[#17365D] dark:text-[#F4C76B]" />
                   </div>
-                  <h4 className="font-['Outfit',sans-serif] text-lg font-bold text-white mb-2 group-hover:text-[#F4C76B] transition-colors">
+                  <h4 className="font-['Outfit',sans-serif] text-lg font-bold text-slate-900 group-hover:text-[#17365D] dark:text-white dark:group-hover:text-[#F4C76B] mb-2 transition-colors">
                     {pillar.title}
                   </h4>
-                  <p className="text-[#AAB4C3] text-sm leading-relaxed flex-1">
+                  <p className="text-slate-600 dark:text-[#AAB4C3] text-sm leading-relaxed flex-1">
                     {pillar.description}
                   </p>
                 </div>
