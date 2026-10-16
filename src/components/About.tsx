@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   Lightbulb,
   Layers,
@@ -10,6 +11,9 @@ import {
   ArrowRight,
   Shield,
   HeartHandshake,
+  Lock,
+  ShieldCheck,
+  EyeOff,
 } from 'lucide-react';
 
 interface AboutProps {
@@ -190,6 +194,51 @@ export const About: React.FC<AboutProps> = ({ onLearnMoreCourses, onOpenConsulta
                 </div>
               );
             })}
+          </div>
+        </div>
+
+        {/* Personal Information & Student Privacy Handling Section */}
+        <div className="mt-12 bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] rounded-3xl p-6 sm:p-8 shadow-sm">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            <div className="space-y-3 max-w-2xl text-left">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#172033] border border-slate-200 dark:border-[#344054] text-xs font-bold text-[#17365D] dark:text-[#F4C76B]">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#17365D] dark:text-[#F4C76B]" />
+                <span>Student Privacy & Personal Information Commitment</span>
+              </div>
+              <h3 className="font-['Outfit',sans-serif] text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                How We Protect Student & Parent Information
+              </h3>
+              <p className="text-slate-600 dark:text-[#AAB4C3] text-xs sm:text-sm leading-relaxed">
+                When you enquire for Class 11, Class 12, or entrance coaching at Antariksh Academy, your name, mobile number,
+                and academic requirements are held in strict confidence. We do not sell data to third-party telemarketers or
+                share contact lists with commercial advertisers. Your details are used solely by our faculty counseling team
+                for academic guidance, Google Meet scheduling, and batch shift coordination.
+              </p>
+              <div className="flex flex-wrap gap-4 text-xs font-semibold text-slate-700 dark:text-slate-300 pt-1">
+                <span className="flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  Encrypted Inquiries
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <EyeOff className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
+                  Zero Third-Party Data Sales
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-3.5 h-3.5 text-[#17365D] dark:text-[#F4C76B]" />
+                  Immediate Opt-Out On Request
+                </span>
+              </div>
+            </div>
+
+            <div className="shrink-0 w-full lg:w-auto">
+              <Link
+                to="/privacy"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-xs sm:text-sm font-extrabold text-white bg-[#17365D] hover:bg-[#102A43] dark:text-[#0F172A] dark:bg-gradient-to-r dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:hover:brightness-105 shadow-sm transition-all w-full lg:w-auto min-h-[44px]"
+              >
+                <span>Read Full Privacy Policy</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
         </div>
 

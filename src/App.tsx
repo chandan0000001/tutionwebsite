@@ -16,6 +16,7 @@ const FacilitiesPage = lazy(() => import('./pages/FacilitiesPage'));
 const TimetablePage = lazy(() => import('./pages/TimetablePage'));
 const ConsultationPage = lazy(() => import('./pages/ConsultationPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 
 export function App() {
   return (
@@ -39,6 +40,8 @@ export function App() {
               <Route path="/timetable" element={<TimetablePage />} />
               <Route path="/consultation" element={<ConsultationPage />} />
               <Route path="/contact" element={<ContactPage />} />
+              <Route path="/privacy" element={<PrivacyPolicyPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               {/* Catch-all route defaults back to Home */}
               <Route path="*" element={<HomePage />} />
             </Routes>

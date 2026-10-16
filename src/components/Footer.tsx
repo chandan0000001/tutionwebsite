@@ -3,114 +3,47 @@ import { Link } from 'react-router-dom';
 import {
   MapPin,
   Mail,
-  ShieldCheck,
   Phone,
   Calendar,
+  Lock,
 } from 'lucide-react';
 import { ACADEMY_CONFIG } from '../config/academyConfig';
 import { COURSES_DATA } from '../data/coursesData';
 
 const currentYear = new Date().getFullYear();
 
+// Clean Vector SVG Icons
+const FacebookIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
+  <svg className={`fill-current ${className}`} viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+  </svg>
+);
+
+const InstagramIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
+  <svg className={`fill-current ${className}`} viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+  </svg>
+);
+
+const WhatsAppIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
+  <svg className={`fill-current ${className}`} viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+  </svg>
+);
+
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-slate-100 dark:bg-[#0E1420] text-slate-600 dark:text-[#AAB4C3] border-t border-slate-200 dark:border-[#344054] pt-12 sm:pt-16 pb-12 transition-colors duration-200">
+    <footer className="bg-slate-100 dark:bg-[#0E1420] text-slate-600 dark:text-[#AAB4C3] border-t border-slate-200 dark:border-[#344054] pt-10 sm:pt-14 pb-8 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Mobile Streamlined Footer (< md) to Eliminate Text Bloat */}
-        <div className="md:hidden space-y-5 pb-6 border-b border-slate-200 dark:border-[#344054]">
-          {/* Compact Brand Header */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white dark:bg-[#172033] p-1 flex items-center justify-center shrink-0 shadow-sm border border-slate-200 dark:border-[#344054]">
-              <img
-                src="/logo_transparent.png"
-                alt="Antariksh Academy Logo"
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <div>
-              <span className="font-['Outfit',sans-serif] font-black text-lg text-slate-900 dark:text-white tracking-tight">
-                ANTARIKSH <span className="gold-gradient-text">ACADEMY</span>
-              </span>
-              <span className="block text-[10px] text-slate-500 dark:text-[#AAB4C3] font-medium">
-                Bijipur, Brahmapur • +2 Science & Entrances
-              </span>
-            </div>
-          </div>
-
-          {/* Direct Mobile Quick Action Buttons */}
-          <div className="grid grid-cols-2 gap-2">
-            <Link
-              to="/consultation"
-              className="py-2.5 px-3 rounded-xl text-xs font-extrabold text-white bg-[#17365D] hover:bg-[#102A43] dark:text-[#0F172A] dark:bg-gradient-to-r dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] flex items-center justify-center gap-1.5 text-center shadow-sm min-h-[44px]"
-            >
-              <Calendar className="w-3.5 h-3.5 text-white dark:text-[#0F172A]" />
-              <span>Book Consult</span>
-            </Link>
-            <a
-              href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`}
-              className="py-2.5 px-3 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-[#202B3D] border border-slate-300 dark:border-[#344054] flex items-center justify-center gap-1.5 text-center min-h-[44px]"
-            >
-              <Phone className="w-3.5 h-3.5 text-[#17365D] dark:text-[#38BDF8]" />
-              <span>Call Desk</span>
-            </a>
-          </div>
-
-          {/* Quick Tap Navigation Grid (2 Columns) */}
-          <div className="grid grid-cols-2 gap-y-1.5 gap-x-4 pt-2 text-xs border-t border-slate-200 dark:border-[#243042]">
-            <Link to="/" className="text-slate-700 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Home</Link>
-            <Link to="/courses" className="text-slate-700 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Courses</Link>
-            <Link to="/faculty" className="text-slate-700 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Our Teachers</Link>
-            <Link to="/results" className="text-slate-700 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Results (10 Yrs)</Link>
-            <Link to="/facilities" className="text-slate-700 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Campus & Labs</Link>
-            <Link to="/contact" className="text-slate-700 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Contact Center</Link>
-          </div>
-
-          {/* Quick Contact & WhatsApp Link */}
-          <div className="pt-2 border-t border-slate-200 dark:border-[#243042] flex items-center justify-between text-xs text-slate-500 dark:text-[#AAB4C3]">
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B] shrink-0" />
-              <span className="text-[11px] truncate">Bijipur Big Street, Brahmapur</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <a
-                href={ACADEMY_CONFIG.contact.whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-7 h-7 rounded-lg bg-white dark:bg-[#172033] hover:bg-emerald-600 text-emerald-600 hover:text-white border border-slate-300 dark:border-[#344054] flex items-center justify-center text-xs font-bold"
-                aria-label="WhatsApp"
-              >
-                WA
-              </a>
-              <a
-                href={ACADEMY_CONFIG.socials.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-7 h-7 rounded-lg bg-white dark:bg-[#172033] hover:bg-[#17365D] hover:text-white text-slate-700 border border-slate-300 dark:border-[#344054] flex items-center justify-center text-xs font-bold"
-                aria-label="Facebook"
-              >
-                f
-              </a>
-              <a
-                href={ACADEMY_CONFIG.socials.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-7 h-7 rounded-lg bg-white dark:bg-[#172033] hover:bg-[#17365D] hover:text-white text-slate-700 border border-slate-300 dark:border-[#344054] flex items-center justify-center text-xs font-bold"
-                aria-label="Instagram"
-              >
-                IG
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop Full Institutional Grid (>= md) */}
-        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10 pb-12 border-b border-slate-200 dark:border-[#344054]">
-          
-          {/* Column 1: Brand & Identity (4 Cols) */}
-          <div className="lg:col-span-4 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white dark:bg-[#172033] p-1 flex items-center justify-center shrink-0 shadow-sm border border-slate-200 dark:border-[#344054]">
+        {/* ============================================================ */}
+        {/* MOBILE FOOTER (< md): Minimal, lightweight, zero bloat       */}
+        {/* ============================================================ */}
+        <div className="md:hidden space-y-4 pb-6">
+          {/* Brand & Socials Bar */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-full bg-white dark:bg-[#172033] p-1 flex items-center justify-center shrink-0 shadow-xs border border-slate-200 dark:border-[#344054]">
                 <img
                   src="/logo_transparent.png"
                   alt="Antariksh Academy Logo"
@@ -118,7 +51,99 @@ export const Footer: React.FC = () => {
                 />
               </div>
               <div>
-                <span className="font-['Outfit',sans-serif] font-black text-xl text-slate-900 dark:text-white tracking-tight">
+                <span className="font-['Outfit',sans-serif] font-black text-base text-slate-900 dark:text-white tracking-tight">
+                  ANTARIKSH <span className="gold-gradient-text">ACADEMY</span>
+                </span>
+                <span className="block text-[10px] text-slate-500 dark:text-[#AAB4C3]">
+                  Bijipur, Brahmapur • +2 Science & Entrances
+                </span>
+              </div>
+            </div>
+
+            {/* Social Icons (SVGs) */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <a
+                href={ACADEMY_CONFIG.contact.whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-xs"
+                aria-label="WhatsApp"
+              >
+                <WhatsAppIcon className="w-4 h-4" />
+              </a>
+              <a
+                href={ACADEMY_CONFIG.socials.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-lg bg-[#1877F2] text-white flex items-center justify-center shadow-xs"
+                aria-label="Facebook"
+              >
+                <FacebookIcon className="w-4 h-4" />
+              </a>
+              <a
+                href={ACADEMY_CONFIG.socials.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#FC1682] via-rose-500 to-purple-600 text-white flex items-center justify-center shadow-xs"
+                aria-label="Instagram"
+              >
+                <InstagramIcon className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
+          {/* Quick Action Row */}
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            <Link
+              to="/consultation"
+              className="py-2.5 px-3 rounded-xl text-xs font-bold text-white bg-[#17365D] hover:bg-[#102A43] dark:text-[#0F172A] dark:bg-gradient-to-r dark:from-[#F4C76B] dark:to-[#D4A33B] flex items-center justify-center gap-1.5 text-center shadow-xs min-h-[44px]"
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Book Consult</span>
+            </Link>
+            <a
+              href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`}
+              className="py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-[#172033] border border-slate-300 dark:border-[#344054] flex items-center justify-center gap-1.5 text-center min-h-[44px]"
+            >
+              <Phone className="w-3.5 h-3.5 text-[#17365D] dark:text-[#38BDF8]" />
+              <span>Call Us</span>
+            </a>
+          </div>
+
+          {/* Streamlined Navigation Links */}
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-2 text-xs border-t border-slate-200 dark:border-[#243042]">
+            <Link to="/" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Home</Link>
+            <Link to="/courses" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Courses</Link>
+            <Link to="/faculty" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Teachers</Link>
+            <Link to="/results" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Success Results</Link>
+            <Link to="/timetable" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Timetable</Link>
+            <Link to="/privacy" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Privacy Policy</Link>
+          </div>
+
+          {/* Location & Copyright */}
+          <div className="pt-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-[#243042] flex items-center justify-between">
+            <span>© {currentYear} {ACADEMY_CONFIG.name}</span>
+            <span>Bijipur, Brahmapur</span>
+          </div>
+        </div>
+
+        {/* ============================================================ */}
+        {/* DESKTOP FOOTER (>= md): Crisp, balanced 4 columns             */}
+        {/* ============================================================ */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-12 gap-8 pb-10 border-b border-slate-200 dark:border-[#344054]">
+          
+          {/* Column 1: Brand & Socials (4 cols) */}
+          <div className="lg:col-span-4 space-y-3.5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white dark:bg-[#172033] p-1 flex items-center justify-center shrink-0 shadow-xs border border-slate-200 dark:border-[#344054]">
+                <img
+                  src="/logo_transparent.png"
+                  alt="Antariksh Academy Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div>
+                <span className="font-['Outfit',sans-serif] font-black text-lg text-slate-900 dark:text-white tracking-tight">
                   ANTARIKSH <span className="gold-gradient-text">ACADEMY</span>
                 </span>
                 <span className="block text-[10px] text-[#17365D] dark:text-[#F4C76B]/90 tracking-wider uppercase font-semibold">
@@ -127,68 +152,71 @@ export const Footer: React.FC = () => {
               </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-[#AAB4C3] leading-relaxed">
-              Antariksh Academy is dedicated to guiding Class 11 & 12 (+2 Science) students in Odisha toward excellence
-              in council board examinations and national entrance tests (JEE, NEET, NDA).
+            <p className="text-xs text-slate-600 dark:text-[#AAB4C3] leading-relaxed max-w-sm">
+              Premier institute for Class 11 & 12 (+2 Science) and competitive entrance coaching (JEE, NEET, NDA) in Brahmapur, Odisha.
             </p>
 
-            <div className="text-xs text-slate-600 dark:text-[#AAB4C3] space-y-2 pt-2">
+            <div className="text-xs text-slate-600 dark:text-[#AAB4C3] space-y-1.5 pt-1">
               <div className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B] shrink-0 mt-0.5" />
-                <span>{ACADEMY_CONFIG.address.fullFormatted}</span>
+                <span>Bijipur Big Street, Brahmapur, Odisha 760001</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-[#17365D] dark:text-[#38BDF8] shrink-0" />
-                <span>Admissions Desk: {ACADEMY_CONFIG.contact.phoneDisplay}</span>
+                <span>Admissions: {ACADEMY_CONFIG.contact.phoneDisplay}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-[#17365D] dark:text-[#38BDF8] shrink-0" />
                 <a
                   href={`mailto:${ACADEMY_CONFIG.contact.email}`}
-                  className="hover:text-[#17365D] dark:hover:text-[#F4C76B] transition-colors break-all"
+                  className="hover:text-[#17365D] dark:hover:text-[#F4C76B] transition-colors truncate"
                 >
-                  Email & Queries: {ACADEMY_CONFIG.contact.email}
+                  {ACADEMY_CONFIG.contact.email}
                 </a>
               </div>
             </div>
 
-            <div className="pt-2 flex items-center gap-3">
+            {/* Social Icons: Real SVGs */}
+            <div className="pt-1 flex items-center gap-2.5">
               <a
                 href={ACADEMY_CONFIG.socials.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-white dark:bg-[#172033] hover:bg-[#17365D] hover:text-white text-slate-700 dark:text-white border border-slate-300 dark:border-[#344054] flex items-center justify-center transition-colors text-xs font-bold"
+                className="w-8 h-8 rounded-lg bg-white dark:bg-[#172033] hover:bg-[#1877F2] hover:text-white text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-[#344054] flex items-center justify-center transition-colors shadow-xs"
                 aria-label="Facebook Page"
+                title="Facebook"
               >
-                f
+                <FacebookIcon className="w-3.5 h-3.5" />
               </a>
               <a
                 href={ACADEMY_CONFIG.socials.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-white dark:bg-[#172033] hover:bg-[#17365D] hover:text-white text-slate-700 dark:text-white border border-slate-300 dark:border-[#344054] flex items-center justify-center transition-colors text-xs font-bold"
+                className="w-8 h-8 rounded-lg bg-white dark:bg-[#172033] hover:bg-[#E4405F] hover:text-white text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-[#344054] flex items-center justify-center transition-colors shadow-xs"
                 aria-label="Instagram Profile"
+                title="Instagram"
               >
-                IG
+                <InstagramIcon className="w-3.5 h-3.5" />
               </a>
               <a
                 href={ACADEMY_CONFIG.contact.whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-white dark:bg-[#172033] hover:bg-emerald-600 text-emerald-600 hover:text-white border border-slate-300 dark:border-[#344054] flex items-center justify-center transition-colors text-xs font-bold"
-                aria-label="WhatsApp (+2 Science)"
+                className="w-8 h-8 rounded-lg bg-white dark:bg-[#172033] hover:bg-emerald-600 hover:text-white text-emerald-600 dark:text-emerald-400 border border-slate-300 dark:border-[#344054] flex items-center justify-center transition-colors shadow-xs"
+                aria-label="WhatsApp"
+                title="WhatsApp"
               >
-                WA
+                <WhatsAppIcon className="w-3.5 h-3.5" />
               </a>
             </div>
           </div>
 
-          {/* Column 2: Quick Links (2 Cols) */}
+          {/* Column 2: Navigation Links (2 cols) */}
           <div className="lg:col-span-2 space-y-3">
-            <h4 className="font-['Outfit',sans-serif] text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+            <h4 className="font-['Outfit',sans-serif] text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
               Navigation
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-1.5 text-xs">
               <li>
                 <Link to="/" className="text-slate-600 dark:text-[#AAB4C3] hover:text-[#17365D] dark:hover:text-[#F4C76B] transition-colors">
                   Home
@@ -196,7 +224,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/about" className="text-slate-600 dark:text-[#AAB4C3] hover:text-[#17365D] dark:hover:text-[#F4C76B] transition-colors">
-                  About the Academy
+                  About Us
                 </Link>
               </li>
               <li>
@@ -206,46 +234,46 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/faculty" className="text-slate-600 dark:text-[#AAB4C3] hover:text-[#17365D] dark:hover:text-[#F4C76B] transition-colors">
-                  Our Teachers & Mentors
+                  Faculty & Mentors
                 </Link>
               </li>
               <li>
                 <Link to="/results" className="text-slate-600 dark:text-[#AAB4C3] hover:text-[#17365D] dark:hover:text-[#F4C76B] transition-colors">
-                  Success Stories (10 Yrs)
+                  Results (10 Yrs)
                 </Link>
               </li>
               <li>
                 <Link to="/facilities" className="text-slate-600 dark:text-[#AAB4C3] hover:text-[#17365D] dark:hover:text-[#F4C76B] transition-colors">
-                  Classrooms & Campus
+                  Campus Facilities
                 </Link>
               </li>
               <li>
                 <Link to="/timetable" className="text-slate-600 dark:text-[#AAB4C3] hover:text-[#17365D] dark:hover:text-[#F4C76B] transition-colors">
-                  Batch Timetable
+                  Timetable
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-slate-600 dark:text-[#AAB4C3] hover:text-[#17365D] dark:hover:text-[#F4C76B] transition-colors">
-                  Contact Center
+                <Link to="/privacy" className="text-slate-600 dark:text-[#AAB4C3] hover:text-[#17365D] dark:hover:text-[#F4C76B] transition-colors font-medium">
+                  Privacy Policy
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Courses (3 Cols) */}
+          {/* Column 3: Academic Programs (3 cols) */}
           <div className="lg:col-span-3 space-y-3">
-            <h4 className="font-['Outfit',sans-serif] text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Academic Streams
+            <h4 className="font-['Outfit',sans-serif] text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+              Programs
             </h4>
-            <ul className="space-y-2 text-xs">
-              {COURSES_DATA.map((c) => (
+            <ul className="space-y-1.5 text-xs">
+              {COURSES_DATA.slice(0, 4).map((c) => (
                 <li key={c.id}>
                   <Link
                     to="/courses"
                     className="text-slate-600 dark:text-[#AAB4C3] hover:text-[#17365D] dark:hover:text-[#F4C76B] transition-colors flex items-center justify-between group"
                   >
                     <span className="truncate">{c.title}</span>
-                    <span className="text-[10px] text-[#C6922E] dark:text-[#F4C76B]/80 group-hover:text-[#17365D] dark:group-hover:text-[#F4C76B] transition-colors">
+                    <span className="text-[10px] text-[#C6922E] dark:text-[#F4C76B]/80 font-semibold shrink-0 ml-1">
                       {c.badge}
                     </span>
                   </Link>
@@ -253,71 +281,67 @@ export const Footer: React.FC = () => {
               ))}
             </ul>
 
-            <div className="pt-2">
+            <div className="pt-1.5">
               <Link
-                to="/consultation"
-                className="text-xs font-bold text-[#17365D] dark:text-[#F4C76B] hover:underline cursor-pointer"
+                to="/courses"
+                className="text-xs font-bold text-[#17365D] dark:text-[#F4C76B] hover:underline"
               >
-                Book Free Consultation (Google Meet) →
+                View All Batches →
               </Link>
             </div>
           </div>
 
-          {/* Column 4: Admissions & Action (3 Cols) */}
+          {/* Column 4: Admissions & Action (3 cols) */}
           <div className="lg:col-span-3 space-y-3">
-            <h4 className="font-['Outfit',sans-serif] text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Admissions Desk
+            <h4 className="font-['Outfit',sans-serif] text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+              Admissions
             </h4>
             <p className="text-xs text-slate-600 dark:text-[#AAB4C3] leading-relaxed">
-              Class 11 & 12 batches enrolling now. Secure your seat early for dedicated mentoring and optimal student-to-teacher ratio.
+              Enrolling Class 11 & 12 batches for 2026–2027. Book a slot or contact our center desk.
             </p>
 
-            <div className="space-y-2.5 pt-1">
-              {/* Option A: 30-min Google Meet Booking */}
+            <div className="space-y-2 pt-1">
               <Link
                 to="/consultation"
-                className="w-full py-2.5 px-3 rounded-xl text-xs font-extrabold text-white bg-[#17365D] hover:bg-[#102A43] dark:text-[#0F172A] dark:bg-gradient-to-r dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:hover:brightness-105 shadow-sm border border-transparent dark:border-amber-300/40 transition-all text-center flex items-center justify-center gap-1.5 min-h-[44px]"
+                className="w-full py-2.5 px-3 rounded-xl text-xs font-extrabold text-white bg-[#17365D] hover:bg-[#102A43] dark:text-[#0F172A] dark:bg-gradient-to-r dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:hover:brightness-105 shadow-xs transition-all text-center flex items-center justify-center gap-1.5 min-h-[42px]"
               >
                 <Calendar className="w-3.5 h-3.5 text-white dark:text-[#0F172A]" />
-                <span>Book Free Consultation (Google Meet)</span>
+                <span>Book Free Consultation</span>
               </Link>
 
-              {/* Option B: Manual callback */}
               <Link
                 to="/contact"
-                className="w-full py-2.5 px-3 rounded-xl text-xs font-semibold text-slate-800 bg-white hover:bg-slate-50 border border-slate-300 hover:border-slate-400 dark:text-slate-200 dark:bg-[#172033] dark:hover:bg-[#202B3D] dark:border-[#344054] dark:hover:border-[#F4C76B]/40 transition-colors text-center flex items-center justify-center gap-1.5 min-h-[44px]"
+                className="w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300 dark:text-slate-200 dark:bg-[#172033] dark:hover:bg-[#202B3D] dark:border-[#344054] transition-colors text-center flex items-center justify-center gap-1.5 min-h-[38px]"
               >
                 <Phone className="w-3.5 h-3.5 text-[#17365D] dark:text-[#38BDF8]" />
-                <span>Request Parent Meeting or Callback</span>
+                <span>Campus Visit / Callback</span>
               </Link>
             </div>
 
-            <p className="text-[10px] text-slate-500 dark:text-slate-400">
-              Center Office: Monday–Saturday 7:00 AM – 7:30 PM
-            </p>
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 pt-0.5">
+              <Lock className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <Link to="/privacy" className="hover:underline">
+                Student data is confidential & secure
+              </Link>
+            </div>
           </div>
 
         </div>
 
-        {/* Privacy Notice Regarding Enquiry Data */}
-        <div className="py-4 sm:py-6 border-b border-slate-200 dark:border-[#344054] flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-slate-600 dark:text-[#AAB4C3]">
-          <div className="flex items-center gap-2 text-center sm:text-left">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-            <span>
-              Your enquiry information is processed securely for counseling and academic admissions only.
-            </span>
-          </div>
-          <span className="text-[11px] text-slate-500 dark:text-slate-400">
-            Odisha CHSE Science & National Entrance Coaching
-          </span>
-        </div>
-
-        {/* Bottom Bar: Copyright & Location Footnote */}
-        <div className="pt-4 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+        {/* Minimal Bottom Bar */}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
           <p>© {currentYear} {ACADEMY_CONFIG.name}. All rights reserved.</p>
-          <p className="text-center sm:text-right text-[11px]">
-            Bijipur Big Street, Brahmapur (Berhampur), Ganjam, Odisha — 760001
-          </p>
+          <div className="flex items-center gap-4 text-[11px]">
+            <span>Bijipur Big Street, Brahmapur, Odisha</span>
+            <span>•</span>
+            <Link to="/privacy" className="hover:text-slate-900 dark:hover:text-white transition-colors underline-offset-2 hover:underline">
+              Privacy Policy
+            </Link>
+            <span>•</span>
+            <Link to="/contact" className="hover:text-slate-900 dark:hover:text-white transition-colors underline-offset-2 hover:underline">
+              Contact Center
+            </Link>
+          </div>
         </div>
 
       </div>
