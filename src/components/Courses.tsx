@@ -81,7 +81,7 @@ export const Courses: React.FC<CoursesProps> = ({
           <div className="mt-8 flex items-center justify-center gap-2 flex-wrap">
             <button
               onClick={() => setActiveFilter('all')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[44px] ${
+              className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[44px] ${
                 activeFilter === 'all'
                   ? 'bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] text-[#0F172A] shadow-md shadow-amber-900/20 border border-amber-300/40'
                   : 'bg-[#202B3D] text-[#AAB4C3] hover:text-white hover:bg-[#2A374D] border border-[#344054]'
@@ -91,7 +91,7 @@ export const Courses: React.FC<CoursesProps> = ({
             </button>
             <button
               onClick={() => setActiveFilter('entrance')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[44px] ${
+              className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[44px] text-center max-w-full ${
                 activeFilter === 'entrance'
                   ? 'bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] text-[#0F172A] shadow-md shadow-amber-900/20 border border-amber-300/40'
                   : 'bg-[#202B3D] text-[#AAB4C3] hover:text-white hover:bg-[#2A374D] border border-[#344054]'
@@ -101,7 +101,7 @@ export const Courses: React.FC<CoursesProps> = ({
             </button>
             <button
               onClick={() => setActiveFilter('board')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[44px] ${
+              className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer min-h-[44px] text-center max-w-full ${
                 activeFilter === 'board'
                   ? 'bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] text-[#0F172A] shadow-md shadow-amber-900/20 border border-amber-300/40'
                   : 'bg-[#202B3D] text-[#AAB4C3] hover:text-white hover:bg-[#2A374D] border border-[#344054]'
@@ -136,7 +136,7 @@ export const Courses: React.FC<CoursesProps> = ({
                   </h3>
 
                   <div className="mb-3">
-                    <span className="text-xs font-semibold text-[#38BDF8] bg-[#38BDF8]/15 px-2.5 py-0.5 rounded-md border border-[#38BDF8]/30">
+                    <span className="text-xs font-semibold text-[#38BDF8] bg-[#38BDF8]/15 px-2.5 py-1 rounded-md border border-[#38BDF8]/30 inline-block break-words max-w-full leading-snug">
                       Target: {course.targetStudents}
                     </span>
                   </div>

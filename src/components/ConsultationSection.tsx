@@ -142,7 +142,7 @@ export const ConsultationSection: React.FC<ConsultationSectionProps> = ({
                   Choose an available 30-minute slot for your free academic consultation.
                 </p>
                 <p className="text-[#AAB4C3] text-[11px] sm:text-xs mt-0.5">
-                  Your booking confirmation and Google Meet video details will be sent directly through Cal.com.
+                  Your booking confirmation and Google Meet video link will be sent directly to your email.
                 </p>
               </div>
             </div>
@@ -211,7 +211,7 @@ export const ConsultationSection: React.FC<ConsultationSectionProps> = ({
             <span className="flex items-center gap-1.5 text-center sm:text-left">
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>
-                Appointment availability, timezones, and automated Google Meet calendar invites are synchronized live by Cal.com.
+                Appointment availability, timezones, and automated Google Meet calendar invites are synchronized live.
               </span>
             </span>
             <a

@@ -52,22 +52,22 @@ export const Navbar: React.FC = () => {
 
       {/* Main Navigation Bar */}
       <nav className="w-full bg-[#111827]/95 backdrop-blur-md py-2.5 sm:py-3" aria-label="Main Navigation">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
+        <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 flex items-center justify-between gap-1.5 sm:gap-3">
           
           {/* Logo with official Antariksh Academy graphic */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-[#F4C76B] rounded-lg shrink-0 mr-1 lg:mr-4"
+            className="flex items-center gap-2 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-[#F4C76B] rounded-lg min-w-0"
           >
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#202B3D] p-1 flex items-center justify-center border-2 border-[#F4C76B]/40 shadow-sm group-hover:scale-105 transition-transform shrink-0">
+            <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-[#202B3D] p-1 flex items-center justify-center border-2 border-[#F4C76B]/40 shadow-sm group-hover:scale-105 transition-transform shrink-0">
               <img
                 src="/logo_transparent.png"
                 alt="Antariksh Academy Logo"
                 className="w-full h-full object-contain"
               />
             </div>
-            <div className="flex flex-col text-left">
-              <span className="font-display font-black text-lg sm:text-2xl tracking-tight text-white group-hover:text-[#F4C76B] transition-colors leading-none whitespace-nowrap">
+            <div className="flex flex-col text-left min-w-0">
+              <span className="font-display font-black text-[15px] sm:text-2xl tracking-tight text-white group-hover:text-[#F4C76B] transition-colors leading-none whitespace-nowrap">
                 ANTARIKSH <span className="bg-gradient-to-r from-[#F4C76B] via-[#FDE68A] to-[#38BDF8] bg-clip-text text-transparent">ACADEMY</span>
               </span>
               <span className="text-[9px] sm:text-[10px] text-slate-300 tracking-wider uppercase font-semibold mt-1 hidden sm:block whitespace-nowrap">
@@ -121,20 +121,20 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center gap-1.5 sm:gap-2 xl:hidden shrink-0">
             <Link
               to="/consultation"
-              className="px-2.5 sm:px-3 py-1.5 text-xs font-extrabold text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] rounded-lg shadow-sm transition-colors flex items-center gap-1 shrink-0"
+              className="px-2 sm:px-3 py-1.5 text-[11px] sm:text-xs font-extrabold text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] rounded-lg shadow-sm transition-colors flex items-center gap-1 shrink-0"
               aria-label="Book Consultation"
             >
-              <Calendar className="w-3.5 h-3.5 shrink-0 text-[#0F172A]" />
+              <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 text-[#0F172A]" />
               <span>Consult</span>
             </Link>
 
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-1.5 sm:p-2 rounded-lg text-slate-200 hover:text-white hover:bg-[#202B3D] focus:outline-none focus:ring-2 focus:ring-[#F4C76B] cursor-pointer"
+              className="p-1 sm:p-2 rounded-lg text-slate-200 hover:text-white hover:bg-[#202B3D] focus:outline-none focus:ring-2 focus:ring-[#F4C76B] cursor-pointer shrink-0"
               aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={isOpen}
             >
-              {isOpen ? <X className="w-6 h-6 text-[#F4C76B]" /> : <Menu className="w-6 h-6" />}
+              {isOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6 text-[#F4C76B]" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
           </div>
 

@@ -88,7 +88,7 @@ export const About: React.FC<AboutProps> = ({ onLearnMoreCourses, onOpenConsulta
         {/* Narrative Feature Row: Mission and Context */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-12 sm:mb-16 bg-[#202B3D] border border-[#344054] rounded-3xl p-6 sm:p-10 shadow-2xl">
           <div className="lg:col-span-7 space-y-4 text-left">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#F4C76B] bg-[#172033] border border-[#344054] px-2.5 py-1 rounded-md">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#F4C76B] bg-[#172033] border border-[#344054] px-2.5 py-1 rounded-md inline-block max-w-full break-words leading-relaxed">
               Bridging School & Entrance Examinations
             </span>
             <h3 className="font-['Outfit',sans-serif] text-xl sm:text-3xl font-bold text-white">

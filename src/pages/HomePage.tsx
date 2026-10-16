@@ -304,13 +304,13 @@ export const HomePage: React.FC = () => {
             <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-left">
               
               {/* Institutional Authority Seal Badge */}
-              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-[#202B3D] border border-[#344054] shadow-xs max-w-full">
-                <span className="w-2 h-2 rounded-full bg-[#F4C76B] animate-ping shrink-0"></span>
-                <span className="font-cinzel text-[10px] sm:text-xs font-bold text-[#F4C76B] tracking-wider uppercase truncate">
-                  Antariksh Academy • Estd. 2017
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-[#202B3D] border border-[#344054] shadow-xs max-w-full">
+                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#F4C76B] shrink-0"></span>
+                <span className="font-cinzel text-[10px] sm:text-xs font-bold text-[#F4C76B] tracking-wider uppercase whitespace-nowrap">
+                  <span className="hidden sm:inline">Antariksh Academy • </span>Estd. 2017
                 </span>
                 <span className="text-[#344054]">|</span>
-                <span className="text-[10px] sm:text-[11px] font-semibold text-[#AAB4C3] truncate">Bijipur, Brahmapur</span>
+                <span className="text-[10px] sm:text-[11px] font-semibold text-[#AAB4C3] whitespace-nowrap">Bijipur, Brahmapur</span>
               </div>
 
               {/* Main Headline */}
@@ -330,8 +330,8 @@ export const HomePage: React.FC = () => {
 
               {/* Business Description - Concise on mobile to eliminate vertical bloat */}
               <p className="text-[#AAB4C3] text-xs sm:text-base leading-relaxed max-w-2xl font-normal">
-                Odisha CHSE Council Board preparation alongside national competitive exams (JEE Main & Adv, NEET-UG, NDA).
-                Strict 30-student batch capacity, dedicated 1-on-1 daily faculty doubt desks, and 10 consecutive years of proven excellence in Brahmapur.
+                <span className="hidden sm:inline">Odisha CHSE Council Board preparation alongside national competitive exams (JEE Main & Adv, NEET-UG, NDA). </span>
+                Strict 30-student batch capacity, dedicated daily faculty doubt desks, and 10+ years of proven academic excellence in Brahmapur.
               </p>
 
               {/* Mobile-First: Dual Action Buttons Shown Immediately Above-The-Fold */}
@@ -367,41 +367,44 @@ export const HomePage: React.FC = () => {
                 </Link>
               </div>
 
-              {/* 3 Core Value Guarantees (Stacked cleanly below CTAs) */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 pt-2">
-                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-2.5 sm:p-3 shadow-xs flex items-center sm:items-start gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-[#F4C76B]/15 text-[#F4C76B] flex items-center justify-center shrink-0">
-                    <Users className="w-4 h-4 text-[#F4C76B]" />
+              {/* 3 Core Value Guarantees */}
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-3 pt-1 sm:pt-2">
+                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-2 sm:p-3 shadow-xs flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-2.5">
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#F4C76B]/15 text-[#F4C76B] flex items-center justify-center shrink-0">
+                    <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#F4C76B]" />
                   </div>
                   <div>
-                    <span className="block text-xs font-bold text-[#F3F4F6] font-display">Strictly 30/Batch</span>
-                    <span className="text-[11px] text-[#AAB4C3]">No mass crowds; 100% individual mentor focus.</span>
+                    <span className="block text-[11px] sm:text-xs font-bold text-[#F3F4F6] font-display leading-tight">30 / Batch</span>
+                    <span className="text-[10px] sm:text-[11px] text-[#AAB4C3] hidden sm:block">100% individual mentor focus.</span>
+                    <span className="text-[9px] text-[#AAB4C3] sm:hidden">Max Focus</span>
                   </div>
                 </div>
 
-                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-2.5 sm:p-3 shadow-xs flex items-center sm:items-start gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-[#38BDF8]/15 text-[#38BDF8] flex items-center justify-center shrink-0">
-                    <BookOpen className="w-4 h-4 text-[#38BDF8]" />
+                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-2 sm:p-3 shadow-xs flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-2.5">
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#38BDF8]/15 text-[#38BDF8] flex items-center justify-center shrink-0">
+                    <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#38BDF8]" />
                   </div>
                   <div>
-                    <span className="block text-xs font-bold text-[#F3F4F6] font-display">Dual-Track Syllabus</span>
-                    <span className="text-[11px] text-[#AAB4C3]">Board subjective answers + MCQ speed drills.</span>
+                    <span className="block text-[11px] sm:text-xs font-bold text-[#F3F4F6] font-display leading-tight">Dual-Track</span>
+                    <span className="text-[10px] sm:text-[11px] text-[#AAB4C3] hidden sm:block">Board answers + MCQ drills.</span>
+                    <span className="text-[9px] text-[#AAB4C3] sm:hidden">Board + MCQ</span>
                   </div>
                 </div>
 
-                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-2.5 sm:p-3 shadow-xs flex items-center sm:items-start gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
-                    <Trophy className="w-4 h-4 text-emerald-400" />
+                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-2 sm:p-3 shadow-xs flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-2.5">
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
+                    <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
                   </div>
                   <div>
-                    <span className="block text-xs font-bold text-[#F3F4F6] font-display">10 Yrs Proven</span>
-                    <span className="text-[11px] text-[#AAB4C3]">1,200+ successful alumni across Odisha.</span>
+                    <span className="block text-[11px] sm:text-xs font-bold text-[#F3F4F6] font-display leading-tight">10+ Yrs</span>
+                    <span className="text-[10px] sm:text-[11px] text-[#AAB4C3] hidden sm:block">1,200+ successful alumni.</span>
+                    <span className="text-[9px] text-[#AAB4C3] sm:hidden">Top Results</span>
                   </div>
                 </div>
               </div>
 
               {/* Social Proof Trust Ticker */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-4 pt-1 sm:pt-2 pb-1 border-t border-[#344054]/70">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 pt-1 sm:pt-2 pb-1 border-t border-[#344054]/70 pr-14 sm:pr-0">
                 <div className="flex items-center gap-1.5">
                   <div className="flex text-[#F4C76B]">
                     {[1, 2, 3, 4, 5].map((s) => (
@@ -412,7 +415,7 @@ export const HomePage: React.FC = () => {
                 </div>
                 <span className="text-[#344054]">•</span>
                 <span className="text-xs text-[#AAB4C3] font-medium">
-                  Trusted by <strong className="text-[#F3F4F6]">500+</strong> Families in Brahmapur
+                  Trusted by <strong className="text-[#F3F4F6]">500+</strong> Families
                 </span>
                 <span className="text-[#344054] hidden sm:inline">•</span>
                 <span className="text-xs text-emerald-400 font-bold hidden sm:inline flex items-center gap-1">
@@ -766,7 +769,7 @@ export const HomePage: React.FC = () => {
 
           {/* Cinematic Carousel Stage with Responsive Height */}
           <div
-            className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#0B0F19] border-2 border-[#344054] shadow-2xl h-[290px] sm:h-[400px] lg:h-[480px] group select-none"
+            className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#0B0F19] border-2 border-[#344054] shadow-2xl h-[320px] sm:h-[400px] lg:h-[480px] group select-none"
             onMouseEnter={() => setIsCarouselPaused(true)}
             onMouseLeave={() => setIsCarouselPaused(false)}
             onTouchStart={handleTouchStart}
@@ -806,12 +809,12 @@ export const HomePage: React.FC = () => {
                   </div>
 
                   {/* Bottom Captions & Content */}
-                  <div className="absolute bottom-13 sm:bottom-16 left-3 sm:left-8 right-3 sm:right-8 z-20 space-y-1.5 sm:space-y-2.5 text-left">
+                  <div className="absolute bottom-12 sm:bottom-16 left-3 sm:left-8 right-3 sm:right-8 z-20 space-y-1 sm:space-y-2.5 text-left">
                     <span className="inline-block px-2 sm:px-2.5 py-0.5 rounded bg-[#F4C76B] text-[#0F172A] text-[9.5px] sm:text-[11px] font-extrabold uppercase tracking-wider font-stat">
                       {slide.badge}
                     </span>
 
-                    <h3 className="font-display text-base sm:text-2xl lg:text-3xl font-black text-white leading-tight max-w-3xl drop-shadow-md">
+                    <h3 className="font-display text-sm sm:text-2xl lg:text-3xl font-black text-white leading-tight max-w-3xl drop-shadow-md">
                       {slide.title}
                     </h3>
 
@@ -819,7 +822,7 @@ export const HomePage: React.FC = () => {
                       {slide.tagline}
                     </p>
 
-                    <p className="text-[#D1D5DB] text-xs sm:text-sm leading-relaxed max-w-2xl line-clamp-2">
+                    <p className="text-[#D1D5DB] text-[11px] sm:text-sm leading-snug sm:leading-relaxed max-w-2xl line-clamp-2">
                       {slide.description}
                     </p>
                   </div>

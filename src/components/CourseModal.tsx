@@ -45,11 +45,11 @@ export const CourseModal: React.FC<CourseModalProps> = ({
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-[#344054] pb-4 mb-5">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-[#172033] text-[#F4C76B] border border-[#344054]">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-[#172033] text-[#F4C76B] border border-[#344054] shrink-0">
                 {course.badge}
               </span>
-              <span className="text-xs text-[#38BDF8] font-semibold bg-[#38BDF8]/15 px-2 py-0.5 rounded border border-[#38BDF8]/30">
+              <span className="text-xs text-[#38BDF8] font-semibold bg-[#38BDF8]/15 px-2 py-0.5 rounded border border-[#38BDF8]/30 break-words leading-relaxed">
                 {course.targetStudents}
               </span>
             </div>
