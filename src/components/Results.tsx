@@ -88,23 +88,25 @@ export const Results: React.FC = () => {
           </div>
 
           {/* Exam Category Filter */}
-          <div className="mt-3.5 flex items-center justify-center gap-1.5 flex-wrap">
-            <span className="text-xs font-semibold text-slate-400 flex items-center gap-1 mr-1">
-              <Filter className="w-3.5 h-3.5 text-slate-500" /> Stream:
+          <div className="mt-4 sm:mt-5 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+              <Filter className="w-3.5 h-3.5 text-[#38BDF8]" /> Stream:
             </span>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer min-h-[36px] ${
-                  selectedCategory === cat
-                    ? 'bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] text-[#0F172A] shadow-xs font-bold border border-amber-300/40'
-                    : 'bg-[#202B3D] text-[#AAB4C3] border border-[#344054] hover:bg-[#2A374D] hover:text-white'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+            <div className="flex items-center gap-1.5 flex-wrap justify-center">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer min-h-[36px] ${
+                    selectedCategory === cat
+                      ? 'bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] text-[#0F172A] shadow-xs font-extrabold border border-amber-300/40'
+                      : 'bg-[#202B3D] text-[#AAB4C3] border border-[#344054] hover:bg-[#2A374D] hover:text-white'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

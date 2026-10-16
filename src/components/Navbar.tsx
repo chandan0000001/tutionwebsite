@@ -52,12 +52,12 @@ export const Navbar: React.FC = () => {
 
       {/* Main Navigation Bar */}
       <nav className="w-full bg-[#111827]/95 backdrop-blur-md py-2.5 sm:py-3" aria-label="Main Navigation">
-        <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 flex items-center justify-between gap-1.5 sm:gap-3">
+        <div className="max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2 lg:gap-4">
           
           {/* Logo with official Antariksh Academy graphic */}
           <Link
             to="/"
-            className="flex items-center gap-2 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-[#F4C76B] rounded-lg min-w-0"
+            className="flex items-center gap-2 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-[#F4C76B] rounded-lg shrink-0"
           >
             <div className="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-[#202B3D] p-1 flex items-center justify-center border-2 border-[#F4C76B]/40 shadow-sm group-hover:scale-105 transition-transform shrink-0">
               <img
@@ -66,7 +66,7 @@ export const Navbar: React.FC = () => {
                 className="w-full h-full object-contain"
               />
             </div>
-            <div className="flex flex-col text-left min-w-0">
+            <div className="flex flex-col text-left shrink-0">
               <span className="font-display font-black text-[15px] sm:text-2xl tracking-tight text-white group-hover:text-[#F4C76B] transition-colors leading-none whitespace-nowrap">
                 ANTARIKSH <span className="bg-gradient-to-r from-[#F4C76B] via-[#FDE68A] to-[#38BDF8] bg-clip-text text-transparent">ACADEMY</span>
               </span>
@@ -77,14 +77,14 @@ export const Navbar: React.FC = () => {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden xl:flex items-center gap-1">
+          <div className="hidden xl:flex items-center gap-0.5 2xl:gap-1">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (
                 <NavLink
                   key={link.path}
                   to={link.path}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  className={`px-2 2xl:px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                     isActive
                       ? 'text-white bg-[#202B3D] border border-[#F4C76B]/40 font-extrabold shadow-sm'
                       : 'text-slate-300 hover:text-white hover:bg-[#172033]'
@@ -97,11 +97,11 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Desktop Action Buttons: Clear Distinction between Option A and Option B */}
-          <div className="hidden xl:flex items-center gap-2.5 shrink-0">
+          <div className="hidden xl:flex items-center gap-2 shrink-0">
             {/* Option B: Manual callback */}
             <Link
               to="/contact"
-              className="px-3.5 py-2 text-xs font-bold text-slate-200 hover:text-white bg-[#202B3D] hover:bg-[#26334A] border border-[#344054] hover:border-[#F4C76B]/40 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+              className="px-3 py-1.5 2xl:px-3.5 2xl:py-2 text-xs font-bold text-slate-200 hover:text-white bg-[#202B3D] hover:bg-[#26334A] border border-[#344054] hover:border-[#F4C76B]/40 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
             >
               <Phone className="w-3.5 h-3.5 text-[#38BDF8] shrink-0" />
               <span>Request Callback</span>
@@ -110,7 +110,7 @@ export const Navbar: React.FC = () => {
             {/* Option A: 30-min Google Meet Booking */}
             <Link
               to="/consultation"
-              className="px-4 py-2 text-xs font-extrabold text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 rounded-xl shadow-md shadow-amber-500/10 border border-[#F4C76B]/40 transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap transform hover:-translate-y-0.5"
+              className="px-3.5 py-1.5 2xl:px-4 2xl:py-2 text-xs font-extrabold text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 rounded-xl shadow-md shadow-amber-500/10 border border-[#F4C76B]/40 transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap transform hover:-translate-y-0.5"
             >
               <Calendar className="w-3.5 h-3.5 text-[#0F172A] shrink-0" />
               <span>Book Free Consultation</span>

@@ -17,8 +17,95 @@ export const Footer: React.FC = () => {
     <footer className="bg-[#0E1420] text-[#AAB4C3] border-t border-[#344054] pt-12 sm:pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10 pb-12 border-b border-[#344054]">
+        {/* Mobile Streamlined Footer (< md) to Eliminate Text Bloat */}
+        <div className="md:hidden space-y-5 pb-6 border-b border-[#344054]">
+          {/* Compact Brand Header */}
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#172033] p-1 flex items-center justify-center shrink-0 shadow-md border border-[#344054]">
+              <img
+                src="/logo_transparent.png"
+                alt="Antariksh Academy Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div>
+              <span className="font-display font-black text-lg text-white tracking-tight">
+                ANTARIKSH <span className="gold-gradient-text">ACADEMY</span>
+              </span>
+              <span className="block text-[10px] text-[#AAB4C3] font-medium">
+                Bijipur, Brahmapur • +2 Science & Entrances
+              </span>
+            </div>
+          </div>
+
+          {/* Direct Mobile Quick Action Buttons */}
+          <div className="grid grid-cols-2 gap-2">
+            <Link
+              to="/consultation"
+              className="py-2.5 px-3 rounded-xl text-xs font-extrabold text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] flex items-center justify-center gap-1.5 text-center shadow-sm min-h-[44px]"
+            >
+              <Calendar className="w-3.5 h-3.5 text-[#0F172A]" />
+              <span>Book Consult</span>
+            </Link>
+            <a
+              href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`}
+              className="py-2.5 px-3 rounded-xl text-xs font-bold text-slate-200 bg-[#202B3D] border border-[#344054] flex items-center justify-center gap-1.5 text-center min-h-[44px]"
+            >
+              <Phone className="w-3.5 h-3.5 text-[#38BDF8]" />
+              <span>Call Desk</span>
+            </a>
+          </div>
+
+          {/* Quick Tap Navigation Grid (2 Columns) */}
+          <div className="grid grid-cols-2 gap-y-1.5 gap-x-4 pt-2 text-xs border-t border-[#243042]">
+            <Link to="/" className="text-slate-300 hover:text-[#F4C76B] py-1 font-medium">Home</Link>
+            <Link to="/courses" className="text-slate-300 hover:text-[#F4C76B] py-1 font-medium">Courses</Link>
+            <Link to="/faculty" className="text-slate-300 hover:text-[#F4C76B] py-1 font-medium">Our Teachers</Link>
+            <Link to="/results" className="text-slate-300 hover:text-[#F4C76B] py-1 font-medium">Results (10 Yrs)</Link>
+            <Link to="/facilities" className="text-slate-300 hover:text-[#F4C76B] py-1 font-medium">Campus & Labs</Link>
+            <Link to="/contact" className="text-slate-300 hover:text-[#F4C76B] py-1 font-medium">Contact Center</Link>
+          </div>
+
+          {/* Quick Contact & WhatsApp Link */}
+          <div className="pt-2 border-t border-[#243042] flex items-center justify-between text-xs text-[#AAB4C3]">
+            <div className="flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-[#F4C76B] shrink-0" />
+              <span className="text-[11px] truncate">Bijipur Big Street, Brahmapur</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <a
+                href={ACADEMY_CONFIG.contact.whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-7 h-7 rounded-lg bg-[#172033] hover:bg-emerald-600 text-emerald-400 hover:text-white border border-[#344054] flex items-center justify-center text-xs font-bold"
+                aria-label="WhatsApp"
+              >
+                WA
+              </a>
+              <a
+                href={ACADEMY_CONFIG.socials.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-7 h-7 rounded-lg bg-[#172033] hover:bg-[#F4C76B] hover:text-[#0F172A] text-slate-300 border border-[#344054] flex items-center justify-center text-xs font-bold"
+                aria-label="Facebook"
+              >
+                f
+              </a>
+              <a
+                href={ACADEMY_CONFIG.socials.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-7 h-7 rounded-lg bg-[#172033] hover:bg-[#F4C76B] hover:text-[#0F172A] text-slate-300 border border-[#344054] flex items-center justify-center text-xs font-bold"
+                aria-label="Instagram"
+              >
+                IG
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Full Institutional Grid (>= md) */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-12 gap-8 sm:gap-10 pb-12 border-b border-[#344054]">
           
           {/* Column 1: Brand & Identity (4 Cols) */}
           <div className="lg:col-span-4 space-y-4">
@@ -213,8 +300,8 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Privacy Notice Regarding Enquiry Data */}
-        <div className="py-6 border-b border-[#344054] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#AAB4C3]">
-          <div className="flex items-center gap-2">
+        <div className="py-4 sm:py-6 border-b border-[#344054] flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-[#AAB4C3]">
+          <div className="flex items-center gap-2 text-center sm:text-left">
             <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>
               Your enquiry information is processed securely for counseling and academic admissions only.
@@ -226,7 +313,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar: Copyright & Location Footnote */}
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+        <div className="pt-4 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
           <p>© {currentYear} {ACADEMY_CONFIG.name}. All rights reserved.</p>
           <p className="text-center sm:text-right text-[11px]">
             Bijipur Big Street, Brahmapur (Berhampur), Ganjam, Odisha — 760001
