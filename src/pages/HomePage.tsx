@@ -34,11 +34,14 @@ import { sanitizeMobileInput, getMobileValidationError } from '../utils/validati
 import { ACADEMY_CONFIG } from '../config/academyConfig';
 
 export const HomePage: React.FC = () => {
-  // Above-the-fold Hero Lead Form State
+  // Option B: Above-the-fold Parent Meeting or Callback Lead Form State
   const [heroName, setHeroName] = useState('');
   const [heroPhone, setHeroPhone] = useState('');
   const [heroTargetClass, setHeroTargetClass] = useState('+2 1st Year (Class 11)');
   const [heroCourse, setHeroCourse] = useState('Integrated Board + Entrance');
+  const [heroContactMethod, setHeroContactMethod] = useState<'Phone callback' | 'Parents meeting at the academy'>(
+    'Phone callback'
+  );
   const [heroHoney, setHeroHoney] = useState('');
   const [heroStatus, setHeroStatus] = useState<string | null>(null);
   const [isHeroSubmitting, setIsHeroSubmitting] = useState(false);
@@ -155,9 +158,9 @@ export const HomePage: React.FC = () => {
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchStartX - touchEndX;
     if (diff > 45) {
-      handleNextSlide(); // Swiped left -> next slide
+      handleNextSlide();
     } else if (diff < -45) {
-      handlePrevSlide(); // Swiped right -> prev slide
+      handlePrevSlide();
     }
     setTouchStartX(null);
   };
@@ -183,14 +186,15 @@ export const HomePage: React.FC = () => {
       mobileNumber: heroPhone.trim(),
       studentClass: heroTargetClass,
       courseInterest: heroCourse,
-      preferredTime: 'Immediate Admissions Callback Requested',
+      preferredTime: `${heroContactMethod} | Immediate Admissions Request`,
+      consultationType: heroContactMethod,
       honeypot: heroHoney,
     });
 
     setIsHeroSubmitting(false);
 
     if (result.success) {
-      setHeroStatus('SUCCESS: Callback request accepted! Our senior counselor will call you shortly.');
+      setHeroStatus('SUCCESS: Request accepted! Our senior counselor will follow up with you shortly.');
       setHeroName('');
       setHeroPhone('');
       setHeroHoney('');
@@ -209,7 +213,7 @@ export const HomePage: React.FC = () => {
   // Top 4 results for preview
   const topResults = RESULTS_DATA.slice(0, 4);
 
-  // Comparison Matrix Items (Business persuasion for both Mobile Cards and Desktop Table)
+  // Comparison Matrix Items
   const comparisonItems = [
     {
       parameter: 'Classroom Batch Capacity',
@@ -263,35 +267,35 @@ export const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col w-full font-body overflow-x-hidden">
+    <div className="flex flex-col w-full font-body overflow-x-hidden bg-[#111827] text-[#F3F4F6]">
       
-      {/* 1. TOP URGENT ANNOUNCEMENT TICKER (Mobile-Optimized) */}
-      <div className="bg-gradient-to-r from-[#0F172A] via-[#1E293B] to-[#0F172A] text-white py-2 px-3 sm:px-4 border-b border-pink-500/30 text-xs">
+      {/* 1. TOP URGENT ANNOUNCEMENT TICKER */}
+      <div className="bg-[#0B0F19] text-[#D1D5DB] py-2 px-3 sm:px-4 border-b border-[#1F2937] text-xs">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2 text-center sm:text-left">
           <div className="flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 flex-wrap">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#FC1682] text-white text-[10px] font-extrabold uppercase tracking-wider animate-pulse shrink-0">
-              <Flame className="w-3 h-3" />
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#F4C76B] text-[#0F172A] text-[10px] font-extrabold uppercase tracking-wider shrink-0">
+              <Flame className="w-3 h-3 text-[#0F172A]" />
               Admissions 2026–27
             </span>
-            <span className="text-slate-300 font-medium text-[11px] sm:text-xs">
-              Class 11 & 12 (+2 Science CHSE) • JEE • NEET • NDA
+            <span className="text-[#AAB4C3] font-medium text-[11px] sm:text-xs">
+              Class 11 & 12 (+2 Science CHSE) • JEE Main/Adv • NEET-UG • NDA
             </span>
           </div>
           <a
             href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`}
-            className="text-[#00C8FF] hover:text-white font-bold inline-flex items-center gap-1 transition-colors text-[11px] sm:text-xs"
+            className="text-[#38BDF8] hover:text-[#F4C76B] font-bold inline-flex items-center gap-1.5 transition-colors text-[11px] sm:text-xs"
           >
-            <Phone className="w-3 h-3 text-[#FC1682]" />
+            <Phone className="w-3 h-3 text-[#F4C76B]" />
             <span>Call Admissions: {ACADEMY_CONFIG.contact.phoneDisplay}</span>
           </a>
         </div>
       </div>
 
-      {/* 2. EXECUTIVE BUSINESS HERO & DIRECT LEAD GENERATION SECTION */}
-      <section className="relative w-full py-8 sm:py-14 lg:py-18 bg-gradient-to-b from-white via-slate-50 to-pink-50/25 text-slate-900 overflow-hidden border-b border-slate-200">
-        {/* Ambient Subtle Gradients */}
-        <div className="absolute top-0 left-1/3 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-[#FC1682]/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-0 right-5 sm:right-10 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] bg-[#00C8FF]/10 rounded-full blur-3xl pointer-events-none"></div>
+      {/* 2. EXECUTIVE BUSINESS HERO & DUAL JOURNEY CTAS */}
+      <section className="relative w-full py-8 sm:py-14 lg:py-18 bg-[#111827] text-[#F3F4F6] overflow-hidden border-b border-[#243042]">
+        {/* Restrained Ambient Glows */}
+        <div className="absolute top-0 left-1/3 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-[#F4C76B]/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 right-5 sm:right-10 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] bg-[#38BDF8]/5 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -300,32 +304,32 @@ export const HomePage: React.FC = () => {
             <div className="lg:col-span-7 space-y-5 sm:space-y-6 text-left">
               
               {/* Institutional Authority Seal Badge */}
-              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-full bg-white border border-pink-200 shadow-xs max-w-full">
-                <span className="w-2 h-2 rounded-full bg-[#FC1682] animate-ping shrink-0"></span>
-                <span className="font-cinzel text-[10px] sm:text-xs font-bold text-[#BE125A] tracking-wider uppercase truncate">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 py-1.5 rounded-full bg-[#202B3D] border border-[#344054] shadow-xs max-w-full">
+                <span className="w-2 h-2 rounded-full bg-[#F4C76B] animate-ping shrink-0"></span>
+                <span className="font-cinzel text-[10px] sm:text-xs font-bold text-[#F4C76B] tracking-wider uppercase truncate">
                   Antariksh Academy • Established 2017
                 </span>
-                <span className="text-slate-300">|</span>
-                <span className="text-[10px] sm:text-[11px] font-semibold text-slate-600 truncate">Berhampur, Odisha</span>
+                <span className="text-[#344054]">|</span>
+                <span className="text-[10px] sm:text-[11px] font-semibold text-[#AAB4C3] truncate">Bijipur, Brahmapur</span>
               </div>
 
-              {/* Main Multi-Font Headline */}
+              {/* Main Headline */}
               <div className="space-y-1.5 sm:space-y-2">
-                <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight leading-[1.14] text-[#0F172A]">
+                <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight leading-[1.14] text-[#F3F4F6]">
                   Empowering{' '}
-                  <span className="font-serif-prestige italic font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#0284C7]">
+                  <span className="font-serif-prestige italic font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#F4C76B] via-[#FDE68A] to-[#38BDF8]">
                     +2 Science
                   </span>{' '}
                   <br className="hidden sm:inline" />
                   & Competitive Aspirants to Excel.
                 </h1>
-                <p className="font-serif-prestige italic text-sm sm:text-lg text-slate-700 font-medium leading-snug">
+                <p className="font-serif-prestige italic text-sm sm:text-lg text-[#D1D5DB] font-medium leading-snug">
                   Where rigorous concept mastery meets disciplined mentorship.
                 </p>
               </div>
 
               {/* Business Description */}
-              <p className="text-slate-600 text-xs sm:text-base leading-relaxed max-w-2xl font-normal">
+              <p className="text-[#AAB4C3] text-xs sm:text-base leading-relaxed max-w-2xl font-normal">
                 Prepare for your Odisha CHSE Council Board examinations alongside national competitive entrance exams
                 (JEE Main & Advanced, NEET-UG, NDA). With small 30-student batches, dedicated 1-on-1 daily faculty doubt desks,
                 and personalized test analytics, we ensure zero student gets left behind.
@@ -333,104 +337,105 @@ export const HomePage: React.FC = () => {
 
               {/* 3 Core Value Guarantees */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-1">
-                <div className="bg-white border border-slate-200/90 rounded-xl p-3 shadow-2xs flex items-start gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-pink-100 text-[#FC1682] flex items-center justify-center shrink-0 mt-0.5">
-                    <Users className="w-4 h-4" />
+                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-3 shadow-xs flex items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-[#F4C76B]/15 text-[#F4C76B] flex items-center justify-center shrink-0 mt-0.5">
+                    <Users className="w-4 h-4 text-[#F4C76B]" />
                   </div>
                   <div>
-                    <span className="block text-xs font-bold text-slate-900 font-display">Strictly 30/Batch</span>
-                    <span className="text-[11px] text-slate-500">No mass crowds; 100% individual mentor focus.</span>
+                    <span className="block text-xs font-bold text-[#F3F4F6] font-display">Strictly 30/Batch</span>
+                    <span className="text-[11px] text-[#AAB4C3]">No mass crowds; 100% individual mentor focus.</span>
                   </div>
                 </div>
 
-                <div className="bg-white border border-slate-200/90 rounded-xl p-3 shadow-2xs flex items-start gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-cyan-100 text-[#0284C7] flex items-center justify-center shrink-0 mt-0.5">
-                    <BookOpen className="w-4 h-4" />
+                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-3 shadow-xs flex items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-[#38BDF8]/15 text-[#38BDF8] flex items-center justify-center shrink-0 mt-0.5">
+                    <BookOpen className="w-4 h-4 text-[#38BDF8]" />
                   </div>
                   <div>
-                    <span className="block text-xs font-bold text-slate-900 font-display">Dual-Track Syllabus</span>
-                    <span className="text-[11px] text-slate-500">Board subjective answers + MCQ speed drills.</span>
+                    <span className="block text-xs font-bold text-[#F3F4F6] font-display">Dual-Track Syllabus</span>
+                    <span className="text-[11px] text-[#AAB4C3]">Board subjective answers + MCQ speed drills.</span>
                   </div>
                 </div>
 
-                <div className="bg-white border border-slate-200/90 rounded-xl p-3 shadow-2xs flex items-start gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
-                    <Trophy className="w-4 h-4" />
+                <div className="bg-[#202B3D] border border-[#344054] rounded-xl p-3 shadow-xs flex items-start gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <Trophy className="w-4 h-4 text-emerald-400" />
                   </div>
                   <div>
-                    <span className="block text-xs font-bold text-slate-900 font-display">10 Yrs Proven</span>
-                    <span className="text-[11px] text-slate-500">1,200+ successful alumni across Odisha.</span>
+                    <span className="block text-xs font-bold text-[#F3F4F6] font-display">10 Yrs Proven</span>
+                    <span className="text-[11px] text-[#AAB4C3]">1,200+ successful alumni across Odisha.</span>
                   </div>
                 </div>
               </div>
 
               {/* Social Proof Trust Ticker */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-4 pt-2 pb-1 border-t border-slate-200/80">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 pt-2 pb-1 border-t border-[#344054]/70">
                 <div className="flex items-center gap-1.5">
-                  <div className="flex text-amber-400">
+                  <div className="flex text-[#F4C76B]">
                     {[1, 2, 3, 4, 5].map((s) => (
-                      <Star key={s} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-amber-400" />
+                      <Star key={s} className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-[#F4C76B]" />
                     ))}
                   </div>
-                  <span className="text-xs font-bold text-slate-800 font-stat">4.9 / 5.0</span>
+                  <span className="text-xs font-bold text-[#F3F4F6] font-stat">4.9 / 5.0</span>
                 </div>
-                <span className="text-slate-300">•</span>
-                <span className="text-xs text-slate-600 font-medium">
-                  Trusted by <strong>500+</strong> Families in Brahmapur
+                <span className="text-[#344054]">•</span>
+                <span className="text-xs text-[#AAB4C3] font-medium">
+                  Trusted by <strong className="text-[#F3F4F6]">500+</strong> Families in Brahmapur
                 </span>
-                <span className="text-slate-300 hidden sm:inline">•</span>
-                <span className="text-xs text-emerald-700 font-bold hidden sm:inline flex items-center gap-1">
+                <span className="text-[#344054] hidden sm:inline">•</span>
+                <span className="text-xs text-emerald-400 font-bold hidden sm:inline flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" /> 100% Board Pass Record
                 </span>
               </div>
 
-              {/* Action Buttons */}
+              {/* Dual Action Buttons: Clear Option A & Option B */}
               <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
+                {/* Option A: Cal.com 30-min booking */}
                 <Link
                   to="/consultation"
-                  className="px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#D9146C] hover:from-[#E00E70] shadow-lg shadow-pink-500/25 transition-all flex items-center justify-center gap-2 text-center font-display min-h-[46px] active:scale-[0.98]"
+                  className="px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl font-extrabold text-xs sm:text-sm text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 shadow-lg shadow-amber-500/15 transition-all flex items-center justify-center gap-2 text-center font-display min-h-[46px] active:scale-[0.98]"
                 >
-                  <Calendar className="w-4 h-4 shrink-0" />
-                  <span>Book Free 2-Day Trial & Counseling</span>
-                  <ArrowRight className="w-4 h-4 shrink-0" />
+                  <Calendar className="w-4 h-4 shrink-0 text-[#0F172A]" />
+                  <span>Book Free Consultation (Cal.com)</span>
+                  <ArrowRight className="w-4 h-4 shrink-0 text-[#0F172A]" />
                 </Link>
 
+                {/* Option B: Manual callback */}
                 <a
-                  href={ACADEMY_CONFIG.contact.whatsappLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm text-slate-800 bg-white hover:bg-slate-50 border-2 border-slate-300 hover:border-emerald-500 shadow-xs transition-all flex items-center justify-center gap-2 text-center min-h-[46px] active:scale-[0.98]"
+                  href="#callback-widget"
+                  className="px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm text-[#F3F4F6] bg-[#202B3D] hover:bg-[#263449] border border-[#344054] hover:border-[#F4C76B]/50 shadow-xs transition-all flex items-center justify-center gap-2 text-center min-h-[46px] active:scale-[0.98]"
                 >
-                  <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>WhatsApp Admissions Desk</span>
+                  <Phone className="w-4 h-4 text-[#38BDF8] shrink-0" />
+                  <span>Request Callback / Meeting</span>
                 </a>
               </div>
 
             </div>
 
-            {/* Right Column: HIGH-CONVERSION EXECUTIVE ADMISSIONS WIDGET */}
-            <div className="lg:col-span-5 relative w-full">
-              <div className="relative rounded-2xl sm:rounded-3xl bg-white border-2 border-slate-200/90 p-4 sm:p-7 shadow-xl overflow-hidden">
+            {/* Right Column: OPTION B LEAD WIDGET ("Request a Parent Meeting or Callback") */}
+            <div id="callback-widget" className="lg:col-span-5 relative w-full">
+              <div className="relative rounded-2xl sm:rounded-3xl bg-[#202B3D] border-2 border-[#344054] p-4 sm:p-7 shadow-2xl overflow-hidden">
                 {/* Visual Top Header Accent */}
-                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#FC1682] via-[#0284C7] to-[#FC1682]"></div>
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#F4C76B] via-[#38BDF8] to-[#F4C76B]"></div>
                 
-                <div className="flex items-center justify-between pb-3 sm:pb-4 mb-3 sm:mb-4 border-b border-slate-100">
+                <div className="flex items-center justify-between pb-3 sm:pb-4 mb-3 sm:mb-4 border-b border-[#344054]/70">
                   <div>
-                    <span className="font-cinzel text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-[#FC1682] block">
+                    <span className="font-cinzel text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-[#F4C76B] block">
                       Direct Admissions Desk
                     </span>
-                    <h3 className="font-display text-base sm:text-xl font-extrabold text-slate-900">
-                      Reserve Seat / Request Call
+                    <h3 className="font-display text-base sm:text-xl font-extrabold text-[#F3F4F6]">
+                      Request a Parent Meeting or Callback
                     </h3>
                   </div>
-                  <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-pink-50 border border-pink-200 text-[#BE125A] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shrink-0 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#FC1682] animate-pulse"></span>
+                  <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[#172033] border border-[#344054] text-[#F4C76B] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shrink-0 flex items-center gap-1 font-stat">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#F4C76B] animate-pulse"></span>
                     2026–27 Batches
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-600 leading-relaxed mb-3 sm:mb-4">
-                  Speak directly with our Academic Director for syllabus guidance, batch timings, and merit scholarship evaluation within 15 minutes.
+                <p className="text-xs text-[#AAB4C3] leading-relaxed mb-3 sm:mb-4">
+                  Would you prefer a phone conversation or an in-person meeting with our academic team?
+                  Share your details and our team will follow up.
                 </p>
 
                 <form onSubmit={(e) => { void handleHeroLeadSubmit(e); }} className="space-y-3 sm:space-y-3.5">
@@ -448,9 +453,37 @@ export const HomePage: React.FC = () => {
                     />
                   </div>
 
+                  {/* Preferred Contact Mode Toggle */}
+                  <div className="grid grid-cols-2 gap-2 pb-1">
+                    <button
+                      type="button"
+                      onClick={() => setHeroContactMethod('Phone callback')}
+                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
+                        heroContactMethod === 'Phone callback'
+                          ? 'bg-[#172033] text-[#F4C76B] border-[#F4C76B]'
+                          : 'bg-[#172033]/50 text-[#AAB4C3] border-[#344054] hover:text-[#F3F4F6]'
+                      }`}
+                    >
+                      <Phone className="w-3 h-3" />
+                      <span>Phone Call</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHeroContactMethod('Parents meeting at the academy')}
+                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
+                        heroContactMethod === 'Parents meeting at the academy'
+                          ? 'bg-[#172033] text-[#F4C76B] border-[#F4C76B]'
+                          : 'bg-[#172033]/50 text-[#AAB4C3] border-[#344054] hover:text-[#F3F4F6]'
+                      }`}
+                    >
+                      <Users className="w-3 h-3" />
+                      <span>Meeting at Center</span>
+                    </button>
+                  </div>
+
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                      Student / Parent Name <span className="text-[#FC1682]">*</span>
+                    <label className="block text-[11px] font-bold text-[#F3F4F6] uppercase tracking-wider mb-1 font-display">
+                      Parent / Student Name <span className="text-[#F4C76B]">*</span>
                     </label>
                     <input
                       type="text"
@@ -458,16 +491,16 @@ export const HomePage: React.FC = () => {
                       placeholder="e.g. Rajesh Patnaik"
                       value={heroName}
                       onChange={(e) => setHeroName(e.target.value)}
-                      className="w-full px-3.5 py-2.5 sm:py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-base sm:text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FC1682] focus:border-transparent transition-all min-h-[44px]"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#172033] border border-[#344054] text-base sm:text-sm text-[#F3F4F6] placeholder-[#8592A3] focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B] focus:outline-none transition-all min-h-[44px]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                      10-Digit Mobile Number <span className="text-[#FC1682]">*</span>
+                    <label className="block text-[11px] font-bold text-[#F3F4F6] uppercase tracking-wider mb-1 font-display">
+                      10-Digit Mobile Number <span className="text-[#F4C76B]">*</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-xs sm:text-sm font-bold text-slate-400">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-xs sm:text-sm font-bold text-[#8592A3]">
                         +91
                       </div>
                       <input
@@ -480,9 +513,9 @@ export const HomePage: React.FC = () => {
                         placeholder="90901 60793"
                         value={heroPhone}
                         onChange={(e) => setHeroPhone(sanitizeMobileInput(e.target.value))}
-                        className="w-full pl-11 pr-14 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-base sm:text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FC1682] focus:border-transparent font-stat tracking-wider transition-all min-h-[44px]"
+                        className="w-full pl-11 pr-14 py-2.5 rounded-xl bg-[#172033] border border-[#344054] text-base sm:text-sm text-[#F3F4F6] placeholder-[#8592A3] focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B] focus:outline-none font-stat tracking-wider transition-all min-h-[44px]"
                       />
-                      <span className="absolute right-3 top-3 text-[10px] font-semibold text-slate-400 pointer-events-none font-stat">
+                      <span className="absolute right-3 top-3 text-[10px] font-semibold text-[#8592A3] pointer-events-none font-stat">
                         {heroPhone.length}/10
                       </span>
                     </div>
@@ -490,13 +523,13 @@ export const HomePage: React.FC = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-bold text-[#F3F4F6] uppercase tracking-wider mb-1 font-display">
                         Current Class
                       </label>
                       <select
                         value={heroTargetClass}
                         onChange={(e) => setHeroTargetClass(e.target.value)}
-                        className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-base sm:text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FC1682] transition-all min-h-[44px]"
+                        className="w-full px-3 py-2.5 rounded-xl bg-[#172033] border border-[#344054] text-base sm:text-xs text-[#F3F4F6] focus:border-[#F4C76B] focus:outline-none transition-all min-h-[44px]"
                       >
                         <option value="+2 1st Year (Class 11)">+2 1st Year (Class 11)</option>
                         <option value="+2 2nd Year (Class 12)">+2 2nd Year (Class 12)</option>
@@ -506,13 +539,13 @@ export const HomePage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      <label className="block text-[11px] font-bold text-[#F3F4F6] uppercase tracking-wider mb-1 font-display">
                         Target Exam
                       </label>
                       <select
                         value={heroCourse}
                         onChange={(e) => setHeroCourse(e.target.value)}
-                        className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-base sm:text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FC1682] transition-all min-h-[44px]"
+                        className="w-full px-3 py-2.5 rounded-xl bg-[#172033] border border-[#344054] text-base sm:text-xs text-[#F3F4F6] focus:border-[#F4C76B] focus:outline-none transition-all min-h-[44px]"
                       >
                         <option value="Integrated Board + Entrance">Integrated Board + Entrance</option>
                         <option value="JEE Main & JEE Advanced">JEE Main & JEE Advanced</option>
@@ -526,14 +559,18 @@ export const HomePage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isHeroSubmitting}
-                    className="w-full py-3 sm:py-3.5 px-4 sm:px-5 rounded-xl font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#D9146C] hover:from-[#E00E70] shadow-md shadow-pink-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 font-display mt-2 min-h-[48px] active:scale-[0.98]"
+                    className="w-full py-3 sm:py-3.5 px-4 sm:px-5 rounded-xl font-bold text-xs sm:text-sm text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 shadow-md shadow-amber-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 font-display mt-2 min-h-[48px] active:scale-[0.98]"
                   >
                     {isHeroSubmitting ? (
                       <span>Dispatching to Admissions Desk...</span>
                     ) : (
                       <>
-                        <Send className="w-4 h-4 text-white shrink-0" />
-                        <span>Request Priority Admissions Callback</span>
+                        <Send className="w-4 h-4 text-[#0F172A] shrink-0" />
+                        <span>
+                          {heroContactMethod === 'Parents meeting at the academy'
+                            ? 'Request Parents Meeting at Center'
+                            : 'Request Priority Phone Callback'}
+                        </span>
                       </>
                     )}
                   </button>
@@ -543,15 +580,15 @@ export const HomePage: React.FC = () => {
                   <div
                     className={`mt-3 p-3 rounded-xl text-xs text-center font-semibold space-y-2 ${
                       heroStatus.startsWith('SUCCESS')
-                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                        : 'bg-rose-50 text-rose-700 border border-rose-200'
+                        ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800'
+                        : 'bg-rose-950/60 text-rose-300 border border-rose-800'
                     }`}
                   >
                     <div className="flex items-center justify-center gap-2">
                       {heroStatus.startsWith('SUCCESS') ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                       ) : (
-                        <Phone className="w-4 h-4 text-rose-600 shrink-0" />
+                        <Phone className="w-4 h-4 text-rose-400 shrink-0" />
                       )}
                       <span>{heroStatus}</span>
                     </div>
@@ -559,7 +596,7 @@ export const HomePage: React.FC = () => {
                       <div className="flex items-center justify-center gap-2 pt-1">
                         <a
                           href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`}
-                          className="px-2.5 py-1 rounded-lg bg-slate-900 text-white font-bold text-[11px] hover:bg-slate-800 transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-[#111827] text-[#F3F4F6] font-bold text-[11px] border border-[#344054] hover:bg-black transition-colors"
                         >
                           Call Direct
                         </a>
@@ -576,13 +613,18 @@ export const HomePage: React.FC = () => {
                   </div>
                 )}
 
-                <div className="mt-3.5 pt-3 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-[11px] text-slate-500">
+                {/* Direct Cross-Link to Option A */}
+                <div className="mt-3.5 pt-3 border-t border-[#344054]/70 flex items-center justify-between text-[10px] sm:text-[11px] text-[#AAB4C3]">
                   <span className="flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                     100% Confidential
                   </span>
-                  <span>Direct Counselor Call</span>
-                  <span>Zero Spam</span>
+                  <Link
+                    to="/consultation"
+                    className="text-[#38BDF8] hover:text-[#F4C76B] font-bold transition-colors inline-flex items-center gap-1"
+                  >
+                    <span>Need instant Google Meet? Book via Cal.com →</span>
+                  </Link>
                 </div>
 
               </div>
@@ -592,84 +634,80 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. EXECUTIVE CREDENTIALS & METRICS STRIP (Corporate Authority) */}
-      <section className="bg-[#0F172A] text-white py-8 sm:py-12 border-b border-slate-800 relative">
+      {/* 3. EXECUTIVE CREDENTIALS & METRICS STRIP */}
+      <section className="bg-[#172033] text-[#F3F4F6] py-8 sm:py-12 border-b border-[#243042] relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-6 text-center">
             
-            <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-pink-500/40 transition-colors">
-              <span className="block text-2xl sm:text-4xl font-extrabold text-[#FC1682] font-stat mb-0.5 sm:mb-1">
+            <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#202B3D] border border-[#344054] hover:border-[#F4C76B]/40 transition-colors">
+              <span className="block text-2xl sm:text-4xl font-extrabold text-[#F4C76B] font-stat mb-0.5 sm:mb-1">
                 10+
               </span>
-              <span className="font-display text-[11px] sm:text-xs font-bold text-white block uppercase tracking-wider">
+              <span className="font-display text-[11px] sm:text-xs font-bold text-[#F3F4F6] block uppercase tracking-wider">
                 Years of Excellence
               </span>
-              <span className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 block">Est. 2017 in Berhampur</span>
+              <span className="text-[10px] sm:text-[11px] text-[#AAB4C3] mt-0.5 block">Est. 2017 in Berhampur</span>
             </div>
 
-            <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/40 transition-colors">
-              <span className="block text-2xl sm:text-4xl font-extrabold text-[#00C8FF] font-stat mb-0.5 sm:mb-1">
+            <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#202B3D] border border-[#344054] hover:border-[#38BDF8]/40 transition-colors">
+              <span className="block text-2xl sm:text-4xl font-extrabold text-[#38BDF8] font-stat mb-0.5 sm:mb-1">
                 99.4%ile
               </span>
-              <span className="font-display text-[11px] sm:text-xs font-bold text-white block uppercase tracking-wider">
+              <span className="font-display text-[11px] sm:text-xs font-bold text-[#F3F4F6] block uppercase tracking-wider">
                 Top JEE Percentile
               </span>
-              <span className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 block">IIT & NIT Selections</span>
+              <span className="text-[10px] sm:text-[11px] text-[#AAB4C3] mt-0.5 block">IIT & NIT Selections</span>
             </div>
 
-            <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-emerald-500/40 transition-colors">
+            <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#202B3D] border border-[#344054] hover:border-emerald-500/40 transition-colors">
               <span className="block text-2xl sm:text-4xl font-extrabold text-emerald-400 font-stat mb-0.5 sm:mb-1">
                 678 / 720
               </span>
-              <span className="font-display text-[11px] sm:text-xs font-bold text-white block uppercase tracking-wider">
+              <span className="font-display text-[11px] sm:text-xs font-bold text-[#F3F4F6] block uppercase tracking-wider">
                 Top NEET-UG Score
               </span>
-              <span className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 block">Govt Medical Colleges</span>
+              <span className="text-[10px] sm:text-[11px] text-[#AAB4C3] mt-0.5 block">Govt Medical Colleges</span>
             </div>
 
-            <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-amber-500/40 transition-colors">
-              <span className="block text-2xl sm:text-4xl font-extrabold text-amber-400 font-stat mb-0.5 sm:mb-1">
+            <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#202B3D] border border-[#344054] hover:border-[#F4C76B]/40 transition-colors">
+              <span className="block text-2xl sm:text-4xl font-extrabold text-[#F4C76B] font-stat mb-0.5 sm:mb-1">
                 100%
               </span>
-              <span className="font-display text-[11px] sm:text-xs font-bold text-white block uppercase tracking-wider">
+              <span className="font-display text-[11px] sm:text-xs font-bold text-[#F3F4F6] block uppercase tracking-wider">
                 CHSE Board Pass Rate
               </span>
-              <span className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 block">10 Consecutive Years</span>
+              <span className="text-[10px] sm:text-[11px] text-[#AAB4C3] mt-0.5 block">10 Consecutive Years</span>
             </div>
 
-            <div className="col-span-2 sm:col-span-1 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/40 transition-colors">
-              <span className="block text-2xl sm:text-4xl font-extrabold text-purple-400 font-stat mb-0.5 sm:mb-1">
+            <div className="col-span-2 sm:col-span-1 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#202B3D] border border-[#344054] hover:border-purple-400/40 transition-colors">
+              <span className="block text-2xl sm:text-4xl font-extrabold text-purple-300 font-stat mb-0.5 sm:mb-1">
                 1,200+
               </span>
-              <span className="font-display text-[11px] sm:text-xs font-bold text-white block uppercase tracking-wider">
+              <span className="font-display text-[11px] sm:text-xs font-bold text-[#F3F4F6] block uppercase tracking-wider">
                 Alumni Impact
               </span>
-              <span className="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 block">Engineers, Doctors & Officers</span>
+              <span className="text-[10px] sm:text-[11px] text-[#AAB4C3] mt-0.5 block">Engineers, Doctors & Officers</span>
             </div>
 
           </div>
         </div>
       </section>
 
-      {/* 4. AUTO-SWIPING CAMPUS & CLASSROOM PHOTO ALBUM (High Business Engagement) */}
-      <section className="py-12 sm:py-20 bg-slate-900 text-white relative overflow-hidden border-b border-slate-800">
-        {/* Ambient Glows */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#FC1682]/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#00C8FF]/10 rounded-full blur-3xl pointer-events-none"></div>
-
+      {/* 4. AUTO-SWIPING CAMPUS & CLASSROOM PHOTO ALBUM */}
+      <section className="py-12 sm:py-20 bg-[#111827] text-[#F3F4F6] relative overflow-hidden border-b border-[#243042]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-pink-500/15 border border-pink-500/30 text-pink-300 text-xs font-bold uppercase tracking-wider mb-2 font-cinzel">
-                <Camera className="w-3.5 h-3.5 text-[#FC1682]" />
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#202B3D] border border-[#344054] text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-2 font-cinzel">
+                <Camera className="w-3.5 h-3.5 text-[#F4C76B]" />
                 <span>Inside Antariksh Academy • Photo Album</span>
               </div>
-              <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+              <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#F3F4F6] tracking-tight">
                 Our Teachers, Classrooms & Campus Life
               </h2>
-              <p className="text-slate-400 text-xs sm:text-sm mt-1.5 max-w-2xl">
+              <p className="text-[#AAB4C3] text-xs sm:text-sm mt-1.5 max-w-2xl">
                 Experience the authentic teaching energy, disciplined small batches, and 1-on-1 mentorship at our Bijipur, Brahmapur center.
               </p>
             </div>
@@ -678,7 +716,7 @@ export const HomePage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsCarouselPaused(!isCarouselPaused)}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 flex items-center gap-1.5 border border-slate-700 transition-colors cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-[#202B3D] hover:bg-[#263449] text-xs font-bold text-[#D1D5DB] flex items-center gap-1.5 border border-[#344054] transition-colors cursor-pointer"
                 aria-label={isCarouselPaused ? 'Resume auto-swiping' : 'Pause auto-swiping'}
                 title={isCarouselPaused ? 'Resume auto-swiping' : 'Pause auto-swiping'}
               >
@@ -689,7 +727,7 @@ export const HomePage: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <Pause className="w-3 h-3 text-[#FC1682]" />
+                    <Pause className="w-3 h-3 text-[#F4C76B]" />
                     <span>Pause</span>
                   </>
                 )}
@@ -699,7 +737,7 @@ export const HomePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handlePrevSlide}
-                  className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-[#FC1682] text-white flex items-center justify-center transition-all border border-slate-700 cursor-pointer active:scale-95"
+                  className="w-9 h-9 rounded-xl bg-[#202B3D] hover:bg-[#F4C76B] hover:text-[#0F172A] text-white flex items-center justify-center transition-all border border-[#344054] cursor-pointer active:scale-95"
                   aria-label="Previous photo slide"
                 >
                   <ChevronLeft className="w-5 h-5" />
@@ -707,7 +745,7 @@ export const HomePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleNextSlide}
-                  className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-[#FC1682] text-white flex items-center justify-center transition-all border border-slate-700 cursor-pointer active:scale-95"
+                  className="w-9 h-9 rounded-xl bg-[#202B3D] hover:bg-[#F4C76B] hover:text-[#0F172A] text-white flex items-center justify-center transition-all border border-[#344054] cursor-pointer active:scale-95"
                   aria-label="Next photo slide"
                 >
                   <ChevronRight className="w-5 h-5" />
@@ -718,7 +756,7 @@ export const HomePage: React.FC = () => {
 
           {/* Cinematic Auto-Swiping Carousel Stage */}
           <div
-            className="relative rounded-3xl overflow-hidden bg-slate-950 border-2 border-slate-800 shadow-2xl h-[420px] sm:h-[480px] lg:h-[540px] group select-none"
+            className="relative rounded-3xl overflow-hidden bg-[#0B0F19] border-2 border-[#344054] shadow-2xl h-[420px] sm:h-[480px] lg:h-[540px] group select-none"
             onMouseEnter={() => setIsCarouselPaused(true)}
             onMouseLeave={() => setIsCarouselPaused(false)}
             onTouchStart={handleTouchStart}
@@ -741,17 +779,17 @@ export const HomePage: React.FC = () => {
                   />
 
                   {/* Dark Vignette & Readability Gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/20"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19] via-[#0B0F19]/60 to-[#0B0F19]/25"></div>
 
                   {/* Top Overlay Badges */}
                   <div className="absolute top-4 sm:top-6 left-4 sm:left-6 right-4 sm:right-6 flex items-center justify-between z-20">
-                    <span className="px-3 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-pink-500/40 text-pink-300 font-extrabold text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md">
-                      <Sparkles className="w-3 h-3 text-[#FC1682]" />
+                    <span className="px-3 py-1 rounded-full bg-[#111827]/90 backdrop-blur-md border border-[#F4C76B]/40 text-[#F4C76B] font-extrabold text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-md">
+                      <Sparkles className="w-3 h-3 text-[#F4C76B]" />
                       <span>{slide.category}</span>
                     </span>
 
-                    <span className="px-3 py-1 rounded-full bg-slate-900/85 backdrop-blur-md border border-slate-700 text-slate-300 font-stat text-[11px] sm:text-xs font-bold flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-[#00C8FF]" />
+                    <span className="px-3 py-1 rounded-full bg-[#111827]/90 backdrop-blur-md border border-[#344054] text-[#D1D5DB] font-stat text-[11px] sm:text-xs font-bold flex items-center gap-1">
+                      <MapPin className="w-3 h-3 text-[#38BDF8]" />
                       <span className="hidden sm:inline">{slide.location}</span>
                       <span className="sm:hidden">{slide.badge}</span>
                     </span>
@@ -759,7 +797,7 @@ export const HomePage: React.FC = () => {
 
                   {/* Bottom Captions & Content */}
                   <div className="absolute bottom-16 sm:bottom-18 left-4 sm:left-8 right-4 sm:right-8 z-20 space-y-2 sm:space-y-3 text-left">
-                    <span className="inline-block px-2.5 py-0.5 rounded bg-[#FC1682] text-white text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider font-stat">
+                    <span className="inline-block px-2.5 py-0.5 rounded bg-[#F4C76B] text-[#0F172A] text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider font-stat">
                       {slide.badge}
                     </span>
 
@@ -767,11 +805,11 @@ export const HomePage: React.FC = () => {
                       {slide.title}
                     </h3>
 
-                    <p className="font-serif-prestige italic text-xs sm:text-sm text-pink-200/90 font-medium max-w-2xl">
+                    <p className="font-serif-prestige italic text-xs sm:text-sm text-[#FDE68A] font-medium max-w-2xl">
                       {slide.tagline}
                     </p>
 
-                    <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl line-clamp-2 sm:line-clamp-3">
+                    <p className="text-[#D1D5DB] text-xs sm:text-sm leading-relaxed max-w-2xl line-clamp-2 sm:line-clamp-3">
                       {slide.description}
                     </p>
                   </div>
@@ -781,7 +819,7 @@ export const HomePage: React.FC = () => {
             })}
 
             {/* Bottom Progress Bar & Direct Slide Switcher */}
-            <div className="absolute bottom-0 left-0 right-0 z-30 bg-slate-950/90 backdrop-blur-md border-t border-slate-800/80 px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+            <div className="absolute bottom-0 left-0 right-0 z-30 bg-[#0B0F19]/90 backdrop-blur-md border-t border-[#344054] px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
               <div className="flex items-center gap-1.5 sm:gap-2 flex-1 overflow-x-auto no-scrollbar">
                 {albumSlides.map((slide, idx) => (
                   <button
@@ -789,8 +827,8 @@ export const HomePage: React.FC = () => {
                     onClick={() => setActiveSlide(idx)}
                     className={`px-2.5 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                       activeSlide === idx
-                        ? 'bg-[#FC1682] text-white shadow-md'
-                        : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700'
+                        ? 'bg-[#F4C76B] text-[#0F172A] shadow-md font-extrabold'
+                        : 'bg-[#202B3D] text-[#AAB4C3] hover:text-[#F3F4F6] hover:bg-[#263449]'
                     }`}
                   >
                     <span>{idx + 1}. {slide.shortLabel}</span>
@@ -799,10 +837,10 @@ export const HomePage: React.FC = () => {
               </div>
 
               <div className="text-right shrink-0">
-                <span className="font-stat text-xs sm:text-sm font-extrabold text-pink-400">
+                <span className="font-stat text-xs sm:text-sm font-extrabold text-[#F4C76B]">
                   0{activeSlide + 1}
                 </span>
-                <span className="text-slate-600 text-xs font-stat"> / 0{albumSlides.length}</span>
+                <span className="text-[#64748B] text-xs font-stat"> / 0{albumSlides.length}</span>
               </div>
             </div>
 
@@ -810,7 +848,7 @@ export const HomePage: React.FC = () => {
             <button
               type="button"
               onClick={handlePrevSlide}
-              className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-[#FC1682] text-white items-center justify-center backdrop-blur-md border border-white/20 transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-xl"
+              className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-[#111827]/80 hover:bg-[#F4C76B] hover:text-[#0F172A] text-white items-center justify-center backdrop-blur-md border border-[#344054] transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-xl"
               aria-label="Previous photo"
             >
               <ChevronLeft className="w-6 h-6" />
@@ -818,7 +856,7 @@ export const HomePage: React.FC = () => {
             <button
               type="button"
               onClick={handleNextSlide}
-              className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-slate-900/70 hover:bg-[#FC1682] text-white items-center justify-center backdrop-blur-md border border-white/20 transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-xl"
+              className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-[#111827]/80 hover:bg-[#F4C76B] hover:text-[#0F172A] text-white items-center justify-center backdrop-blur-md border border-[#344054] transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-xl"
               aria-label="Next photo"
             >
               <ChevronRight className="w-6 h-6" />
@@ -828,22 +866,22 @@ export const HomePage: React.FC = () => {
 
           {/* Quick Action Navigation Links below the Carousel */}
           <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <div className="text-slate-400 text-center sm:text-left">
+            <div className="text-[#AAB4C3] text-center sm:text-left">
               <span>Swipe left or right on mobile to browse photos • Auto-swiping every 3.8s</span>
             </div>
 
             <div className="flex items-center gap-3 flex-wrap justify-center">
               <Link
                 to="/faculty"
-                className="font-bold text-[#FC1682] hover:text-pink-400 flex items-center gap-1 transition-colors"
+                className="font-bold text-[#F4C76B] hover:text-[#FDE68A] flex items-center gap-1 transition-colors"
               >
                 <span>Meet Our Teachers & Mentors</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-              <span className="text-slate-700">•</span>
+              <span className="text-[#344054]">•</span>
               <Link
                 to="/facilities"
-                className="font-bold text-[#00C8FF] hover:text-cyan-300 flex items-center gap-1 transition-colors"
+                className="font-bold text-[#38BDF8] hover:text-cyan-300 flex items-center gap-1 transition-colors"
               >
                 <span>View Campus & Classrooms</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -855,60 +893,58 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* 5. BUSINESS DECISION MATRIX: "ANTARIKSH ACADEMY VS ORDINARY COACHING" */}
-      <section className="py-12 sm:py-20 bg-white border-b border-slate-200">
+      <section className="py-12 sm:py-20 bg-[#172033] border-b border-[#243042]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#FC1682] bg-pink-50 border border-pink-200 px-3.5 py-1 rounded-full">
+            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#F4C76B] bg-[#202B3D] border border-[#344054] px-3.5 py-1 rounded-full">
               The Antariksh Business Advantage
             </span>
-            <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mt-3 mb-2 sm:mb-3">
+            <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#F3F4F6] tracking-tight mt-3 mb-2 sm:mb-3">
               Why Discerning Parents & Students Choose Us
             </h2>
-            <p className="text-slate-600 text-xs sm:text-base leading-relaxed">
+            <p className="text-[#AAB4C3] text-xs sm:text-base leading-relaxed">
               Compare our structured, disciplined academic model with typical crowded coaching centers in Berhampur.
             </p>
           </div>
 
-          {/* A. MOBILE-NATIVE COMPARISON CARD STACK (< md): ZERO HORIZONTAL SCROLLING */}
+          {/* A. MOBILE-NATIVE COMPARISON CARD STACK (< md) */}
           <div className="md:hidden space-y-3.5">
             {comparisonItems.map((item, idx) => (
-              <div key={idx} className="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-xs">
-                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
-                  <span className="w-5 h-5 rounded-full bg-pink-100 text-[#FC1682] flex items-center justify-center text-[11px] font-stat font-extrabold shrink-0">
+              <div key={idx} className="bg-[#202B3D] border border-[#344054] rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#344054]/70">
+                  <span className="w-5 h-5 rounded-full bg-[#172033] text-[#F4C76B] flex items-center justify-center text-[11px] font-stat font-extrabold shrink-0 border border-[#344054]">
                     {idx + 1}
                   </span>
-                  <h4 className="font-display font-bold text-xs sm:text-sm text-slate-900 leading-snug">
+                  <h4 className="font-display font-bold text-xs sm:text-sm text-[#F3F4F6] leading-snug">
                     {item.parameter}
                   </h4>
                 </div>
 
                 <div className="space-y-2">
-                  {/* Antariksh Advantage */}
-                  <div className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-xs text-slate-800 flex items-start gap-2.5">
-                    <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
-                      <Check className="w-3 h-3" />
+                  <div className="p-3 rounded-xl bg-[#172033] border border-emerald-500/40 text-xs text-[#F3F4F6] flex items-start gap-2.5">
+                    <div className="w-5 h-5 rounded-full bg-emerald-500 text-[#0F172A] flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-[#0F172A]" />
                     </div>
                     <div>
-                      <span className="font-bold text-emerald-800 block text-[10px] uppercase tracking-wider font-cinzel">
+                      <span className="font-bold text-emerald-400 block text-[10px] uppercase tracking-wider font-cinzel">
                         ★ Antariksh Academy
                       </span>
-                      <span className="font-medium text-slate-800 leading-relaxed block mt-0.5">
+                      <span className="font-medium text-[#D1D5DB] leading-relaxed block mt-0.5">
                         {item.antariksh}
                       </span>
                     </div>
                   </div>
 
-                  {/* Typical Tuitions Drawback */}
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-start gap-2.5">
-                    <div className="w-5 h-5 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="p-3 rounded-xl bg-[#111827] border border-[#344054] text-xs text-[#AAB4C3] flex items-start gap-2.5">
+                    <div className="w-5 h-5 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 mt-0.5">
                       <X className="w-3 h-3" />
                     </div>
                     <div>
-                      <span className="font-bold text-slate-500 block text-[10px] uppercase tracking-wider">
+                      <span className="font-bold text-[#8592A3] block text-[10px] uppercase tracking-wider">
                         Typical Tuitions / Mega Centers
                       </span>
-                      <span className="text-slate-500 leading-relaxed block mt-0.5">
+                      <span className="text-[#8592A3] leading-relaxed block mt-0.5">
                         {item.typical}
                       </span>
                     </div>
@@ -919,37 +955,37 @@ export const HomePage: React.FC = () => {
           </div>
 
           {/* B. DESKTOP / TABLET COMPARISON TABLE (>= md) */}
-          <div className="hidden md:block overflow-hidden rounded-2xl border border-slate-200 shadow-lg">
+          <div className="hidden md:block overflow-hidden rounded-2xl border border-[#344054] shadow-xl">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-slate-900 text-white text-left text-xs sm:text-sm font-display">
-                  <th className="py-4 px-5 sm:px-6 w-1/3">Key Academic Parameter</th>
-                  <th className="py-4 px-5 sm:px-6 w-1/3 bg-[#FC1682] text-white font-extrabold">
+                <tr className="bg-[#0B0F19] text-white text-left text-xs sm:text-sm font-display">
+                  <th className="py-4 px-5 sm:px-6 w-1/3 text-[#F3F4F6]">Key Academic Parameter</th>
+                  <th className="py-4 px-5 sm:px-6 w-1/3 bg-[#202B3D] text-[#F4C76B] font-extrabold border-b-2 border-[#F4C76B]">
                     ★ Antariksh Academy (Berhampur)
                   </th>
-                  <th className="py-4 px-5 sm:px-6 w-1/3 bg-slate-800 text-slate-300">
+                  <th className="py-4 px-5 sm:px-6 w-1/3 bg-[#111827] text-[#8592A3]">
                     Typical Tuitions / Mega Factories
                   </th>
                 </tr>
               </thead>
-              <tbody className="text-xs sm:text-sm divide-y divide-slate-200">
+              <tbody className="text-xs sm:text-sm divide-y divide-[#344054]/60">
                 {comparisonItems.map((item, idx) => (
                   <tr
                     key={idx}
-                    className={idx % 2 === 0 ? 'bg-white hover:bg-slate-50 transition-colors' : 'bg-slate-50/60 hover:bg-slate-50 transition-colors'}
+                    className={idx % 2 === 0 ? 'bg-[#202B3D]/90' : 'bg-[#172033]/90'}
                   >
-                    <td className="py-4 px-5 sm:px-6 font-bold text-slate-900">
+                    <td className="py-4 px-5 sm:px-6 font-bold text-[#F3F4F6]">
                       {item.parameter}
                     </td>
-                    <td className="py-4 px-5 sm:px-6 font-semibold text-emerald-800 bg-emerald-50/50">
+                    <td className="py-4 px-5 sm:px-6 font-semibold text-emerald-300 bg-emerald-950/20">
                       <div className="flex items-center gap-2">
-                        <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <Check className="w-4 h-4 text-emerald-400 shrink-0" />
                         <span>{item.antariksh}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-5 sm:px-6 text-slate-500">
+                    <td className="py-4 px-5 sm:px-6 text-[#8592A3]">
                       <div className="flex items-center gap-2">
-                        <X className="w-4 h-4 text-rose-500 shrink-0" />
+                        <X className="w-4 h-4 text-rose-400 shrink-0" />
                         <span>{item.typical}</span>
                       </div>
                     </td>
@@ -962,7 +998,7 @@ export const HomePage: React.FC = () => {
           <div className="mt-6 sm:mt-8 text-center">
             <Link
               to="/about"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#FC1682] hover:underline"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#F4C76B] hover:underline"
             >
               <span>Learn more about our 10-year institutional methodology →</span>
             </Link>
@@ -971,25 +1007,25 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 6. TARGETED ACADEMIC PROGRAMS (Executive Program Grid) */}
-      <section className="py-12 sm:py-20 bg-slate-50/70 border-b border-slate-200">
+      {/* 6. TARGETED ACADEMIC PROGRAMS */}
+      <section className="py-12 sm:py-20 bg-[#111827] border-b border-[#243042]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
             <div>
-              <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#BE125A] bg-pink-50 border border-pink-200 px-3.5 py-1 rounded-full">
+              <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#F4C76B] bg-[#202B3D] border border-[#344054] px-3.5 py-1 rounded-full">
                 Curated Academic Pathways
               </span>
-              <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mt-3">
+              <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#F3F4F6] tracking-tight mt-3">
                 Comprehensive Coaching Programs
               </h2>
             </div>
             <Link
               to="/courses"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-slate-800 bg-white hover:bg-slate-50 border border-slate-300 shadow-2xs transition-colors shrink-0"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-[#F3F4F6] bg-[#202B3D] hover:bg-[#263449] border border-[#344054] hover:border-[#F4C76B]/50 transition-colors shrink-0"
             >
               <span>Explore All Course Syllabus & Batches</span>
-              <ArrowRight className="w-4 h-4 text-[#FC1682]" />
+              <ArrowRight className="w-4 h-4 text-[#F4C76B]" />
             </Link>
           </div>
 
@@ -997,45 +1033,45 @@ export const HomePage: React.FC = () => {
             {COURSES_DATA.slice(0, 4).map((course) => (
               <div
                 key={course.id}
-                className="bg-white border-2 border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-xl transition-all flex flex-col justify-between group hover:border-[#FC1682]"
+                className="bg-[#202B3D] border border-[#344054] rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl transition-all flex flex-col justify-between group hover:border-[#F4C76B]/60"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-pink-50 text-[#BE125A] border border-pink-200 uppercase tracking-wider">
+                    <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#172033] text-[#F4C76B] border border-[#344054] uppercase tracking-wider">
                       {course.badge}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-400 font-stat">
+                    <span className="text-[10px] font-bold text-[#AAB4C3] font-stat">
                       Batch: 30 Max
                     </span>
                   </div>
 
-                  <h3 className="font-display text-lg sm:text-xl font-bold text-slate-900 group-hover:text-[#FC1682] transition-colors mb-2">
+                  <h3 className="font-display text-lg sm:text-xl font-bold text-[#F3F4F6] group-hover:text-[#F4C76B] transition-colors mb-2">
                     {course.title}
                   </h3>
 
-                  <p className="text-xs text-slate-600 leading-relaxed mb-4 line-clamp-3">
+                  <p className="text-xs text-[#AAB4C3] leading-relaxed mb-4 line-clamp-3">
                     {course.shortDescription}
                   </p>
 
-                  <div className="space-y-2 border-t border-slate-100 pt-3 mb-4">
+                  <div className="space-y-2 border-t border-[#344054]/60 pt-3 mb-4">
                     {course.keyBenefits.slice(0, 2).map((benefit, i) => (
-                      <div key={i} className="flex items-start gap-1.5 text-xs text-slate-700 leading-snug">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                      <div key={i} className="flex items-start gap-1.5 text-xs text-[#D1D5DB] leading-snug">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                         <span>{benefit}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 space-y-3">
-                  <div className="flex items-center justify-between text-[11px] text-slate-500">
+                <div className="pt-3 border-t border-[#344054]/60 space-y-3">
+                  <div className="flex items-center justify-between text-[11px] text-[#AAB4C3]">
                     <span className="font-medium">{course.batchType}</span>
                   </div>
                   <Link
                     to="/consultation"
-                    className="w-full py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-[#FC1682] hover:text-white text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-center min-h-[42px] active:scale-[0.98]"
+                    className="w-full py-2.5 px-3 rounded-xl bg-[#172033] hover:bg-[#F4C76B] hover:text-[#0F172A] text-[#F3F4F6] font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-center min-h-[42px] border border-[#344054]"
                   >
-                    <span>Check Batch Availability</span>
+                    <span>Book Consultation via Cal.com</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
@@ -1047,23 +1083,23 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* 7. 10-YEAR HALL OF FAME: VERIFIED RESULTS & ALUMNI SUCCESS */}
-      <section className="py-12 sm:py-20 bg-white border-b border-slate-200">
+      <section className="py-12 sm:py-20 bg-[#172033] border-b border-[#243042]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-4">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-pink-50 border border-pink-200 text-[#BE125A] text-xs font-bold uppercase tracking-wider mb-2">
-                <Award className="w-3.5 h-3.5 text-[#FC1682]" />
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#202B3D] border border-[#344054] text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-2">
+                <Award className="w-3.5 h-3.5 text-[#F4C76B]" />
                 <span className="font-cinzel">10 Years of Proven Success (2017–2026)</span>
               </div>
-              <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
+              <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#F3F4F6] tracking-tight">
                 Our Results Speak for Themselves.
               </h2>
             </div>
 
             <Link
               to="/results"
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#FC1682] hover:underline shrink-0"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#F4C76B] hover:underline shrink-0"
             >
               <span>View Complete 10-Year Hall of Fame (50+ Records)</span>
               <ArrowRight className="w-4 h-4" />
@@ -1074,47 +1110,47 @@ export const HomePage: React.FC = () => {
             {topResults.map((item) => (
               <div
                 key={item.id}
-                className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-lg transition-all flex flex-col justify-between group hover:border-[#FC1682]/70"
+                className="bg-[#202B3D] border border-[#344054] rounded-2xl p-4 sm:p-5 shadow-sm hover:border-[#F4C76B]/60 transition-all flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-800 border border-slate-200 font-stat">
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-[#172033] text-[#F3F4F6] border border-[#344054] font-stat">
                         Session {item.year}
                       </span>
-                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-700/50 px-1.5 py-0.5 rounded">
                         Verified
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-pink-50 text-[#BE125A] border border-pink-200 font-cinzel">
+                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#172033] text-[#F4C76B] border border-[#344054] font-cinzel">
                       {item.category}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-slate-100 border-2 border-[#FC1682]/40 shrink-0">
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-[#172033] border-2 border-[#F4C76B]/40 shrink-0">
                       <img src={item.photoUrl} alt={item.studentName} className="w-full h-full object-cover" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="font-display text-sm font-bold text-slate-900 truncate">
+                      <h4 className="font-display text-sm font-bold text-[#F3F4F6] truncate">
                         {item.studentName}
                       </h4>
-                      <div className="text-xs font-extrabold text-[#FC1682] font-stat">
+                      <div className="text-xs font-extrabold text-[#F4C76B] font-stat">
                         {item.scoreOrRank}
                       </div>
-                      <div className="text-[10px] text-slate-500 truncate">
+                      <div className="text-[10px] text-[#AAB4C3] truncate">
                         {item.allotmentOrCollege}
                       </div>
                     </div>
                   </div>
 
-                  <p className="text-xs text-slate-600 italic bg-pink-50/50 border-l-2 border-[#FC1682] pl-2.5 py-1.5 rounded-r-lg line-clamp-2">
+                  <p className="text-xs text-[#D1D5DB] italic bg-[#172033] border-l-2 border-[#F4C76B] pl-2.5 py-1.5 rounded-r-lg line-clamp-2">
                     "{item.storyQuote}"
                   </p>
                 </div>
 
-                <div className="mt-3 pt-2.5 border-t border-slate-100 text-[11px] text-slate-600 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <div className="mt-3 pt-2.5 border-t border-[#344054]/60 text-[11px] text-[#AAB4C3] flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                   <span className="font-medium line-clamp-1">{item.achievementSummary}</span>
                 </div>
               </div>
@@ -1124,56 +1160,56 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 8. THREE-STEP ADMISSION ROADMAP (Eliminating Friction) */}
-      <section className="py-12 sm:py-20 bg-slate-50/70 border-b border-slate-200">
+      {/* 8. THREE-STEP ADMISSION ROADMAP */}
+      <section className="py-12 sm:py-20 bg-[#111827] border-b border-[#243042]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#BE125A] bg-pink-50 border border-pink-200 px-3.5 py-1 rounded-full">
+            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#F4C76B] bg-[#202B3D] border border-[#344054] px-3.5 py-1 rounded-full">
               Friction-Free Enrollment
             </span>
-            <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mt-3 mb-2 sm:mb-3">
+            <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#F3F4F6] tracking-tight mt-3 mb-2 sm:mb-3">
               How Admission Works in 3 Simple Steps
             </h2>
-            <p className="text-slate-600 text-xs sm:text-base leading-relaxed">
+            <p className="text-[#AAB4C3] text-xs sm:text-base leading-relaxed">
               We ensure every student and parent is completely confident in our faculty and methodology before formal enrollment.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 relative">
-            <div className="bg-white border-2 border-slate-200 rounded-2xl p-5 sm:p-8 shadow-xs relative">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-pink-100 text-[#FC1682] flex items-center justify-center font-stat font-extrabold text-lg sm:text-xl mb-3 sm:mb-4">
+            <div className="bg-[#202B3D] border border-[#344054] rounded-2xl p-5 sm:p-8 shadow-sm relative">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#172033] border border-[#344054] text-[#F4C76B] flex items-center justify-center font-stat font-extrabold text-lg sm:text-xl mb-3 sm:mb-4">
                 01
               </div>
-              <h3 className="font-display text-base sm:text-lg font-bold text-slate-900 mb-1.5 sm:mb-2">
-                1. Free Concept & Target Counseling
+              <h3 className="font-display text-base sm:text-lg font-bold text-[#F3F4F6] mb-1.5 sm:mb-2">
+                1. Book Free Consultation (Cal.com)
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Meet our senior counselor (in-person or video call) to assess current academic baselines, career targets, and subject requirements.
+              <p className="text-xs sm:text-sm text-[#AAB4C3] leading-relaxed">
+                Choose a 30-minute slot via Cal.com (Google Meet or phone) to assess baseline marks, target ranks, and syllabus roadmap.
               </p>
             </div>
 
-            <div className="bg-white border-2 border-[#FC1682]/40 rounded-2xl p-5 sm:p-8 shadow-md relative">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#FC1682] text-white flex items-center justify-center font-stat font-extrabold text-lg sm:text-xl mb-3 sm:mb-4">
+            <div className="bg-[#202B3D] border-2 border-[#F4C76B]/40 rounded-2xl p-5 sm:p-8 shadow-md relative">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#F4C76B] text-[#0F172A] flex items-center justify-center font-stat font-extrabold text-lg sm:text-xl mb-3 sm:mb-4">
                 02
               </div>
-              <h3 className="font-display text-base sm:text-lg font-bold text-slate-900 mb-1.5 sm:mb-2">
+              <h3 className="font-display text-base sm:text-lg font-bold text-[#F3F4F6] mb-1.5 sm:mb-2">
                 2. Attend 2-Day Trial Classes
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#AAB4C3] leading-relaxed">
                 Sit inside our active classrooms. Experience our concept derivations, solve daily practice sheets, and interact directly with our mentors.
               </p>
             </div>
 
-            <div className="bg-white border-2 border-slate-200 rounded-2xl p-5 sm:p-8 shadow-xs relative">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-cyan-100 text-[#0284C7] flex items-center justify-center font-stat font-extrabold text-lg sm:text-xl mb-3 sm:mb-4">
+            <div className="bg-[#202B3D] border border-[#344054] rounded-2xl p-5 sm:p-8 shadow-sm relative">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#172033] border border-[#344054] text-[#38BDF8] flex items-center justify-center font-stat font-extrabold text-lg sm:text-xl mb-3 sm:mb-4">
                 03
               </div>
-              <h3 className="font-display text-base sm:text-lg font-bold text-slate-900 mb-1.5 sm:mb-2">
-                3. Secure Batch & Receive Study Kit
+              <h3 className="font-display text-base sm:text-lg font-bold text-[#F3F4F6] mb-1.5 sm:mb-2">
+                3. Secure Batch Slot & Begin
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Confirm your capped 30-student batch slot, receive official curriculum booklets and DPP modules, and begin your guided journey to success.
+              <p className="text-xs sm:text-sm text-[#AAB4C3] leading-relaxed">
+                Confirm your capped 30-student batch slot, receive official curriculum booklets and DPP modules, and begin your guided journey.
               </p>
             </div>
           </div>
@@ -1181,9 +1217,9 @@ export const HomePage: React.FC = () => {
           <div className="mt-8 sm:mt-10 text-center">
             <Link
               to="/consultation"
-              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-[#FC1682] to-[#D9146C] hover:from-[#E00E70] shadow-md shadow-pink-500/20 transition-all font-display min-h-[46px] active:scale-[0.98]"
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-extrabold text-xs sm:text-sm text-[#0F172A] bg-gradient-to-r from-[#F4C76B] to-[#E5B555] hover:brightness-105 shadow-md shadow-amber-500/15 transition-all font-display min-h-[46px]"
             >
-              <span>Schedule Step 1: Free Counseling</span>
+              <span>Schedule Step 1: Free Consultation (Cal.com)</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -1191,18 +1227,18 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 9. PARENT & STUDENT VOICES (Institutional Social Proof) */}
-      <section className="py-12 sm:py-20 bg-white border-b border-slate-200">
+      {/* 9. PARENT & STUDENT VOICES */}
+      <section className="py-12 sm:py-20 bg-[#172033] border-b border-[#243042]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#BE125A] bg-pink-50 border border-pink-200 px-3.5 py-1 rounded-full">
+            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#F4C76B] bg-[#202B3D] border border-[#344054] px-3.5 py-1 rounded-full">
               Voices of Trust
             </span>
-            <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mt-3 mb-2">
+            <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#F3F4F6] tracking-tight mt-3 mb-2">
               Endorsed by Families Across Brahmapur
             </h2>
-            <p className="text-slate-600 text-xs sm:text-base">
+            <p className="text-[#AAB4C3] text-xs sm:text-base">
               Real reflections on our disciplined atmosphere, mentor accessibility, and balanced preparation.
             </p>
           </div>
@@ -1211,32 +1247,32 @@ export const HomePage: React.FC = () => {
             {TESTIMONIALS_DATA.slice(0, 3).map((item) => (
               <div
                 key={item.id}
-                className="bg-slate-50 border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col justify-between"
+                className="bg-[#202B3D] border border-[#344054] rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-1 text-amber-400">
+                    <div className="flex items-center gap-1 text-[#F4C76B]">
                       {Array.from({ length: item.rating }).map((_, i) => (
-                        <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
+                        <Star key={i} className="w-3.5 h-3.5 fill-[#F4C76B]" />
                       ))}
                     </div>
-                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-cyan-50 text-[#0284C7] border border-cyan-200 font-cinzel">
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[#172033] text-[#38BDF8] border border-[#344054] font-cinzel">
                       {item.authorType} Voice
                     </span>
                   </div>
 
-                  <p className="text-slate-700 text-xs sm:text-sm leading-relaxed italic mb-4 font-serif-prestige">
+                  <p className="text-[#D1D5DB] text-xs sm:text-sm leading-relaxed italic mb-4 font-serif-prestige">
                     "{item.quote}"
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-200 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-200 border-2 border-[#FC1682]/40 shrink-0">
+                <div className="pt-3 border-t border-[#344054]/60 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-[#172033] border-2 border-[#F4C76B]/40 shrink-0">
                     <img src={item.avatarUrl} alt={item.displayName} className="w-full h-full object-cover" />
                   </div>
                   <div>
-                    <span className="text-xs font-bold text-slate-900 block font-display">{item.displayName}</span>
-                    <span className="text-[11px] text-[#FC1682] font-semibold block">{item.subTitle}</span>
+                    <span className="text-xs font-bold text-[#F3F4F6] block font-display">{item.displayName}</span>
+                    <span className="text-[11px] text-[#F4C76B] font-semibold block">{item.subTitle}</span>
                   </div>
                 </div>
               </div>
@@ -1246,15 +1282,15 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 10. INTERACTIVE FAQ ACCORDION (Overcoming Objections) */}
-      <section className="py-12 sm:py-20 bg-slate-50/70 border-b border-slate-200">
+      {/* 10. INTERACTIVE FAQ ACCORDION */}
+      <section className="py-12 sm:py-20 bg-[#111827] border-b border-[#243042]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center mb-8 sm:mb-10">
-            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#BE125A] bg-pink-50 border border-pink-200 px-3.5 py-1 rounded-full">
+            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#F4C76B] bg-[#202B3D] border border-[#344054] px-3.5 py-1 rounded-full">
               Frequently Asked Questions
             </span>
-            <h2 className="font-display text-xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight mt-3">
+            <h2 className="font-display text-xl sm:text-3xl font-extrabold text-[#F3F4F6] tracking-tight mt-3">
               Answers for Prospective Students & Parents
             </h2>
           </div>
@@ -1265,20 +1301,20 @@ export const HomePage: React.FC = () => {
               return (
                 <div
                   key={idx}
-                  className="bg-white border border-slate-200/90 rounded-xl sm:rounded-2xl overflow-hidden shadow-2xs transition-all"
+                  className="bg-[#202B3D] border border-[#344054] rounded-xl sm:rounded-2xl overflow-hidden transition-all"
                 >
                   <button
                     type="button"
                     onClick={() => toggleFaq(idx)}
-                    className="w-full py-3.5 sm:py-4 px-4 sm:px-6 text-left flex items-center justify-between gap-3 font-display font-bold text-xs sm:text-base text-slate-900 hover:text-[#FC1682] transition-colors cursor-pointer min-h-[48px]"
+                    className="w-full py-3.5 sm:py-4 px-4 sm:px-6 text-left flex items-center justify-between gap-3 font-display font-bold text-xs sm:text-base text-[#F3F4F6] hover:text-[#F4C76B] transition-colors cursor-pointer min-h-[48px]"
                   >
                     <span className="leading-snug">{faq.q}</span>
-                    <span className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-slate-600">
+                    <span className="w-6 h-6 rounded-full bg-[#172033] border border-[#344054] flex items-center justify-center shrink-0 text-[#AAB4C3]">
                       {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </span>
                   </button>
                   {isOpen && (
-                    <div className="px-4 sm:px-6 pb-4 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100">
+                    <div className="px-4 sm:px-6 pb-4 pt-1 text-xs sm:text-sm text-[#AAB4C3] leading-relaxed border-t border-[#344054]/60">
                       {faq.a}
                     </div>
                   )}
@@ -1291,50 +1327,51 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* 11. HIGH-IMPACT CLOSING CONVERSION BANNER */}
-      <section className="py-12 sm:py-20 bg-gradient-to-r from-[#0F172A] via-[#1E293B] to-[#0F172A] text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#FC1682]/10 rounded-full blur-3xl pointer-events-none"></div>
-
+      <section className="py-12 sm:py-20 bg-gradient-to-r from-[#111827] via-[#172033] to-[#111827] text-[#F3F4F6] relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4 sm:space-y-6 relative">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FC1682]/20 text-pink-300 text-xs font-bold uppercase tracking-wider border border-pink-500/30 font-cinzel">
-            <Calendar className="w-3.5 h-3.5 text-[#FC1682]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#202B3D] text-[#F4C76B] text-xs font-bold uppercase tracking-wider border border-[#344054] font-cinzel">
+            <Calendar className="w-3.5 h-3.5 text-[#F4C76B]" />
             <span>Admissions Desk 2026–27</span>
           </div>
 
-          <h2 className="font-display text-2xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+          <h2 className="font-display text-2xl sm:text-5xl font-black text-[#F3F4F6] tracking-tight leading-tight">
             Give Your Child the Advantage of{' '}
-            <span className="font-serif-prestige italic text-transparent bg-clip-text bg-gradient-to-r from-[#FC1682] via-pink-400 to-[#00C8FF]">
+            <span className="font-serif-prestige italic text-transparent bg-clip-text bg-gradient-to-r from-[#F4C76B] via-[#FDE68A] to-[#38BDF8]">
               Disciplined Academic Mentorship.
             </span>
           </h2>
 
-          <p className="text-slate-300 text-xs sm:text-base max-w-xl mx-auto leading-relaxed">
-            Small batches fill up quickly. Schedule a free 30-minute consultation or visit our Bijipur Big Street campus today.
+          <p className="text-[#AAB4C3] text-xs sm:text-base max-w-xl mx-auto leading-relaxed">
+            Small batches fill up quickly. Choose an available slot via Cal.com or request a callback / parents meeting today.
           </p>
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3">
+            {/* Option A */}
             <Link
               to="/consultation"
-              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 rounded-xl font-bold text-xs sm:text-base text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#D9146C] hover:from-[#E00E70] shadow-lg shadow-pink-500/25 transition-all text-center font-display min-h-[46px] flex items-center justify-center"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3.5 rounded-xl font-extrabold text-xs sm:text-base text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 shadow-lg shadow-amber-500/15 transition-all text-center font-display min-h-[46px] flex items-center justify-center gap-2"
             >
-              Book a Free Consultation
+              <Calendar className="w-4 h-4 text-[#0F172A]" />
+              <span>Book Free Consultation (Cal.com)</span>
             </Link>
 
-            <a
-              href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`}
-              className="w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl font-bold text-xs sm:text-base text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors text-center font-display flex items-center justify-center gap-2 min-h-[46px]"
+            {/* Option B */}
+            <Link
+              to="/contact"
+              className="w-full sm:w-auto px-6 sm:px-7 py-3.5 rounded-xl font-bold text-xs sm:text-base text-[#F3F4F6] bg-[#202B3D] hover:bg-[#263449] border border-[#344054] transition-colors text-center font-display flex items-center justify-center gap-2 min-h-[46px]"
             >
-              <Phone className="w-4 h-4 text-[#FC1682]" />
-              <span>Call Admissions: {ACADEMY_CONFIG.contact.phoneDisplay}</span>
-            </a>
+              <Phone className="w-4 h-4 text-[#38BDF8]" />
+              <span>Request Parent Meeting / Callback</span>
+            </Link>
           </div>
 
-          <p className="text-[11px] sm:text-xs text-slate-400 pt-2">
+          <p className="text-[11px] sm:text-xs text-[#8592A3] pt-2">
             Bijipur, Big Street, Brahmapur (PIN: 760001) • Office open 7:00 AM – 7:30 PM daily
           </p>
         </div>
       </section>
 
-      {/* 12. MOBILE FLOATING QUICK-CONNECT WHATSAPP BUTTON (Mobile Smoothness) */}
+      {/* 12. MOBILE FLOATING QUICK-CONNECT WHATSAPP BUTTON */}
       <div className="fixed bottom-5 right-4 z-40 sm:hidden">
         <a
           href={ACADEMY_CONFIG.contact.whatsappLink}

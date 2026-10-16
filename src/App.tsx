@@ -20,7 +20,7 @@ export function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <div className="min-h-screen bg-slate-50 flex flex-col font-['Plus_Jakarta_Sans',sans-serif] text-slate-800 antialiased selection:bg-[#FC1682] selection:text-white">
+      <div className="min-h-screen bg-[#111827] flex flex-col font-['Plus_Jakarta_Sans',sans-serif] text-[#F3F4F6] antialiased selection:bg-[#F4C76B] selection:text-[#111827]">
         {/* Sticky Global Navigation */}
         <Navbar />
 

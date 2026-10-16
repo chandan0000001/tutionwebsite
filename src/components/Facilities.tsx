@@ -32,19 +32,19 @@ export const Facilities: React.FC = () => {
   };
 
   return (
-    <section id="facilities" className="py-16 sm:py-20 md:py-24 bg-slate-50/70 border-b border-slate-200">
+    <section id="facilities" className="py-16 sm:py-20 md:py-24 bg-[#111827] border-b border-[#344054]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-pink-50 border border-pink-200 text-[#BE125A] text-xs font-bold uppercase tracking-wider mb-3">
-            <Layers className="w-3.5 h-3.5 text-[#FC1682]" />
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#F4C76B]/15 border border-[#F4C76B]/30 text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-3">
+            <Layers className="w-3.5 h-3.5 text-[#F4C76B]" />
             <span>Infrastructure & Atmosphere</span>
           </div>
-          <h2 className="font-['Outfit',sans-serif] text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0F172A] tracking-tight mb-4">
+          <h2 className="font-['Outfit',sans-serif] text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#F3F4F6] tracking-tight mb-4">
             Classrooms & Campus Infrastructure
           </h2>
-          <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+          <p className="text-[#AAB4C3] text-base sm:text-lg leading-relaxed">
             A purposeful, distraction-free environment in Bijipur, Brahmapur designed for sustained concentration,
             collaborative doubt clearing, and continuous academic growth.
           </p>
@@ -57,8 +57,8 @@ export const Facilities: React.FC = () => {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                   selectedCategory === cat
-                    ? 'bg-gradient-to-r from-[#FC1682] to-[#D9146C] text-white shadow-md'
-                    : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+                    ? 'bg-gradient-to-r from-[#F4C76B] to-[#E5B555] text-[#0B0F19] shadow-md font-bold'
+                    : 'bg-[#202B3D] text-[#AAB4C3] hover:text-[#F3F4F6] hover:bg-[#2A374D] border border-[#344054]'
                 }`}
               >
                 {cat}
@@ -74,10 +74,10 @@ export const Facilities: React.FC = () => {
               <div
                 key={facility.id}
                 onClick={() => handleOpenLightbox(facility)}
-                className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col group cursor-pointer hover:border-[#FC1682]/60"
+                className="bg-[#202B3D] border border-[#344054] rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col group cursor-pointer hover:border-[#F4C76B]/50"
               >
                 {/* Image Container with Hover Action */}
-                <div className="relative h-56 sm:h-64 w-full overflow-hidden bg-slate-100">
+                <div className="relative h-56 sm:h-64 w-full overflow-hidden bg-[#172033]">
                   <img
                     src={facility.imageUrl}
                     alt={facility.title}
@@ -86,28 +86,28 @@ export const Facilities: React.FC = () => {
                   />
                   
                   {/* Subtle Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-transparent to-transparent opacity-85 group-hover:opacity-90 transition-opacity"></div>
 
                   {/* Top Badges */}
                   <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                    <span className="text-[11px] font-bold uppercase tracking-wider bg-white/95 text-[#0F172A] px-2.5 py-0.5 rounded-md border border-slate-200 shadow-xs">
+                    <span className="text-[11px] font-bold uppercase tracking-wider bg-[#111827]/90 text-[#F3F4F6] px-2.5 py-0.5 rounded-md border border-[#344054] shadow-xs">
                       {facility.category}
                     </span>
                     {facility.isAcademyOriginal ? (
-                      <span className="text-[10px] font-bold bg-[#FC1682] text-white px-2 py-0.5 rounded shadow">
+                      <span className="text-[10px] font-bold bg-[#F4C76B] text-[#0B0F19] px-2 py-0.5 rounded shadow font-bold">
                         Official Academy Photo
                       </span>
                     ) : (
-                      <span className="text-[10px] font-bold bg-[#00C8FF] text-slate-950 px-2 py-0.5 rounded shadow">
+                      <span className="text-[10px] font-bold bg-[#38BDF8] text-[#0B0F19] px-2 py-0.5 rounded shadow font-bold">
                         Campus Facility
                       </span>
                     )}
                   </div>
 
                   {/* Click to Zoom Hover Indicator */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 backdrop-blur-[2px]">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white text-[#FC1682] font-extrabold text-xs shadow-lg transform -translate-y-1 group-hover:translate-y-0 transition-transform">
-                      <Eye className="w-3.5 h-3.5 text-[#FC1682]" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-[2px]">
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#F4C76B] text-[#0B0F19] font-bold text-xs shadow-lg transform -translate-y-1 group-hover:translate-y-0 transition-transform">
+                      <Eye className="w-3.5 h-3.5 text-[#0B0F19]" />
                       Click to View Full Size
                     </span>
                   </div>
@@ -122,13 +122,13 @@ export const Facilities: React.FC = () => {
 
                 {/* Description Body */}
                 <div className="p-4 flex-1 flex flex-col justify-between">
-                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-3">
+                  <p className="text-[#AAB4C3] text-xs sm:text-sm leading-relaxed mb-3">
                     {facility.description}
                   </p>
 
-                  <div className="text-[11px] text-slate-400 border-t border-slate-100 pt-2 flex items-center justify-between">
+                  <div className="text-[11px] text-[#AAB4C3] border-t border-[#344054] pt-2 flex items-center justify-between">
                     <span className="truncate max-w-[240px]">{facility.attributionNote}</span>
-                    <span className="text-[#FC1682] font-bold group-hover:underline">Zoom In →</span>
+                    <span className="text-[#F4C76B] font-bold group-hover:underline">Zoom In →</span>
                   </div>
                 </div>
               </div>
@@ -137,8 +137,8 @@ export const Facilities: React.FC = () => {
         </div>
 
         {/* Gallery Note */}
-        <div className="mt-12 bg-white border border-slate-200 rounded-xl p-4 text-center max-w-2xl mx-auto text-xs text-slate-600 shadow-2xs flex items-center justify-center gap-2">
-          <Info className="w-4 h-4 text-[#0284C7] shrink-0" />
+        <div className="mt-12 bg-[#172033] border border-[#344054] rounded-xl p-4 text-center max-w-2xl mx-auto text-xs text-[#AAB4C3] shadow-md flex items-center justify-center gap-2">
+          <Info className="w-4 h-4 text-[#38BDF8] shrink-0" />
           <span>
             Visit our Bijipur center at Big Street, Brahmapur to experience the classroom atmosphere and tour the study facilities in person.
           </span>

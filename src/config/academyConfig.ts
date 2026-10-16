@@ -59,6 +59,16 @@ export const ACADEMY_CONFIG = {
     endpoint: 'https://formsubmit.co/ajax',
   },
 
+  // Cal.com Official Integration Configuration (Option A: 30-min Free Consultation + Google Meet)
+  calCom: {
+    bookingUrl: 'https://cal.com/antarikshacademy/30min?overlayCalendar=true',
+    calLink: 'antarikshacademy/30min',
+    durationMinutes: 30,
+    conferencing: 'Google Meet',
+    theme: 'dark' as const,
+    brandColor: '#F4C76B',
+  },
+
   // Consultation & Scheduling Settings
   consultation: {
     durationMinutes: 30,

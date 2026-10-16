@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { Phone, CheckCircle2, AlertCircle, Send, ShieldCheck, RefreshCw, MessageSquare } from 'lucide-react';
+import {
+  Phone,
+  CheckCircle2,
+  AlertCircle,
+  Send,
+  ShieldCheck,
+  RefreshCw,
+  MessageSquare,
+  Users,
+  Clock,
+} from 'lucide-react';
 import { sanitizeMobileInput, getMobileValidationError } from '../utils/validation';
 import { ACADEMY_CONFIG } from '../config/academyConfig';
 import { submitEnquiryToGmail } from '../services/formSubmission';
@@ -13,15 +23,22 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
   preselectedCourse = '',
   isStandalonePage = false,
 }) => {
+  // Form Fields State
   const [fullName, setFullName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [studentClass, setStudentClass] = useState('+2 First Year (Class 11)');
-  const [courseInterest, setCourseInterest] = useState(preselectedCourse || 'Integrated Board + Entrance Preparation');
+  const [courseInterest, setCourseInterest] = useState(
+    preselectedCourse || 'Integrated Board + Entrance Preparation'
+  );
+  const [contactMethod, setContactMethod] = useState<'Phone callback' | 'Parents meeting at the academy'>(
+    'Phone callback'
+  );
   const [preferredTime, setPreferredTime] = useState('Morning (09:00 AM - 12:00 PM)');
+  const [message, setMessage] = useState('');
   const [consent, setConsent] = useState(false);
   const [honeypot, setHoneypot] = useState('');
 
-  // Form State
+  // Form Submission & Status State
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState<boolean | null>(null);
@@ -31,6 +48,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
     fullName: string;
     mobileNumber: string;
     courseInterest: string;
+    contactMethod: string;
     preferredTime: string;
   } | null>(null);
 
@@ -49,12 +67,12 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
     }
 
     if (!consent) {
-      errs.consent = 'Please provide consent so we may call you regarding your enquiry.';
+      errs.consent = 'Please provide consent so our counselors may follow up regarding your enquiry.';
     }
 
     // Duplicate check
     if (submissionSuccess && lastSubmittedPhone === mobileNumber.trim()) {
-      errs.mobileNumber = 'A callback request with this phone number was already submitted.';
+      errs.mobileNumber = 'A request with this phone number was already submitted.';
     }
 
     setErrors(errs);
@@ -69,14 +87,16 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
     setIsSubmitting(true);
     setSubmissionError(null);
 
-    // Send directly to admissions inbox
+    // Send directly to admissions inbox (Option B flow: Manual follow-up, separate from Cal.com)
     const result = await submitEnquiryToGmail({
-      formType: 'Callback Request',
+      formType: contactMethod === 'Parents meeting at the academy' ? 'Callback Request' : 'Callback Request',
       fullName: fullName.trim(),
       mobileNumber: mobileNumber.trim(),
       studentClass,
       courseInterest,
-      preferredTime,
+      preferredTime: `${contactMethod} | ${preferredTime}`,
+      consultationType: contactMethod,
+      message: message.trim() || undefined,
       honeypot,
     });
 
@@ -87,6 +107,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
         fullName: fullName.trim(),
         mobileNumber: mobileNumber.trim(),
         courseInterest,
+        contactMethod,
         preferredTime,
       });
       setSubmissionSuccess(true);
@@ -94,6 +115,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
       // Reset form fields only after confirmed provider acceptance
       setFullName('');
       setMobileNumber('');
+      setMessage('');
       setConsent(false);
       setHoneypot('');
       setErrors({});
@@ -101,7 +123,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
       setSubmissionSuccess(false);
       setSubmissionError(
         result.message ||
-          'We were unable to transmit your callback request right now. Please call or WhatsApp our admissions desk directly.'
+          'We were unable to transmit your request right now. Please call or WhatsApp our admissions desk directly.'
       );
     }
   };
@@ -109,6 +131,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
   const handleReset = () => {
     setFullName('');
     setMobileNumber('');
+    setMessage('');
     setConsent(false);
     setHoneypot('');
     setErrors({});
@@ -121,62 +144,71 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
     <section
       id="callback"
       className={`${
-        isStandalonePage ? 'py-12 sm:py-16' : 'py-16 sm:py-20 md:py-24'
-      } bg-gradient-to-b from-white via-pink-50/20 to-slate-50 text-slate-900 relative overflow-hidden border-b border-slate-200`}
+        isStandalonePage ? 'py-10 sm:py-16' : 'py-16 sm:py-20 md:py-24'
+      } bg-[#111827] text-[#F3F4F6] relative overflow-hidden border-b border-[#243042]`}
     >
-      {/* Brand Pink & Cyan Glows */}
-      <div className="absolute top-0 right-0 w-80 sm:w-96 h-80 sm:h-96 bg-[#FC1682]/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-80 sm:w-96 h-80 sm:h-96 bg-[#00C8FF]/10 rounded-full blur-3xl pointer-events-none"></div>
+      {/* Restrained Ambient Glows */}
+      <div className="absolute top-0 right-0 w-80 sm:w-96 h-80 sm:h-96 bg-[#F4C76B]/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-80 sm:w-96 h-80 sm:h-96 bg-[#38BDF8]/5 rounded-full blur-3xl pointer-events-none"></div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         
-        {/* Section Heading */}
+        {/* Section Heading & Supporting Text (Option B: Dedicated Flow) */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-pink-50 border border-pink-200 text-[#BE125A] text-xs font-bold uppercase tracking-wider mb-3">
-            <Phone className="w-3.5 h-3.5 text-[#FC1682]" />
-            <span>Fast Academic Assistance</span>
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#202B3D] border border-[#344054] text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-3 font-cinzel">
+            <Phone className="w-3.5 h-3.5 text-[#F4C76B]" />
+            <span>Option B: Direct Academy Follow-Up</span>
           </div>
-          <h2 className="font-['Outfit',sans-serif] text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0F172A] tracking-tight mb-3">
-            Need Guidance? Let Us Call You.
+
+          <h2 className="font-display text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#F3F4F6] tracking-tight mb-3">
+            Request a Parent Meeting or Callback
           </h2>
-          <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-            Have questions about +2 board coaching, entrance test patterns, or batch timings? Leave your contact details
-            and our senior counselor will reach out.
+
+          <p className="text-[#AAB4C3] text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+            Would you prefer a phone conversation or an in-person meeting with our academic team?
+            Share your details and our team will follow up.
           </p>
         </div>
 
-        {/* Card Form Container */}
-        <div className="bg-white border-2 border-pink-100 rounded-3xl p-6 sm:p-10 shadow-xl backdrop-blur-xl">
+        {/* Elevated Form Card Container */}
+        <div className="bg-[#202B3D] border-2 border-[#344054] rounded-3xl p-6 sm:p-10 shadow-xl relative backdrop-blur-xl">
           
           {submissionSuccess ? (
-            <div className="text-center py-8 space-y-5 animate-in fade-in duration-300">
-              <div className="w-16 h-16 bg-pink-50 border-2 border-[#FC1682]/40 rounded-full flex items-center justify-center mx-auto text-[#FC1682]">
+            <div className="text-center py-8 space-y-6 animate-in fade-in duration-300">
+              <div className="w-16 h-16 bg-[#172033] border-2 border-emerald-500/40 rounded-full flex items-center justify-center mx-auto text-emerald-400">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-2xl font-bold font-['Outfit',sans-serif] text-[#0F172A]">
-                  Callback Request Submitted!
+                <span className="text-xs uppercase font-extrabold tracking-wider px-3.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
+                  Request Dispatched to Admissions Desk
+                </span>
+                <h3 className="text-2xl font-bold font-display text-[#F3F4F6] mt-2">
+                  Thank You, {submittedData?.fullName || 'Student/Parent'}!
                 </h3>
-                <p className="text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
-                  Thank you, <span className="font-semibold text-slate-900">{submittedData?.fullName || 'Student/Parent'}</span>. Your details for{' '}
-                  <span className="text-[#FC1682] font-semibold">{submittedData?.courseInterest}</span> have been sent to our Berhampur admissions office.
-                  A counselor will call you at <span className="font-bold text-slate-900">+91 {submittedData?.mobileNumber}</span> during your preferred window ({submittedData?.preferredTime}).
+                <p className="text-sm text-[#AAB4C3] max-w-lg mx-auto leading-relaxed">
+                  We have received your preference for{' '}
+                  <span className="text-[#F4C76B] font-bold">{submittedData?.contactMethod}</span> regarding{' '}
+                  <span className="text-[#F3F4F6] font-semibold">{submittedData?.courseInterest}</span>. Our senior counselor
+                  will connect with you at <strong className="text-[#F3F4F6]">+91 {submittedData?.mobileNumber}</strong> during your
+                  requested window ({submittedData?.preferredTime}).
                 </p>
               </div>
 
               {/* Direct Instant Connect Options */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-700 text-left max-w-lg mx-auto space-y-2">
-                <div className="flex items-center gap-2 text-[#BE125A] font-bold">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-[#FC1682]" />
-                  <span>Prefer to Connect Right Now?</span>
+              <div className="bg-[#172033] border border-[#344054] rounded-2xl p-4 text-xs text-[#AAB4C3] text-left max-w-lg mx-auto space-y-2">
+                <div className="flex items-center gap-2 text-[#F4C76B] font-bold">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-[#F4C76B]" />
+                  <span>Need Immediate Assistance?</span>
                 </div>
                 <p className="leading-relaxed">
-                  You can also message our counseling team directly on WhatsApp for immediate fee structures and brochure downloads:
+                  You can also message our counseling desk on WhatsApp for fee structures and seat reservations:
                 </p>
                 <div className="pt-2 flex flex-wrap gap-2 text-[11px]">
                   <a
-                    href={`https://wa.me/${ACADEMY_CONFIG.contact.whatsappNumber}?text=${encodeURIComponent(`Hello Antariksh Academy, my name is ${submittedData?.fullName || 'a student/parent'}. I would like to enquire about +2 Science and ${submittedData?.courseInterest || 'Entrance'} batches.`)}`}
+                    href={`https://wa.me/${ACADEMY_CONFIG.contact.whatsappNumber}?text=${encodeURIComponent(
+                      `Hello Antariksh Academy, my name is ${submittedData?.fullName || 'a student/parent'}. I submitted a ${submittedData?.contactMethod} request for ${submittedData?.courseInterest}.`
+                    )}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-colors flex items-center gap-1.5 shadow-sm"
@@ -191,7 +223,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="px-5 py-2 text-xs font-bold text-slate-600 hover:text-[#FC1682] transition-colors flex items-center gap-1.5 mx-auto cursor-pointer"
+                  className="px-5 py-2.5 text-xs font-bold text-[#AAB4C3] hover:text-[#F4C76B] bg-[#172033] hover:bg-[#263449] border border-[#344054] rounded-xl transition-colors flex items-center gap-1.5 mx-auto cursor-pointer"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   <span>Submit Another Request</span>
@@ -215,21 +247,22 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                 />
               </div>
 
+              {/* Submission Error Banner with Fallback Links */}
               {submissionError && (
-                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm space-y-3">
+                <div className="p-4 rounded-2xl bg-rose-950/60 border border-rose-800 text-rose-200 text-xs sm:text-sm space-y-3">
                   <div className="flex items-start gap-2.5">
-                    <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                    <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-bold text-rose-900">Submission Notice</p>
-                      <p className="mt-0.5 leading-relaxed text-rose-700">{submissionError}</p>
+                      <p className="font-bold text-rose-100">Submission Notice</p>
+                      <p className="mt-0.5 leading-relaxed text-rose-300">{submissionError}</p>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2 pt-1">
                     <a
                       href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#111827] hover:bg-black text-[#F3F4F6] font-bold text-xs border border-[#344054] transition-colors"
                     >
-                      <Phone className="w-3.5 h-3.5 text-pink-400" />
+                      <Phone className="w-3.5 h-3.5 text-[#F4C76B]" />
                       <span>Call {ACADEMY_CONFIG.contact.phoneDisplay}</span>
                     </a>
                     <a
@@ -244,12 +277,72 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                   </div>
                 </div>
               )}
-              
+
+              {/* Preferred Contact Method Selection */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-2 font-display">
+                  Preferred Contact Method <span className="text-[#F4C76B]">*</span>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label
+                    className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
+                      contactMethod === 'Phone callback'
+                        ? 'bg-[#172033] border-[#F4C76B] text-[#F3F4F6] shadow-sm'
+                        : 'bg-[#172033]/60 border-[#344054] text-[#AAB4C3] hover:border-[#4B5E7D]'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="contactMethod"
+                      value="Phone callback"
+                      checked={contactMethod === 'Phone callback'}
+                      onChange={() => setContactMethod('Phone callback')}
+                      className="mt-1 h-4 w-4 text-[#F4C76B] focus:ring-[#F4C76B] border-[#344054] bg-[#111827]"
+                    />
+                    <div>
+                      <span className="block text-xs font-bold text-[#F3F4F6] flex items-center gap-1.5">
+                        <Phone className="w-3.5 h-3.5 text-[#F4C76B]" />
+                        Phone Callback
+                      </span>
+                      <span className="text-[11px] text-[#AAB4C3] leading-snug mt-0.5 block">
+                        Our counselor calls you at your preferred time window.
+                      </span>
+                    </div>
+                  </label>
+
+                  <label
+                    className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
+                      contactMethod === 'Parents meeting at the academy'
+                        ? 'bg-[#172033] border-[#F4C76B] text-[#F3F4F6] shadow-sm'
+                        : 'bg-[#172033]/60 border-[#344054] text-[#AAB4C3] hover:border-[#4B5E7D]'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="contactMethod"
+                      value="Parents meeting at the academy"
+                      checked={contactMethod === 'Parents meeting at the academy'}
+                      onChange={() => setContactMethod('Parents meeting at the academy')}
+                      className="mt-1 h-4 w-4 text-[#F4C76B] focus:ring-[#F4C76B] border-[#344054] bg-[#111827]"
+                    />
+                    <div>
+                      <span className="block text-xs font-bold text-[#F3F4F6] flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5 text-[#38BDF8]" />
+                        Parents Meeting at Academy
+                      </span>
+                      <span className="text-[11px] text-[#AAB4C3] leading-snug mt-0.5 block">
+                        Meet faculty in person at Bijipur campus, Brahmapur.
+                      </span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Row 1: Full Name and Mobile Number */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {/* Full Name */}
                 <div>
-                  <label htmlFor="cb-name" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Student or Parent Name <span className="text-[#FC1682]">*</span>
+                  <label htmlFor="cb-name" className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-1.5 font-display">
+                    Parent or Student Name <span className="text-[#F4C76B]">*</span>
                   </label>
                   <input
                     id="cb-name"
@@ -260,25 +353,24 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                       if (errors.fullName) setErrors((prev) => ({ ...prev, fullName: '' }));
                     }}
                     placeholder="e.g. Ramesh Chandra Das"
-                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 border text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682] transition-all ${
-                      errors.fullName ? 'border-rose-500 bg-rose-50' : 'border-slate-300'
+                    className={`w-full px-4 py-3 rounded-xl bg-[#172033] border text-[#F3F4F6] placeholder-[#8592A3] text-sm focus:outline-none focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B] transition-all ${
+                      errors.fullName ? 'border-rose-500 bg-rose-950/30' : 'border-[#344054]'
                     }`}
                   />
                   {errors.fullName && (
-                    <p className="mt-1 text-xs text-rose-600 flex items-center gap-1">
+                    <p className="mt-1 text-xs text-rose-400 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3 shrink-0" />
                       <span>{errors.fullName}</span>
                     </p>
                   )}
                 </div>
 
-                {/* Mobile Number */}
                 <div>
-                  <label htmlFor="cb-mobile" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Mobile Number (10 Digits) <span className="text-[#FC1682]">*</span>
+                  <label htmlFor="cb-mobile" className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-1.5 font-display">
+                    Mobile Number (10 Digits) <span className="text-[#F4C76B]">*</span>
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-3.5 text-xs font-bold text-slate-500 pointer-events-none">
+                    <span className="absolute left-3.5 top-3.5 text-xs font-bold text-[#8592A3] pointer-events-none">
                       +91
                     </span>
                     <input
@@ -294,16 +386,16 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                       }}
                       placeholder="9876543210"
                       maxLength={10}
-                      className={`w-full pl-12 pr-16 py-3 rounded-xl bg-slate-50 border text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682] transition-all font-mono tracking-wider ${
-                        errors.mobileNumber ? 'border-rose-500 bg-rose-50' : 'border-slate-300'
+                      className={`w-full pl-12 pr-16 py-3 rounded-xl bg-[#172033] border text-[#F3F4F6] placeholder-[#8592A3] text-sm focus:outline-none focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B] transition-all font-mono tracking-wider ${
+                        errors.mobileNumber ? 'border-rose-500 bg-rose-950/30' : 'border-[#344054]'
                       }`}
                     />
-                    <span className="absolute right-3.5 top-3.5 text-[11px] font-semibold text-slate-400 pointer-events-none">
+                    <span className="absolute right-3.5 top-3.5 text-[11px] font-semibold text-[#8592A3] pointer-events-none">
                       {mobileNumber.length}/10
                     </span>
                   </div>
                   {errors.mobileNumber && (
-                    <p className="mt-1 text-xs text-rose-600 flex items-center gap-1">
+                    <p className="mt-1 text-xs text-rose-400 flex items-center gap-1">
                       <AlertCircle className="w-3 h-3 shrink-0" />
                       <span>{errors.mobileNumber}</span>
                     </p>
@@ -311,18 +403,17 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                 </div>
               </div>
 
-              {/* Class & Course Row */}
+              {/* Row 2: Class & Course Selection */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {/* Student's Current Class */}
                 <div>
-                  <label htmlFor="cb-class" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Class / Level
+                  <label htmlFor="cb-class" className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-1.5 font-display">
+                    Student's Class
                   </label>
                   <select
                     id="cb-class"
                     value={studentClass}
                     onChange={(e) => setStudentClass(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682]"
+                    className="w-full px-4 py-3 rounded-xl bg-[#172033] border border-[#344054] text-[#F3F4F6] text-sm focus:outline-none focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B]"
                   >
                     <option value="+2 First Year (Class 11)">+2 First Year (Class 11 Science)</option>
                     <option value="+2 Second Year (Class 12)">+2 Second Year (Class 12 Science)</option>
@@ -331,16 +422,15 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                   </select>
                 </div>
 
-                {/* Course of Interest */}
                 <div>
-                  <label htmlFor="cb-course" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Interested Course
+                  <label htmlFor="cb-course" className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-1.5 font-display">
+                    Course or Exam Interest
                   </label>
                   <select
                     id="cb-course"
                     value={courseInterest}
                     onChange={(e) => setCourseInterest(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682]"
+                    className="w-full px-4 py-3 rounded-xl bg-[#172033] border border-[#344054] text-[#F3F4F6] text-sm focus:outline-none focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B]"
                   >
                     <option value="Integrated Board + Entrance Preparation">Integrated Board + Entrance Preparation</option>
                     <option value="JEE Main & JEE Advanced">JEE Main & JEE Advanced</option>
@@ -351,25 +441,42 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                 </div>
               </div>
 
-              {/* Preferred Time Slot */}
+              {/* Row 3: Preferred Time or Meeting Preference */}
               <div>
-                <label htmlFor="cb-time" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Preferred Callback Time Window
+                <label htmlFor="cb-time" className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-1.5 font-display">
+                  {contactMethod === 'Parents meeting at the academy'
+                    ? 'Preferred Meeting Time at Bijipur Campus'
+                    : 'Preferred Callback Time Window'}
                 </label>
                 <select
                   id="cb-time"
                   value={preferredTime}
                   onChange={(e) => setPreferredTime(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682]"
+                  className="w-full px-4 py-3 rounded-xl bg-[#172033] border border-[#344054] text-[#F3F4F6] text-sm focus:outline-none focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B]"
                 >
                   <option value="Morning (09:00 AM - 12:00 PM)">Morning (09:00 AM – 12:00 PM)</option>
                   <option value="Afternoon (12:00 PM - 04:00 PM)">Afternoon (12:00 PM – 04:00 PM)</option>
                   <option value="Evening (04:00 PM - 07:30 PM)">Evening (04:00 PM – 07:30 PM)</option>
-                  <option value="Anytime during working hours">Anytime during academy office hours</option>
+                  <option value="Anytime during working hours">Anytime during academy hours (07:00 AM – 07:30 PM)</option>
                 </select>
               </div>
 
-              {/* Consent Checkbox */}
+              {/* Row 4: Optional Message */}
+              <div>
+                <label htmlFor="cb-message" className="block text-xs font-bold uppercase tracking-wider text-[#F3F4F6] mb-1.5 font-display">
+                  Optional Message or Questions <span className="text-[#8592A3] font-normal">(Optional)</span>
+                </label>
+                <textarea
+                  id="cb-message"
+                  rows={2}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="e.g. Inquiring about hostel accommodation, fee installments, or current batch schedules."
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#172033] border border-[#344054] text-[#F3F4F6] placeholder-[#8592A3] text-sm focus:outline-none focus:border-[#F4C76B] focus:ring-1 focus:ring-[#F4C76B] resize-y"
+                ></textarea>
+              </div>
+
+              {/* Row 5: Consent Checkbox */}
               <div>
                 <label className="flex items-start gap-3 cursor-pointer group">
                   <input
@@ -379,47 +486,57 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                       setConsent(e.target.checked);
                       if (errors.consent) setErrors((prev) => ({ ...prev, consent: '' }));
                     }}
-                    className="mt-1 h-4 w-4 rounded border-slate-300 bg-white text-[#FC1682] focus:ring-[#FC1682]"
+                    className="mt-1 h-4 w-4 rounded border-[#344054] bg-[#172033] text-[#F4C76B] focus:ring-[#F4C76B]"
                   />
-                  <span className="text-xs text-slate-600 group-hover:text-slate-900 transition-colors leading-relaxed">
+                  <span className="text-xs text-[#AAB4C3] group-hover:text-[#F3F4F6] transition-colors leading-relaxed">
                     I authorize Antariksh Academy counselors to contact me on the provided number solely regarding
                     academic guidance, fee structures, and batch admissions. We respect your privacy.
                   </span>
                 </label>
                 {errors.consent && (
-                  <p className="mt-1 text-xs text-rose-600 flex items-center gap-1">
+                  <p className="mt-1 text-xs text-rose-400 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3 shrink-0" />
                     <span>{errors.consent}</span>
                   </p>
                 )}
               </div>
 
-              {/* Submit Button */}
+              {/* Submit Action Button */}
               <div className="pt-2">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 px-6 rounded-xl font-bold text-sm sm:text-base text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#D9146C] hover:from-[#E00E70] shadow-lg shadow-pink-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                  className="w-full py-4 px-6 rounded-xl font-bold text-sm sm:text-base text-[#0F172A] bg-gradient-to-r from-[#F4C76B] via-[#E5B555] to-[#D4A33B] hover:brightness-105 shadow-lg shadow-amber-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 font-display"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Sending Request...</span>
+                      <div className="w-4 h-4 border-2 border-[#0F172A] border-t-transparent rounded-full animate-spin"></div>
+                      <span>Submitting Request...</span>
                     </>
                   ) : (
                     <>
-                      <Send className="w-4 h-4 text-white" />
-                      <span>Request Free Academic Callback</span>
+                      <Send className="w-4 h-4 text-[#0F172A]" />
+                      <span>
+                        {contactMethod === 'Parents meeting at the academy'
+                          ? 'Request Parents Meeting at Academy'
+                          : 'Request Academic Phone Callback'}
+                      </span>
                     </>
                   )}
                 </button>
               </div>
 
-              {/* Footnote */}
-              <p className="text-[11px] text-slate-500 text-center flex items-center justify-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#0284C7]" />
-                <span>Your details are private and used solely to fulfill your admission guidance enquiry</span>
-              </p>
+              {/* Distinction Footnote */}
+              <div className="flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#8592A3] pt-2 border-t border-[#344054]/60 gap-2">
+                <span className="flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Manual follow-up by Antariksh Academy admissions team (Private & Confidential)</span>
+                </span>
+                <span className="flex items-center gap-1 text-[#38BDF8]">
+                  <Clock className="w-3 h-3" />
+                  <span>Response within 15–30 minutes</span>
+                </span>
+              </div>
             </form>
           )}
 
@@ -429,3 +546,5 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
     </section>
   );
 };
+
+export default CallbackSection;

@@ -1,596 +1,308 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Calendar,
   Clock,
-  CheckCircle2,
-  AlertCircle,
   Video,
   ExternalLink,
   ShieldCheck,
-  RefreshCw,
-  Send,
+  Target,
+  BookOpen,
+  Compass,
   Phone,
+  MessageSquare,
+  MapPin,
+  HelpCircle,
+  Users,
 } from 'lucide-react';
 import { ACADEMY_CONFIG } from '../config/academyConfig';
-import { buildGoogleCalendarUrl } from '../utils/googleCalendar';
-import { isValidEmail, sanitizeMobileInput, getMobileValidationError } from '../utils/validation';
-import { submitEnquiryToGmail } from '../services/formSubmission';
 
 interface ConsultationSectionProps {
   preselectedCourse?: string;
   isStandalonePage?: boolean;
 }
 
-function getTomorrowDateStr(): string {
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  return tomorrow.toISOString().split('T')[0];
-}
-
-function getDefaultDateStr(): string {
-  const defaultDate = new Date();
-  defaultDate.setDate(defaultDate.getDate() + 3);
-  return defaultDate.toISOString().split('T')[0];
-}
-
 export const ConsultationSection: React.FC<ConsultationSectionProps> = ({
   preselectedCourse = '',
   isStandalonePage = false,
 }) => {
-  const [minDateStr] = useState(getTomorrowDateStr);
+  const [isIframeLoading, setIsIframeLoading] = useState(true);
+  const [embedFailed, setEmbedFailed] = useState(false);
 
-  // Form Fields State
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [studentClass, setStudentClass] = useState('+2 First Year (Class 11)');
-  const [courseInterest, setCourseInterest] = useState(
-    preselectedCourse || 'Integrated Board + Entrance Preparation'
-  );
-  const [preferredDate, setPreferredDate] = useState(getDefaultDateStr);
-  const [preferredTime, setPreferredTime] = useState<string>(ACADEMY_CONFIG.consultation.availableSlots[1]);
-  const [consultationType, setConsultationType] = useState('Google Meet Video Call');
-  const [specificQuery, setSpecificQuery] = useState('');
-  const [honeypot, setHoneypot] = useState('');
+  // Cal.com embed initialization
+  useEffect(() => {
+    // Timeout safeguard: if embed doesn't trigger load in 8s, offer prominent fallback
+    const timer = setTimeout(() => {
+      setIsIframeLoading(false);
+    }, 4500);
 
-  // Form Validation & Status
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submissionSuccess, setSubmissionSuccess] = useState<boolean>(false);
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const [calendarUrl, setCalendarUrl] = useState<string>('');
-  const [submittedData, setSubmittedData] = useState<{
-    fullName: string;
-    email: string;
-    courseInterest: string;
-    preferredDate: string;
-    preferredTime: string;
-  } | null>(null);
-
-  const validate = (): boolean => {
-    const errs: Record<string, string> = {};
-
-    if (!fullName.trim()) {
-      errs.fullName = 'Please enter your full name.';
-    } else if (fullName.trim().length < 3) {
-      errs.fullName = 'Name must be at least 3 characters.';
-    }
-
-    if (!email.trim()) {
-      errs.email = 'Please provide an email address for meeting confirmations.';
-    } else if (!isValidEmail(email)) {
-      errs.email = 'Please enter a valid email address.';
-    }
-
-    if (mobileNumber.trim()) {
-      const phoneErr = getMobileValidationError(mobileNumber);
-      if (phoneErr) {
-        errs.mobileNumber = phoneErr;
-      }
-    }
-
-    if (!preferredDate) {
-      errs.preferredDate = 'Please select a consultation date.';
-    } else {
-      const dateParts = preferredDate.split('-').map(Number);
-      if (dateParts.length !== 3 || dateParts.some(isNaN)) {
-        errs.preferredDate = 'Please select a valid date.';
-      } else {
-        const selected = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (selected < today) {
-          errs.preferredDate = 'Consultation date cannot be in the past.';
-        }
-      }
-    }
-
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validate()) return;
-
-    setIsSubmitting(true);
-    setSubmissionError(null);
-
-    // Transmit directly to academy admissions inbox
-    const result = await submitEnquiryToGmail({
-      formType: 'Consultation Booking',
-      fullName: fullName.trim(),
-      email: email.trim(),
-      mobileNumber: mobileNumber.trim() || undefined,
-      studentClass,
-      courseInterest,
-      preferredDate,
-      preferredTime,
-      consultationType,
-      message: specificQuery.trim() || undefined,
-      honeypot,
-    });
-
-    setIsSubmitting(false);
-
-    if (result.success) {
-      // Build draft calendar URL only upon verified request acceptance
-      const calUrl = buildGoogleCalendarUrl({
-        fullName: fullName.trim(),
-        email: email.trim(),
-        phone: mobileNumber.trim() || undefined,
-        studentClass,
-        courseInterest,
-        preferredDate,
-        preferredTime,
-        notes: specificQuery.trim() || undefined,
-      });
-
-      setCalendarUrl(calUrl);
-      setSubmittedData({
-        fullName: fullName.trim(),
-        email: email.trim(),
-        courseInterest,
-        preferredDate,
-        preferredTime,
-      });
-      setSubmissionSuccess(true);
-      // Reset form fields only after confirmed provider acceptance
-      setFullName('');
-      setEmail('');
-      setMobileNumber('');
-      setSpecificQuery('');
-      setHoneypot('');
-      setErrors({});
-    } else {
-      setSubmissionSuccess(false);
-      setSubmissionError(
-        result.message ||
-          'We were unable to transmit your consultation booking right now. Please call or WhatsApp our admissions desk directly.'
-      );
-    }
-  };
-
-  const handleReset = () => {
-    setFullName('');
-    setEmail('');
-    setMobileNumber('');
-    setSpecificQuery('');
-    setHoneypot('');
-    setErrors({});
-    setSubmissionSuccess(false);
-    setSubmissionError(null);
-    setSubmittedData(null);
-    setCalendarUrl('');
-  };
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <section
       id="consultation"
       className={`${
-        isStandalonePage ? 'py-12 sm:py-16' : 'py-16 sm:py-20 md:py-24'
-      } bg-gradient-to-b from-white via-pink-50/25 to-slate-50 border-b border-slate-200 relative overflow-hidden`}
+        isStandalonePage ? 'py-10 sm:py-16' : 'py-16 sm:py-20 md:py-24'
+      } bg-[#111827] text-[#F3F4F6] relative overflow-hidden border-b border-[#243042]`}
     >
-      {/* Decorative Glows */}
-      <div className="absolute top-10 left-10 w-80 h-80 bg-[#FC1682]/10 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-10 right-10 w-80 h-80 bg-[#00C8FF]/10 rounded-full blur-3xl pointer-events-none"></div>
+      {/* Restrained Ambient Glows */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#F4C76B]/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#38BDF8]/5 rounded-full blur-3xl pointer-events-none"></div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-pink-50 border border-pink-200 text-[#BE125A] text-xs font-bold uppercase tracking-wider mb-3">
-            <Video className="w-3.5 h-3.5 text-[#FC1682]" />
-            <span>1-on-1 Academic Counseling</span>
+        {/* 1. Page Heading */}
+        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#202B3D] border border-[#344054] text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-4 font-cinzel">
+            <Video className="w-3.5 h-3.5 text-[#F4C76B]" />
+            <span>Option A: Free Online Consultation</span>
           </div>
-          <h2 className="font-['Outfit',sans-serif] text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#0F172A] tracking-tight mb-4">
-            Book a Free Academic Consultation
-          </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-            Discuss your student’s strengths, identify board and entrance requirements, and plan a clear academic roadmap with
-            our senior faculty via Google Meet or in person at Bijipur, Brahmapur.
+
+          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#F3F4F6] tracking-tight mb-4">
+            Book Your Free Academic Consultation
+          </h1>
+
+          {/* 2. Short Explanation */}
+          <p className="text-[#AAB4C3] text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+            Discuss your student’s strengths, identify council board and competitive entrance milestones,
+            and create a clear academic roadmap with our senior faculty via a 30-minute 1-on-1 session.
           </p>
 
-          <div className="mt-5 flex items-center justify-center gap-4 text-xs text-slate-500 flex-wrap">
-            <span className="flex items-center gap-1 font-bold text-slate-700">
-              <Clock className="w-3.5 h-3.5 text-[#FC1682]" />
-              30-Minute Interactive Session
+          <div className="mt-5 flex items-center justify-center gap-3 sm:gap-6 text-xs text-[#AAB4C3] flex-wrap">
+            <span className="flex items-center gap-1.5 font-semibold text-[#F3F4F6]">
+              <Clock className="w-3.5 h-3.5 text-[#F4C76B]" />
+              30-Minute 1-on-1 Session
             </span>
-            <span className="text-slate-300">•</span>
-            <span className="flex items-center gap-1 font-bold text-emerald-700">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              100% Free & Personalized
+            <span className="text-[#344054]">•</span>
+            <span className="flex items-center gap-1.5 font-semibold text-[#38BDF8]">
+              <Video className="w-3.5 h-3.5 text-[#38BDF8]" />
+              Google Meet Video Conferencing
             </span>
-            <span className="text-slate-300">•</span>
-            <span className="flex items-center gap-1 font-bold text-[#0284C7]">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#0284C7]" />
-              Direct Faculty Interaction
+            <span className="text-[#344054]">•</span>
+            <span className="flex items-center gap-1.5 font-semibold text-emerald-400">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              100% Free & Transparent
             </span>
           </div>
         </div>
 
-        {/* Main Consultation Form Card */}
-        <div className="bg-white border-2 border-pink-100 rounded-3xl p-6 sm:p-10 shadow-xl backdrop-blur-xl">
-          
-          {submissionSuccess ? (
-            <div className="space-y-6 text-center py-6 animate-in fade-in duration-300">
-              <div className="w-16 h-16 bg-pink-50 border-2 border-[#FC1682]/40 text-[#FC1682] rounded-full flex items-center justify-center mx-auto shadow-sm">
-                <CheckCircle2 className="w-8 h-8 text-[#FC1682]" />
-              </div>
+        {/* 3. Three Key Benefit Items */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+          <div className="bg-[#202B3D] border border-[#344054] rounded-2xl p-5 shadow-sm hover:border-[#F4C76B]/40 transition-colors">
+            <div className="w-9 h-9 rounded-xl bg-[#F4C76B]/15 text-[#F4C76B] flex items-center justify-center mb-3">
+              <Target className="w-5 h-5 text-[#F4C76B]" />
+            </div>
+            <h3 className="font-display text-sm font-bold text-[#F3F4F6] mb-1.5">
+              1. Discuss Academic Goals
+            </h3>
+            <p className="text-xs text-[#AAB4C3] leading-relaxed">
+              Evaluate current baseline marks, target percentiles in JEE/NEET, and identify conceptual strengths early.
+            </p>
+          </div>
 
-              <div className="space-y-2">
-                <span className="text-xs uppercase font-extrabold tracking-wider px-3.5 py-1 rounded-full bg-amber-50 border border-amber-300 text-amber-800">
-                  Status: Pending Counselor Confirmation
-                </span>
-                <h3 className="font-['Outfit',sans-serif] text-2xl sm:text-3xl font-extrabold text-[#0F172A] mt-2">
-                  Consultation Request Received!
-                </h3>
-                <p className="text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
-                  Thank you, <span className="font-bold text-slate-900">{submittedData?.fullName || 'Student/Parent'}</span>. Your appointment request for{' '}
-                  <span className="font-bold text-[#FC1682]">{submittedData?.courseInterest}</span> on{' '}
-                  <span className="font-bold text-slate-900">{submittedData?.preferredDate}</span> ({submittedData?.preferredTime}) has been transmitted to the
-                  Antariksh Academy Admissions Desk.
+          <div className="bg-[#202B3D] border border-[#344054] rounded-2xl p-5 shadow-sm hover:border-[#38BDF8]/40 transition-colors">
+            <div className="w-9 h-9 rounded-xl bg-[#38BDF8]/15 text-[#38BDF8] flex items-center justify-center mb-3">
+              <Compass className="w-5 h-5 text-[#38BDF8]" />
+            </div>
+            <h3 className="font-display text-sm font-bold text-[#F3F4F6] mb-1.5">
+              2. Understand Suitable Pathways
+            </h3>
+            <p className="text-xs text-[#AAB4C3] leading-relaxed">
+              Determine the right batch stream: Integrated CHSE + Entrance, Pure Board Foundation, or Repeater Dropper drills.
+            </p>
+          </div>
+
+          <div className="bg-[#202B3D] border border-[#344054] rounded-2xl p-5 shadow-sm hover:border-emerald-500/40 transition-colors">
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center mb-3">
+              <BookOpen className="w-5 h-5 text-emerald-400" />
+            </div>
+            <h3 className="font-display text-sm font-bold text-[#F3F4F6] mb-1.5">
+              3. Board + Entrance Synergy
+            </h3>
+            <p className="text-xs text-[#AAB4C3] leading-relaxed">
+              Learn our proven methodology for scoring 90%+ in subjective CHSE board answers alongside objective speed problem-solving.
+            </p>
+          </div>
+        </div>
+
+        {/* 4. Cal.com Booking Card Container */}
+        <div className="bg-[#202B3D] border-2 border-[#344054] rounded-3xl p-4 sm:p-7 shadow-2xl relative overflow-hidden">
+          
+          {/* Booking Area Guidance Message */}
+          <div className="bg-[#172033] border border-[#344054] rounded-2xl p-4 sm:p-5 mb-6 text-xs sm:text-sm text-[#F3F4F6] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#F4C76B]/15 text-[#F4C76B] flex items-center justify-center shrink-0 mt-0.5">
+                <Calendar className="w-4 h-4 text-[#F4C76B]" />
+              </div>
+              <div>
+                <p className="font-bold text-[#F3F4F6] leading-snug">
+                  Choose an available 30-minute slot for your free academic consultation.
+                </p>
+                <p className="text-[#AAB4C3] text-xs mt-0.5">
+                  Your booking confirmation and Google Meet details will be sent through Cal.com.
                 </p>
               </div>
+            </div>
 
-              {/* Confirmation Details Card */}
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-xs text-slate-700 text-left space-y-3 max-w-xl mx-auto">
-                <div className="flex items-center gap-2 font-bold text-[#0F172A] text-sm border-b border-slate-200 pb-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Next Steps for Your Consultation:</span>
-                </div>
-                <ul className="space-y-2 text-slate-600 leading-relaxed">
-                  <li className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#FC1682] shrink-0 mt-1.5"></span>
-                    <span>Our senior academic counselor will review mentor availability and verify your slot.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#FC1682] shrink-0 mt-1.5"></span>
-                    <span>The confirmed Google Meet video link or centre appointment details will be sent to <strong className="text-slate-800">{submittedData?.email}</strong> and via WhatsApp.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#FC1682] shrink-0 mt-1.5"></span>
-                    <span>Note: This submission is an appointment request. Confirmed timing and meeting link will be coordinated directly by our counselor.</span>
-                  </li>
-                </ul>
+            {/* Direct New-Tab Link fallback */}
+            <a
+              href={ACADEMY_CONFIG.calCom.bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#2A374E] hover:bg-[#344563] text-xs font-bold text-[#F4C76B] border border-[#3E4F6D] transition-colors shrink-0 cursor-pointer"
+            >
+              <span>Open in New Tab</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          {/* Cal.com Embedded Iframe Widget */}
+          <div className="relative w-full rounded-2xl overflow-hidden bg-[#111827] border border-[#344054] min-h-[680px] sm:min-h-[720px] flex flex-col">
+            
+            {/* Loading Spinner */}
+            {isIframeLoading && (
+              <div className="absolute inset-0 bg-[#111827] flex flex-col items-center justify-center p-6 z-10 space-y-3">
+                <div className="w-10 h-10 border-3 border-[#344054] border-t-[#F4C76B] rounded-full animate-spin"></div>
+                <p className="text-xs font-bold text-[#AAB4C3] uppercase tracking-wider font-stat">
+                  Connecting with Cal.com Availability...
+                </p>
+                <p className="text-[11px] text-[#8592A3]">
+                  Fetching live 30-minute counseling slots with Google Meet
+                </p>
               </div>
+            )}
 
-              {/* Action Buttons */}
-              <div className="flex flex-col items-center justify-center gap-3 pt-2">
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto">
-                  {calendarUrl && (
-                    <a
-                      href={calendarUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#D9146C] hover:from-[#E00E70] shadow-lg shadow-pink-500/25 flex items-center justify-center gap-2 transition-all cursor-pointer"
-                    >
-                      <Calendar className="w-4 h-4 text-white" />
-                      <span>Add Draft Reminder to Google Calendar (Optional)</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    className="w-full sm:w-auto px-5 py-3.5 rounded-xl font-bold text-xs sm:text-sm text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <RefreshCw className="w-4 h-4 text-[#FC1682]" />
-                    <span>Book Another Slot</span>
-                  </button>
+            {/* Embed Error / Adblocker Fallback Notice */}
+            {embedFailed && (
+              <div className="p-8 text-center space-y-4 my-auto">
+                <div className="w-12 h-12 rounded-full bg-[#F4C76B]/15 text-[#F4C76B] flex items-center justify-center mx-auto">
+                  <HelpCircle className="w-6 h-6 text-[#F4C76B]" />
                 </div>
-                {calendarUrl && (
-                  <p className="text-[11px] text-slate-500 max-w-md text-center">
-                    Note: Calendar link creates a provisional draft entry on your device's Google Calendar for your personal reminder. Final appointment confirmation is coordinated by our counseling desk.
+                <div className="space-y-1">
+                  <h4 className="font-bold text-base text-[#F3F4F6]">Calendar Embed Blocked or Taking Too Long?</h4>
+                  <p className="text-xs text-[#AAB4C3] max-w-md mx-auto leading-relaxed">
+                    Browser privacy extensions or ad-blockers can occasionally block third-party scheduling widgets.
+                    You can open the official Cal.com booking interface directly:
                   </p>
-                )}
+                </div>
+                <a
+                  href={ACADEMY_CONFIG.calCom.bookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#F4C76B] text-[#0F172A] font-extrabold text-sm hover:bg-[#E5B555] transition-all shadow-md shadow-amber-500/20"
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span>Open Free Consultation Calendar (Cal.com)</span>
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            )}
+
+            {/* Official Cal.com Iframe with dark theme & overlayCalendar enabled */}
+            <iframe
+              title="Antariksh Academy 30-Minute Free Academic Consultation Calendar"
+              src={ACADEMY_CONFIG.calCom.bookingUrl}
+              className="w-full flex-1 border-0 rounded-2xl min-h-[680px] sm:min-h-[720px]"
+              onLoad={() => setIsIframeLoading(false)}
+              onError={() => {
+                setIsIframeLoading(false);
+                setEmbedFailed(true);
+              }}
+            ></iframe>
+          </div>
+
+          {/* 5. Small Note Explaining Appointment Availability */}
+          <div className="mt-4 pt-4 border-t border-[#344054]/70 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#AAB4C3]">
+            <span className="flex items-center gap-1.5 text-center sm:text-left">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>
+                Appointment availability, timezones, and automated Google Meet calendar invites are powered through Cal.com.
+              </span>
+            </span>
+            <a
+              href={ACADEMY_CONFIG.calCom.bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#F4C76B] hover:underline font-bold inline-flex items-center gap-1 shrink-0"
+            >
+              <span>Direct Link</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+
+        </div>
+
+        {/* 6. Secondary Section: Prefer to Speak with Our Team? (Option B Distinction) */}
+        <div className="mt-12 bg-[#172033] border border-[#344054] rounded-3xl p-6 sm:p-8">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            
+            <div className="space-y-2 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#202B3D] border border-[#344054] text-[#38BDF8] text-xs font-bold uppercase tracking-wider font-cinzel">
+                <Users className="w-3.5 h-3.5 text-[#38BDF8]" />
+                <span>Option B: Phone Callback or In-Person Visit</span>
+              </div>
+              <h3 className="font-display text-xl sm:text-2xl font-bold text-[#F3F4F6]">
+                Prefer to Speak with Our Team?
+              </h3>
+              <p className="text-xs sm:text-sm text-[#AAB4C3] leading-relaxed">
+                Would you prefer an immediate phone conversation or an in-person meeting with our academic team at our Bijipur, Brahmapur center?
+                Share your details and our senior mentor will follow up directly.
+              </p>
+            </div>
+
+            {/* 7. Link to Separate Parent Meeting / Callback Form */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
+              <Link
+                to="/contact"
+                state={{ preselectedCourse }}
+                className="px-5 py-3 rounded-xl bg-[#202B3D] hover:bg-[#2A374E] text-[#F3F4F6] border border-[#344054] hover:border-[#F4C76B]/60 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-sm"
+              >
+                <Phone className="w-4 h-4 text-[#F4C76B]" />
+                <span>Request Parent Meeting or Callback</span>
+              </Link>
+
+              <a
+                href={ACADEMY_CONFIG.contact.whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-sm"
+              >
+                <MessageSquare className="w-4 h-4 text-white" />
+                <span>WhatsApp Admissions Desk</span>
+              </a>
+            </div>
+
+          </div>
+
+          {/* 8. Academy Address and Direct Contact Links */}
+          <div className="mt-6 pt-5 border-t border-[#344054]/60 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-[#AAB4C3]">
+            <div className="flex items-start gap-2">
+              <MapPin className="w-4 h-4 text-[#F4C76B] shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold text-[#F3F4F6] block">Campus Address</span>
+                <span>{ACADEMY_CONFIG.address.street}, {ACADEMY_CONFIG.address.city} (PIN: 760001)</span>
               </div>
             </div>
-          ) : (
-            <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(e); }} className="space-y-6" noValidate>
-              
-              {/* Anti-spam honeypot */}
-              <div className="hidden" aria-hidden="true">
-                <label htmlFor="cs-honey">Leave this field blank</label>
-                <input
-                  id="cs-honey"
-                  type="text"
-                  name="_honey"
-                  value={honeypot}
-                  onChange={(e) => setHoneypot(e.target.value)}
-                  tabIndex={-1}
-                  autoComplete="off"
-                />
-              </div>
 
-              {submissionError && (
-                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm space-y-3">
-                  <div className="flex items-start gap-2.5">
-                    <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-bold text-rose-900">Consultation Request Notice</p>
-                      <p className="mt-0.5 leading-relaxed text-rose-700">{submissionError}</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    <a
-                      href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-colors"
-                    >
-                      <Phone className="w-3.5 h-3.5 text-pink-400" />
-                      <span>Call {ACADEMY_CONFIG.contact.phoneDisplay}</span>
-                    </a>
-                    <a
-                      href={ACADEMY_CONFIG.contact.whatsappLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors"
-                    >
-                      <Video className="w-3.5 h-3.5" />
-                      <span>Connect on WhatsApp</span>
-                    </a>
-                  </div>
-                </div>
-              )}
-              
-              {/* Row 1: Full Name and Email Address */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label htmlFor="cs-name" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Student or Parent Name <span className="text-[#FC1682]">*</span>
-                  </label>
-                  <input
-                    id="cs-name"
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => {
-                      setFullName(e.target.value);
-                      if (errors.fullName) setErrors((prev) => ({ ...prev, fullName: '' }));
-                    }}
-                    placeholder="e.g. Priyabrata Mohapatra"
-                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 border text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682] transition-all ${
-                      errors.fullName ? 'border-rose-500 bg-rose-50' : 'border-slate-300'
-                    }`}
-                  />
-                  {errors.fullName && (
-                    <p className="mt-1 text-xs text-rose-600 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3 shrink-0" />
-                      <span>{errors.fullName}</span>
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="cs-email" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Email Address (for Google Meet Link) <span className="text-[#FC1682]">*</span>
-                  </label>
-                  <input
-                    id="cs-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
-                    }}
-                    placeholder="student@example.com"
-                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 border text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682] transition-all ${
-                      errors.email ? 'border-rose-500 bg-rose-50' : 'border-slate-300'
-                    }`}
-                  />
-                  {errors.email && (
-                    <p className="mt-1 text-xs text-rose-600 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3 shrink-0" />
-                      <span>{errors.email}</span>
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Row 2: Mobile Number and Student Class */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label htmlFor="cs-mobile" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Mobile Number <span className="text-slate-400 font-normal">(for SMS/WhatsApp Confirmation)</span>
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-3.5 text-xs font-bold text-slate-500 pointer-events-none">
-                      +91
-                    </span>
-                    <input
-                      id="cs-mobile"
-                      type="tel"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={mobileNumber}
-                      onChange={(e) => {
-                        const sanitized = sanitizeMobileInput(e.target.value);
-                        setMobileNumber(sanitized);
-                        if (errors.mobileNumber) setErrors((prev) => ({ ...prev, mobileNumber: '' }));
-                      }}
-                      placeholder="9876543210"
-                      maxLength={10}
-                      className={`w-full pl-12 pr-16 py-3 rounded-xl bg-slate-50 border text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682] transition-all font-mono tracking-wider ${
-                        errors.mobileNumber ? 'border-rose-500 bg-rose-50' : 'border-slate-300'
-                      }`}
-                    />
-                    <span className="absolute right-3.5 top-3.5 text-[11px] font-semibold text-slate-400 pointer-events-none">
-                      {mobileNumber.length}/10
-                    </span>
-                  </div>
-                  {errors.mobileNumber && (
-                    <p className="mt-1 text-xs text-rose-600 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3 shrink-0" />
-                      <span>{errors.mobileNumber}</span>
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="cs-class" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Student Current Class / Status
-                  </label>
-                  <select
-                    id="cs-class"
-                    value={studentClass}
-                    onChange={(e) => setStudentClass(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682]"
-                  >
-                    <option value="+2 First Year (Class 11)">Class 11 (+2 First Year Science)</option>
-                    <option value="+2 Second Year (Class 12)">Class 12 (+2 Second Year Science)</option>
-                    <option value="+2 Passout (Repeater / Dropper)">12th Passout / Dropper Batch</option>
-                    <option value="Class 10 Moving to 11">Class 10 Moving to +2 Science</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Row 3: Target Course and Consultation Mode */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label htmlFor="cs-course" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Target Course Stream
-                  </label>
-                  <select
-                    id="cs-course"
-                    value={courseInterest}
-                    onChange={(e) => setCourseInterest(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682]"
-                  >
-                    <option value="Integrated Board + Entrance Preparation">Integrated Board + Entrance Preparation</option>
-                    <option value="JEE Main & JEE Advanced">JEE Main & JEE Advanced</option>
-                    <option value="NEET-UG Medical Preparation">NEET-UG Medical Preparation</option>
-                    <option value="+2 Science Odisha CHSE Board">+2 Science Odisha CHSE Board</option>
-                    <option value="NDA (National Defence Academy) Preparation">NDA (National Defence Academy) Preparation</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label htmlFor="cs-mode" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Consultation Medium
-                  </label>
-                  <select
-                    id="cs-mode"
-                    value={consultationType}
-                    onChange={(e) => setConsultationType(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682]"
-                  >
-                    <option value="Google Meet Video Call">Google Meet Video Call</option>
-                    <option value="In-Person at Bijipur Centre">In-Person at Bijipur Center, Brahmapur</option>
-                    <option value="Phone Call Consultation">Direct Phone Consultation</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Row 4: Preferred Date and Preferred Time Slot */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label htmlFor="cs-date" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Preferred Date <span className="text-[#FC1682]">*</span>
-                  </label>
-                  <input
-                    id="cs-date"
-                    type="date"
-                    min={minDateStr}
-                    value={preferredDate}
-                    onChange={(e) => {
-                      setPreferredDate(e.target.value);
-                      if (errors.preferredDate) setErrors((prev) => ({ ...prev, preferredDate: '' }));
-                    }}
-                    className={`w-full px-4 py-3 rounded-xl bg-slate-50 border text-slate-900 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682] ${
-                      errors.preferredDate ? 'border-rose-500 bg-rose-50' : 'border-slate-300'
-                    }`}
-                  />
-                  {errors.preferredDate && (
-                    <p className="mt-1 text-xs text-rose-600 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3 shrink-0" />
-                      <span>{errors.preferredDate}</span>
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="cs-time" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                    Preferred Time Slot
-                  </label>
-                  <select
-                    id="cs-time"
-                    value={preferredTime}
-                    onChange={(e) => setPreferredTime(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682]"
-                  >
-                    {ACADEMY_CONFIG.consultation.availableSlots.map((slot) => (
-                      <option key={slot} value={slot}>
-                        {slot}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Row 5: Specific Questions or Academic Focus (Optional) */}
+            <div className="flex items-start gap-2">
+              <Phone className="w-4 h-4 text-[#38BDF8] shrink-0 mt-0.5" />
               <div>
-                <label htmlFor="cs-query" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                  Specific Questions / Academic Focus <span className="text-slate-400 font-normal">(Optional)</span>
-                </label>
-                <textarea
-                  id="cs-query"
-                  rows={3}
-                  value={specificQuery}
-                  onChange={(e) => setSpecificQuery(e.target.value)}
-                  placeholder="e.g. Currently scoring 75% in school, want advice on managing JEE numericals alongside CHSE Physics."
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FC1682] resize-y"
-                ></textarea>
+                <span className="font-bold text-[#F3F4F6] block">Direct Phone</span>
+                <a href={`tel:${ACADEMY_CONFIG.contact.phoneRaw}`} className="hover:text-[#F4C76B] transition-colors">
+                  {ACADEMY_CONFIG.contact.phoneDisplay}
+                </a>
               </div>
+            </div>
 
-              {/* Submit CTA */}
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-4 px-6 rounded-xl font-bold text-sm sm:text-base text-white bg-gradient-to-r from-[#FC1682] via-[#E11D74] to-[#D9146C] hover:from-[#E00E70] shadow-lg shadow-pink-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Connecting with Admissions Desk...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4 text-white" />
-                      <span>Confirm & Schedule Free Consultation</span>
-                    </>
-                  )}
-                </button>
+            <div className="flex items-start gap-2">
+              <Clock className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold text-[#F3F4F6] block">Center Operational Hours</span>
+                <span>Monday – Saturday: 7:00 AM – 7:30 PM</span>
               </div>
-
-              {/* Privacy Footnote (NO email mentioned, NO demo mode) */}
-              <div className="flex items-center justify-center text-[11px] text-slate-500 pt-2 border-t border-slate-100 gap-1.5 text-center">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>Your information is strictly protected and shared solely with Antariksh Academy senior mentors.</span>
-              </div>
-            </form>
-          )}
+            </div>
+          </div>
 
         </div>
 
@@ -598,3 +310,5 @@ export const ConsultationSection: React.FC<ConsultationSectionProps> = ({
     </section>
   );
 };
+
+export default ConsultationSection;
