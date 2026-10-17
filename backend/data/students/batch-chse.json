@@ -3,7 +3,6 @@
     "name": "Aarav Kumar Sahu",
     "username": "aarav.kumar.sahu",
     "phone": "9437101001",
-    "initialPassword": "9437101001",
     "dateOfBirth": "01/01/2007",
     "email": "aarav.kumar.sahu@student.antariksh.edu.in",
     "address": {
@@ -24,7 +23,6 @@
     "name": "Abhilash Biswal",
     "username": "abhilash.biswal",
     "phone": "9437101011",
-    "initialPassword": "9437101011",
     "dateOfBirth": "11/07/2007",
     "email": "abhilash.biswal@student.antariksh.edu.in",
     "address": {
@@ -45,7 +43,6 @@
     "name": "Ananya Mohapatra",
     "username": "ananya.mohapatra",
     "phone": "9437101004",
-    "initialPassword": "9437101004",
     "dateOfBirth": "04/10/2008",
     "email": "ananya.mohapatra@student.antariksh.edu.in",
     "address": {
@@ -66,7 +63,6 @@
     "name": "Barsha Rani Tripathy",
     "username": "barsha.rani.tripathy",
     "phone": "9437101006",
-    "initialPassword": "9437101006",
     "dateOfBirth": "06/04/2008",
     "email": "barsha.rani.tripathy@student.antariksh.edu.in",
     "address": {
@@ -87,7 +83,6 @@
     "name": "Bhabani Sankar Padhy",
     "username": "bhabani.sankar.padhy",
     "phone": "9437101017",
-    "initialPassword": "9437101017",
     "dateOfBirth": "17/01/2007",
     "email": "bhabani.sankar.padhy@student.antariksh.edu.in",
     "address": {
@@ -108,7 +103,6 @@
     "name": "Biswajeet Mahapatra",
     "username": "biswajeet.mahapatra",
     "phone": "9437101019",
-    "initialPassword": "9437101019",
     "dateOfBirth": "19/07/2007",
     "email": "biswajeet.mahapatra@student.antariksh.edu.in",
     "address": {
@@ -129,7 +123,6 @@
     "name": "Debashis Routray",
     "username": "debashis.routray",
     "phone": "9437101007",
-    "initialPassword": "9437101007",
     "dateOfBirth": "07/07/2007",
     "email": "debashis.routray@student.antariksh.edu.in",
     "address": {
@@ -150,7 +143,6 @@
     "name": "Ipsita Priyadarshini",
     "username": "ipsita.priyadarshini",
     "phone": "9437101010",
-    "initialPassword": "9437101010",
     "dateOfBirth": "10/04/2008",
     "email": "ipsita.priyadarshini@student.antariksh.edu.in",
     "address": {
@@ -171,7 +163,6 @@
     "name": "Kalyani Mishra",
     "username": "kalyani.mishra",
     "phone": "9437101018",
-    "initialPassword": "9437101018",
     "dateOfBirth": "18/04/2008",
     "email": "kalyani.mishra@student.antariksh.edu.in",
     "address": {
@@ -192,7 +183,6 @@
     "name": "Madhusmita Behera",
     "username": "madhusmita.behera",
     "phone": "9437101008",
-    "initialPassword": "9437101008",
     "dateOfBirth": "08/10/2008",
     "email": "madhusmita.behera@student.antariksh.edu.in",
     "address": {
@@ -213,7 +203,6 @@
     "name": "Monalisa Barik",
     "username": "monalisa.barik",
     "phone": "9437101020",
-    "initialPassword": "9437101020",
     "dateOfBirth": "20/10/2008",
     "email": "monalisa.barik@student.antariksh.edu.in",
     "address": {
@@ -234,7 +223,6 @@
     "name": "Omkar Nath Pradhan",
     "username": "omkar.nath.pradhan",
     "phone": "9437101013",
-    "initialPassword": "9437101013",
     "dateOfBirth": "13/01/2007",
     "email": "omkar.nath.pradhan@student.antariksh.edu.in",
     "address": {
@@ -255,7 +243,6 @@
     "name": "Priyadarshini Jena",
     "username": "priyadarshini.jena",
     "phone": "9437101002",
-    "initialPassword": "9437101002",
     "dateOfBirth": "02/04/2008",
     "email": "priyadarshini.jena@student.antariksh.edu.in",
     "address": {
@@ -276,7 +263,6 @@
     "name": "Rashmi Rekha Sethi",
     "username": "rashmi.rekha.sethi",
     "phone": "9437101016",
-    "initialPassword": "9437101016",
     "dateOfBirth": "16/10/2008",
     "email": "rashmi.rekha.sethi@student.antariksh.edu.in",
     "address": {
@@ -297,7 +283,6 @@
     "name": "Ritesh Kumar Senapati",
     "username": "ritesh.kumar.senapati",
     "phone": "9437101015",
-    "initialPassword": "9437101015",
     "dateOfBirth": "15/07/2007",
     "email": "ritesh.kumar.senapati@student.antariksh.edu.in",
     "address": {
@@ -318,7 +303,6 @@
     "name": "Rohan Kumar Nayak",
     "username": "rohan.kumar.nayak",
     "phone": "9437101005",
-    "initialPassword": "9437101005",
     "dateOfBirth": "05/01/2007",
     "email": "rohan.kumar.nayak@student.antariksh.edu.in",
     "address": {
@@ -339,7 +323,6 @@
     "name": "Snigdha Rani Swain",
     "username": "snigdha.rani.swain",
     "phone": "9437101014",
-    "initialPassword": "9437101014",
     "dateOfBirth": "14/04/2008",
     "email": "snigdha.rani.swain@student.antariksh.edu.in",
     "address": {
@@ -360,7 +343,6 @@
     "name": "Soumya Ranjan Das",
     "username": "soumya.ranjan.das",
     "phone": "9437101009",
-    "initialPassword": "9437101009",
     "dateOfBirth": "09/01/2007",
     "email": "soumya.ranjan.das@student.antariksh.edu.in",
     "address": {
@@ -381,7 +363,6 @@
     "name": "Subham Sekhar Panda",
     "username": "subham.sekhar.panda",
     "phone": "9437101003",
-    "initialPassword": "9437101003",
     "dateOfBirth": "03/07/2007",
     "email": "subham.sekhar.panda@student.antariksh.edu.in",
     "address": {
@@ -402,7 +383,6 @@
     "name": "Swayamsiddha Sahoo",
     "username": "swayamsiddha.sahoo",
     "phone": "9437101012",
-    "initialPassword": "9437101012",
     "dateOfBirth": "12/10/2008",
     "email": "swayamsiddha.sahoo@student.antariksh.edu.in",
     "address": {

@@ -40,4 +40,6 @@ export const ENV = {
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1d',
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
   BCRYPT_SALT_ROUNDS: parseInt(process.env.BCRYPT_SALT_ROUNDS || '12', 10),
+  SUPERADMIN_DEFAULT_PASSWORD: process.env.SUPERADMIN_DEFAULT_PASSWORD || '',
+  TEACHER_DEFAULT_PASSWORD: process.env.TEACHER_DEFAULT_PASSWORD || '',
 };

@@ -28,7 +28,28 @@ export async function runStaffSeed() {
 
   for (const s of staffData) {
     const cleanUsername = s.username.trim().toLowerCase();
-    const passwordHash = await bcrypt.hash(s.initialPassword, ENV.BCRYPT_SALT_ROUNDS);
+    
+    // Resolve initial password securely from environment or fallback
+    let initialPassword = '';
+    if (s.role === 'superadmin') {
+      initialPassword =
+        ENV.SUPERADMIN_DEFAULT_PASSWORD ||
+        process.env.SUPERADMIN_DEFAULT_PASSWORD ||
+        s.initialPassword ||
+        'SuperAdmin@Antariksh2026';
+    } else {
+      initialPassword =
+        ENV.TEACHER_DEFAULT_PASSWORD ||
+        process.env.TEACHER_DEFAULT_PASSWORD ||
+        s.initialPassword ||
+        (cleanUsername === 'sudeepdash'
+          ? 'sudeep@Accademy01'
+          : cleanUsername === 'prasantbehera'
+          ? 'prasant@Accademy02'
+          : 'Teacher@Antariksh2026');
+    }
+
+    const passwordHash = await bcrypt.hash(initialPassword, ENV.BCRYPT_SALT_ROUNDS);
     const assignedBatches = s.assignedBatches && s.assignedBatches.length > 0 ? s.assignedBatches : allBatchCodes;
 
     const updated = await Staff.findOneAndUpdate(
@@ -59,7 +80,7 @@ export async function runStaffSeed() {
       name: updated.name,
       username: updated.username,
       phone: updated.phone,
-      password: s.initialPassword,
+      password: initialPassword,
       assignedBatches: updated.assignedBatches,
       note: updated.role === 'superadmin' ? 'Master administrator account' : 'Faculty mentor account',
     });
