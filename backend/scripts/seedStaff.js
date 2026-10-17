@@ -1,182 +1,101 @@
 import fs from 'fs';
 import path from 'path';
-import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 import { ENV } from '../src/config/env.js';
-import { Batch } from '../src/models/Batch.js';
 import { Staff } from '../src/models/Staff.js';
+import { Batch } from '../src/models/Batch.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function generateNumeric8DigitPassword() {
-  return `${crypto.randomInt(10000000, 99999999)}`;
-}
+export async function runStaffSeed() {
+  console.log('[SEED STAFF] Loading staff data from data/staff.json...');
+  const staffFilePath = path.join(__dirname, '../data/staff.json');
 
-async function runStaffSeed() {
-  console.log('[SEED] Initializing Antariksh Academy Staff & Superadmin bootstrap...');
-
-  try {
-    await mongoose.connect(ENV.MONGODB_URI, { serverSelectionTimeoutMS: 5000 });
-    console.log('[SEED] Connected to MongoDB.');
-
-    // 1. Ensure Standard Batches Exist
-    const initialBatches = [
-      {
-        name: 'Batch 2026',
-        code: 'BATCH-2026',
-        academicYear: '2026',
-        description: '+2 2nd Year Science & Entrance Revision (CHSE / JEE / NEET)',
-        isActive: true,
-      },
-      {
-        name: 'Batch 2027',
-        code: 'BATCH-2027',
-        academicYear: '2027',
-        description: '+2 1st Year Science Foundation & Concept Mastery',
-        isActive: true,
-      },
-    ];
-
-    for (const b of initialBatches) {
-      const existing = await Batch.findOne({ code: b.code });
-      if (!existing) {
-        await Batch.create(b);
-        console.log(`[SEED] Created Batch: ${b.code} (${b.name})`);
-      }
-    }
-
-    const createdStaff = [];
-
-    // 2. Bootstrap Superadmin Account
-    const superadminUsername = 'aa_superadmin';
-    const existingSuperadmin = await Staff.findOne({ username: superadminUsername });
-
-    if (!existingSuperadmin) {
-      const tempPassword = generateNumeric8DigitPassword();
-      const passwordHash = await bcrypt.hash(tempPassword, ENV.BCRYPT_SALT_ROUNDS);
-
-      const superadmin = await Staff.create({
-        name: 'Academy Director & Chief Administrator',
-        qualification: 'Academic Leadership & Direction',
-        phone: '9861000000',
-        email: 'superadmin.antariksh@example.com',
-        username: superadminUsername,
-        passwordHash,
-        role: 'superadmin',
-        assignedBatches: ['BATCH-2026', 'BATCH-2027'],
-        isActive: true,
-        mustChangePassword: true,
-      });
-
-      createdStaff.push({
-        role: 'SUPERADMIN',
-        name: superadmin.name,
-        username: superadmin.username,
-        temporaryPassword: tempPassword,
-        note: 'Superadmin master console account. Must change password upon first sign-in.',
-      });
-      console.log(`[SEED] Superadmin account '${superadminUsername}' initialized successfully.`);
-    } else {
-      console.log(`[SEED] Superadmin '${superadminUsername}' already exists. Password preserved.`);
-    }
-
-    // 3. Bootstrap 2 Fictional Teacher Accounts
-    const teachersSeedData = [
-      {
-        name: 'Dr. Subrat Tripathy',
-        qualification: 'M.Sc. Physics (Utkal University), Ph.D.',
-        dateOfBirth: '1984-06-15',
-        phone: '9861000001',
-        email: 'subrat.tripathy.demo@example.com',
-        username: 'aa_teacher_subrat',
-        role: 'teacher',
-        assignedBatches: ['BATCH-2026', 'BATCH-2027'],
-      },
-      {
-        name: 'Smt. Kalyani Panigrahi',
-        qualification: 'M.Sc. Organic Chemistry, B.Ed.',
-        dateOfBirth: '1987-10-22',
-        phone: '9861000002',
-        email: 'kalyani.panigrahi.demo@example.com',
-        username: 'aa_teacher_kalyani',
-        role: 'teacher',
-        assignedBatches: ['BATCH-2026'],
-      },
-    ];
-
-    for (const t of teachersSeedData) {
-      const existingTeacher = await Staff.findOne({ username: t.username });
-      if (!existingTeacher) {
-        const tempPassword = generateNumeric8DigitPassword();
-        const passwordHash = await bcrypt.hash(tempPassword, ENV.BCRYPT_SALT_ROUNDS);
-
-        const teacher = await Staff.create({
-          ...t,
-          passwordHash,
-          isActive: true,
-          mustChangePassword: true,
-        });
-
-        createdStaff.push({
-          role: 'TEACHER',
-          name: teacher.name,
-          username: teacher.username,
-          temporaryPassword: tempPassword,
-          assignedBatches: teacher.assignedBatches,
-          note: 'Assigned teacher account. Must change password upon first sign-in.',
-        });
-        console.log(`[SEED] Teacher account '${teacher.username}' initialized successfully.`);
-      } else {
-        console.log(`[SEED] Teacher '${t.username}' already exists. Password preserved.`);
-      }
-    }
-
-    // Output formatted credentials box once if new accounts were created
-    if (createdStaff.length > 0) {
-      const exportPath = path.join(__dirname, '../data/credentials-export-staff.json');
-      fs.writeFileSync(
-        exportPath,
-        JSON.stringify(
-          {
-            generatedAt: new Date().toISOString(),
-            totalAccounts: createdStaff.length,
-            accounts: createdStaff,
-          },
-          null,
-          2
-        ),
-        'utf-8'
-      );
-
-      console.log('\n========================================================================');
-      console.log('           ONE-TIME GENERATED STAFF & ADMIN CREDENTIALS                 ');
-      console.log('  WARNING: Do not share or commit these credentials to Git.             ');
-      console.log('  All accounts are flagged with mustChangePassword: true.               ');
-      console.log('========================================================================');
-      for (const item of createdStaff) {
-        console.log(`[${item.role}] ${item.name}`);
-        console.log(`  Username:           ${item.username}`);
-        console.log(`  Temporary Password: ${item.temporaryPassword}`);
-        if (item.assignedBatches) {
-          console.log(`  Assigned Batches:   ${item.assignedBatches.join(', ')}`);
-        }
-        console.log('------------------------------------------------------------------------');
-      }
-      console.log(`Credentials also written to: ${exportPath} (git-ignored)`);
-      console.log('========================================================================\n');
-    } else {
-      console.log('[SEED] All staff and admin accounts already present. No new passwords generated.');
-    }
-  } catch (error) {
-    console.error('[SEED FATAL ERROR]:', error.message);
-    process.exit(1);
-  } finally {
-    await mongoose.disconnect();
-    console.log('[SEED] Disconnected from MongoDB.');
+  if (!fs.existsSync(staffFilePath)) {
+    throw new Error(`Staff file not found at ${staffFilePath}`);
   }
+
+  const staffData = JSON.parse(fs.readFileSync(staffFilePath, 'utf-8'));
+  console.log(`[SEED STAFF] Found ${staffData.length} staff records in data/staff.json.`);
+
+  const allBatches = await Batch.find().select('code');
+  const allBatchCodes = allBatches.map((b) => b.code);
+
+  const exportAccounts = [];
+
+  for (const s of staffData) {
+    const cleanUsername = s.username.trim().toLowerCase();
+    const passwordHash = await bcrypt.hash(s.initialPassword, ENV.BCRYPT_SALT_ROUNDS);
+    const assignedBatches = s.assignedBatches && s.assignedBatches.length > 0 ? s.assignedBatches : allBatchCodes;
+
+    const updated = await Staff.findOneAndUpdate(
+      { username: cleanUsername },
+      {
+        $set: {
+          name: s.name.trim(),
+          username: cleanUsername,
+          passwordHash,
+          phone: s.phone.trim(),
+          qualification: s.qualification || '',
+          dateOfBirth: s.dateOfBirth || '',
+          email: s.email || `${cleanUsername}@antariksh.edu.in`,
+          role: s.role,
+          assignedBatches,
+          isActive: s.isActive ?? true,
+          mustChangePassword: false,
+          temporaryPasswordExpiresAt: null,
+        },
+      },
+      { upsert: true, new: true }
+    );
+
+    console.log(`[SEED STAFF] Synced ${updated.role.toUpperCase()}: ${updated.name} (@${updated.username})`);
+
+    exportAccounts.push({
+      role: updated.role.toUpperCase(),
+      name: updated.name,
+      username: updated.username,
+      phone: updated.phone,
+      password: s.initialPassword,
+      assignedBatches: updated.assignedBatches,
+      note: updated.role === 'superadmin' ? 'Master administrator account' : 'Faculty mentor account',
+    });
+  }
+
+  // Deduplicate: remove any stray superadmins other than aa_superadmin
+  await Staff.deleteMany({ role: 'superadmin', username: { $ne: 'aa_superadmin' } });
+
+  // Update credentials-export-staff.json
+  const exportPath = path.join(__dirname, '../data/credentials-export-staff.json');
+  fs.writeFileSync(
+    exportPath,
+    JSON.stringify(
+      {
+        generatedAt: new Date().toISOString(),
+        totalAccounts: exportAccounts.length,
+        accounts: exportAccounts,
+      },
+      null,
+      2
+    )
+  );
+  console.log(`[SEED STAFF] Updated credentials-export-staff.json successfully.`);
 }
 
-runStaffSeed();
+// Standalone execution
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  mongoose
+    .connect(ENV.MONGODB_URI)
+    .then(async () => {
+      await runStaffSeed();
+      await mongoose.disconnect();
+      console.log('[SEED STAFF] Completed.');
+    })
+    .catch((err) => {
+      console.error('[SEED STAFF ERROR]', err);
+      process.exit(1);
+    });
+}

@@ -15,12 +15,14 @@ import {
   validateChangePassword,
 } from '../middleware/validateRequest.js';
 
+import { ENV } from '../config/env.js';
+
 const router = express.Router();
 
-// Rate limiter for student login: 10 attempts per 15 minutes per IP
+// Rate limiter for login: 10 attempts per 15 minutes in production, 500 in dev
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: ENV.isProduction ? 10 : 500,
   message: {
     success: false,
     message: 'Too many login attempts from this IP. Please try again after 15 minutes.',
@@ -29,10 +31,10 @@ const loginLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Rate limiter for password change: 5 attempts per 15 minutes
+// Rate limiter for password change: 5 attempts per 15 minutes in production, 100 in dev
 const passwordChangeLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: ENV.isProduction ? 5 : 100,
   message: {
     success: false,
     message: 'Too many password change attempts. Please try again later.',

@@ -23,9 +23,20 @@ export async function getLectures(req, res, next) {
       limit = PAGE_SIZE;
     }
 
+    const studentBatchCode =
+      req.student.batchCode ||
+      (studentBatch && studentBatch.startsWith('BATCH-')
+        ? studentBatch
+        : `BATCH-${studentBatch}`);
+
     // Filter criteria: Authenticated student's batch ONLY & isPublished: true
     const filter = {
-      batch: studentBatch,
+      $or: [
+        { batch: studentBatch },
+        { batchCode: studentBatchCode },
+        { batchCode: studentBatch },
+        { batch: studentBatchCode },
+      ],
       isPublished: true,
     };
 
@@ -92,9 +103,20 @@ export async function getLectureById(req, res, next) {
     const { id } = req.params;
     const studentBatch = req.student.batch;
 
+    const studentBatchCode =
+      req.student.batchCode ||
+      (studentBatch && studentBatch.startsWith('BATCH-')
+        ? studentBatch
+        : `BATCH-${studentBatch}`);
+
     const lecture = await Lecture.findOne({
       _id: id,
-      batch: studentBatch,
+      $or: [
+        { batch: studentBatch },
+        { batchCode: studentBatchCode },
+        { batchCode: studentBatch },
+        { batch: studentBatchCode },
+      ],
       isPublished: true,
     }).lean();
 

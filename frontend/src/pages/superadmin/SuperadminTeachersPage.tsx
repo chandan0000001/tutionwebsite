@@ -14,6 +14,7 @@ import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../config/apiConfig';
 import { SuperadminHeader } from '../../components/superadmin/SuperadminHeader';
 import { CredentialsModal } from '../../components/common/CredentialsModal';
+import { ConfirmModal, type ConfirmVariant } from '../../components/common/ConfirmModal';
 
 interface TeacherItem {
   _id: string;
@@ -40,6 +41,23 @@ export const SuperadminTeachersPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Confirmation modal state
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: React.ReactNode;
+    confirmText?: string;
+    cancelText?: string;
+    variant?: ConfirmVariant;
+    onConfirm: () => void;
+    isLoading?: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
 
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -183,13 +201,8 @@ export const SuperadminTeachersPage: React.FC = () => {
     }
   };
 
-  // Toggle Active Status
-  const handleToggleStatus = async (t: TeacherItem) => {
-    const action = t.isActive ? 'deactivate' : 'activate';
-    if (!window.confirm(`Are you sure you want to ${action} faculty account "${t.name}"?`)) {
-      return;
-    }
-
+  // Execute Toggle Active Status
+  const executeToggleStatus = async (t: TeacherItem) => {
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/teachers/${t._id}/status`, {
         method: 'PATCH',
@@ -204,19 +217,29 @@ export const SuperadminTeachersPage: React.FC = () => {
       }
     } catch {
       setErrorMessage('Network error while updating status.');
+    } finally {
+      setConfirmState((prev) => ({ ...prev, isOpen: false }));
     }
   };
 
-  // Reset Password
-  const handleResetPassword = async (t: TeacherItem) => {
-    if (
-      !window.confirm(
-        `Reset password for "${t.name}" (@${t.username})? A new 8-digit temporary password will be generated.`
-      )
-    ) {
-      return;
-    }
+  const handleToggleStatus = (t: TeacherItem) => {
+    const isActivating = !t.isActive;
+    setConfirmState({
+      isOpen: true,
+      title: `${isActivating ? 'Reactivate' : 'Deactivate'} Faculty Account`,
+      message: (
+        <span>
+          Are you sure you want to <strong>{isActivating ? 'reactivate' : 'deactivate'}</strong> the faculty account for <strong>{t.name}</strong> (@{t.username})? {isActivating ? 'This will re-enable their portal access immediately.' : 'The teacher will no longer be able to log in until reactivated.'}
+        </span>
+      ),
+      confirmText: isActivating ? 'Reactivate Account' : 'Deactivate Account',
+      variant: isActivating ? 'warning' : 'danger',
+      onConfirm: () => executeToggleStatus(t),
+    });
+  };
 
+  // Execute Reset Password
+  const executeResetPassword = async (t: TeacherItem) => {
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/teachers/${t._id}/reset-password`, {
         method: 'POST',
@@ -235,7 +258,24 @@ export const SuperadminTeachersPage: React.FC = () => {
       }
     } catch {
       setErrorMessage('Network error while resetting password.');
+    } finally {
+      setConfirmState((prev) => ({ ...prev, isOpen: false }));
     }
+  };
+
+  const handleResetPassword = (t: TeacherItem) => {
+    setConfirmState({
+      isOpen: true,
+      title: 'Reset Faculty Password',
+      message: (
+        <span>
+          Generate a new temporary password for <strong>{t.name}</strong> (@{t.username})? The new password will be valid for <strong>1 hour only</strong>.
+        </span>
+      ),
+      confirmText: 'Generate Password',
+      variant: 'primary',
+      onConfirm: () => executeResetPassword(t),
+    });
   };
 
   const toggleBatchCheckbox = (code: string) => {
@@ -325,9 +365,24 @@ export const SuperadminTeachersPage: React.FC = () => {
           />
         )}
 
+        {/* Custom Confirmation Modal */}
+        <ConfirmModal
+          isOpen={confirmState.isOpen}
+          onClose={() => setConfirmState((prev) => ({ ...prev, isOpen: false }))}
+          onConfirm={confirmState.onConfirm}
+          title={confirmState.title}
+          message={confirmState.message}
+          confirmText={confirmState.confirmText}
+          cancelText={confirmState.cancelText}
+          variant={confirmState.variant}
+          isLoading={confirmState.isLoading}
+        />
+
         {/* Teachers Table */}
+        {/* Teachers Container */}
         <div className="bg-white dark:bg-[#0E1524] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 dark:bg-[#151F33] border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider font-extrabold text-slate-500 dark:text-slate-400">
                 <tr>
@@ -450,6 +505,103 @@ export const SuperadminTeachersPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Dedicated Mobile Cards View */}
+          <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800/80">
+            {isLoading ? (
+              <div className="py-12 text-center text-slate-500">
+                <div className="w-7 h-7 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
+                <p className="mt-2 text-xs">Loading faculty profiles...</p>
+              </div>
+            ) : teachers.length === 0 ? (
+              <div className="py-12 text-center text-slate-500">
+                <GraduationCap className="w-8 h-8 mx-auto text-slate-400 mb-2" />
+                <p className="font-bold text-slate-800 dark:text-slate-200">No teachers registered yet</p>
+                <p className="text-xs text-slate-400 mt-0.5">Create teacher profiles to grant faculty admin access.</p>
+              </div>
+            ) : (
+              teachers.map((t) => (
+                <div key={t._id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="font-bold text-slate-900 dark:text-white text-sm">{t.name}</div>
+                      <div className="font-mono text-xs text-amber-700 dark:text-amber-400 mt-0.5">@{t.username}</div>
+                    </div>
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider shrink-0 ${
+                        t.isActive
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                          : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
+                      }`}
+                    >
+                      {t.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Phone</span>
+                      <a href={`tel:${t.phone}`} className="font-mono font-bold text-slate-800 dark:text-slate-200 hover:text-amber-600">
+                        {t.phone}
+                      </a>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Qualification</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-300 truncate block">
+                        {t.qualification || '—'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Assigned Batches</span>
+                    {t.assignedBatches && t.assignedBatches.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {t.assignedBatches.map((b) => (
+                          <span
+                            key={b}
+                            className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-amber-500/10 text-amber-800 dark:text-[#F4C76B] border border-amber-500/20"
+                          >
+                            {b}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-slate-400 italic">None assigned</span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <button
+                      onClick={() => openEdit(t)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 flex items-center gap-1.5"
+                    >
+                      <Edit className="w-3.5 h-3.5" />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={() => handleResetPassword(t)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 border border-amber-200 dark:border-amber-800 flex items-center gap-1.5"
+                    >
+                      <KeyRound className="w-3.5 h-3.5" />
+                      <span>Reset Key</span>
+                    </button>
+                    <button
+                      onClick={() => handleToggleStatus(t)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 ${
+                        t.isActive
+                          ? 'text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/40'
+                          : 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/40'
+                      }`}
+                    >
+                      {t.isActive ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
+                      <span>{t.isActive ? 'Deactivate' : 'Activate'}</span>
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
 
         {/* Create Teacher Modal */}
@@ -491,20 +643,21 @@ export const SuperadminTeachersPage: React.FC = () => {
 
                   <div>
                     <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
-                      Mobile Phone (10 digits) *
+                      Mobile Phone *
                     </label>
                     <input
                       type="tel"
                       required
-                      maxLength={10}
+                      maxLength={14}
                       value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          phone: e.target.value.replace(/[^0-9]/g, ''),
-                        })
-                      }
-                      placeholder="9876543210"
+                      onChange={(e) => {
+                        let val = e.target.value.replace(/[^0-9]/g, '');
+                        if (val.length === 12 && val.startsWith('91')) val = val.slice(2);
+                        else if (val.length === 11 && val.startsWith('0')) val = val.slice(1);
+                        if (val.length > 10) val = val.slice(-10);
+                        setFormData({ ...formData, phone: val });
+                      }}
+                      placeholder="e.g. 8763654489 (or +91...)"
                       className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
                     />
                   </div>
@@ -642,14 +795,15 @@ export const SuperadminTeachersPage: React.FC = () => {
                     <input
                       type="tel"
                       required
-                      maxLength={10}
+                      maxLength={14}
                       value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          phone: e.target.value.replace(/[^0-9]/g, ''),
-                        })
-                      }
+                      onChange={(e) => {
+                        let val = e.target.value.replace(/[^0-9]/g, '');
+                        if (val.length === 12 && val.startsWith('91')) val = val.slice(2);
+                        else if (val.length === 11 && val.startsWith('0')) val = val.slice(1);
+                        if (val.length > 10) val = val.slice(-10);
+                        setFormData({ ...formData, phone: val });
+                      }}
                       className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
                     />
                   </div>

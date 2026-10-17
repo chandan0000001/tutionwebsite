@@ -1,4 +1,5 @@
 import ExcelJS from 'exceljs';
+import { normalizeIndianPhone } from '../utils/phone.js';
 
 export const CANONICAL_HEADERS = [
   'name',
@@ -63,6 +64,26 @@ export async function generateStudentTemplate() {
   return await workbook.xlsx.writeBuffer();
 }
 
+export const HEADER_SYNONYMS = {
+  name: ['name', 'studentname', 'student', 'fullname', 'nameofstudent'],
+  phone: ['phone', 'phonenumber', 'mobile', 'mobilenumber', 'contact', 'contactnumber'],
+  dateOfBirth: ['dateofbirth', 'dob', 'birthdate', 'birth'],
+  email: ['email', 'emailid', 'emailaddress', 'mail'],
+  address: ['address', 'street', 'residentialaddress', 'location'],
+  college: ['college', 'school', 'institution', 'collegeuniversity', 'institute'],
+  fatherName: ['fathername', 'fathersname', 'father'],
+  motherName: ['mothername', 'mothersname', 'mother'],
+};
+
+function matchHeaderKey(rawVal) {
+  const norm = String(rawVal || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (!norm) return null;
+  for (const [canonical, synonyms] of Object.entries(HEADER_SYNONYMS)) {
+    if (synonyms.includes(norm)) return canonical;
+  }
+  return null;
+}
+
 /**
  * Parse and validate an uploaded Excel file buffer
  */
@@ -75,32 +96,35 @@ export async function parseStudentExcel(buffer) {
     throw new Error('Excel workbook contains no readable worksheets.');
   }
 
-  // 1. Identify header mapping from row 1
-  const headerRow = worksheet.getRow(1);
-  const colIndexToKey = {};
-  const foundHeaders = new Set();
+  // 1. Identify header mapping by scanning the first 10 rows
+  let headerRowNum = -1;
+  let colIndexToKey = {};
+  let foundHeaders = new Set();
 
-  headerRow.eachCell((cell, colNumber) => {
-    const rawVal = String(cell.value || '').trim();
-    // Normalize header string (remove spaces, camelCase or lowercase)
-    const normalized = rawVal.toLowerCase().replace(/[^a-z0-9]/g, '');
+  for (let r = 1; r <= Math.min(worksheet.rowCount, 10); r++) {
+    const row = worksheet.getRow(r);
+    const candidateMap = {};
+    const candidateFound = new Set();
 
-    for (const canonical of CANONICAL_HEADERS) {
-      if (normalized === canonical.toLowerCase()) {
-        colIndexToKey[colNumber] = canonical;
-        foundHeaders.add(canonical);
-        break;
+    row.eachCell((cell, colNumber) => {
+      const matched = matchHeaderKey(cell.value);
+      if (matched) {
+        candidateMap[colNumber] = matched;
+        candidateFound.add(matched);
       }
-    }
-  });
+    });
 
-  // Verify critical headers exist
-  const missingCritical = ['name', 'phone', 'dateOfBirth'].filter(
-    (h) => !foundHeaders.has(h)
-  );
-  if (missingCritical.length > 0) {
+    if (candidateFound.has('name') && (candidateFound.has('phone') || candidateFound.has('dateOfBirth'))) {
+      headerRowNum = r;
+      colIndexToKey = candidateMap;
+      foundHeaders = candidateFound;
+      break;
+    }
+  }
+
+  if (headerRowNum === -1) {
     throw new Error(
-      `Missing required column header(s): ${missingCritical.join(', ')}. Please use the canonical Excel template.`
+      'Could not detect student table headers in spreadsheet. Ensure columns include Student Name, Phone Number, and Date of Birth.'
     );
   }
 
@@ -110,9 +134,9 @@ export async function parseStudentExcel(buffer) {
   const seenPhones = new Set();
   const seenEmails = new Set();
 
-  // 2. Iterate data rows starting from row 2
+  // 2. Iterate data rows starting after the header row
   worksheet.eachRow((row, rowNumber) => {
-    if (rowNumber === 1) return; // Skip header
+    if (rowNumber <= headerRowNum) return; // Skip header and any pre-header banner rows
 
     const rowData = {};
     let hasAnyData = false;
@@ -145,7 +169,7 @@ export async function parseStudentExcel(buffer) {
     }
 
     // Validation: Phone
-    const cleanPhone = String(rowData.phone || '').replace(/[^0-9]/g, '');
+    const cleanPhone = normalizeIndianPhone(rowData.phone);
     if (!cleanPhone || cleanPhone.length !== 10) {
       errors.push('Phone number must be a valid 10-digit Indian mobile number');
     } else {

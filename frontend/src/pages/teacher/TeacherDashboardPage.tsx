@@ -63,41 +63,41 @@ export const TeacherDashboardPage: React.FC = () => {
   const totalLectures = batches.reduce((acc, b) => acc + (b.lectureCount || 0), 0);
 
   return (
-    <div className="w-full min-h-[85vh] bg-[#F8FAFC] dark:bg-[#0B1120] pb-12 transition-colors duration-200">
+    <div className="w-full min-h-[85vh] bg-[#F8FAFC] dark:bg-[#070B14] pb-12 transition-colors duration-200">
       <TeacherHeader />
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
         {/* Welcome Banner */}
-        <div className="bg-gradient-to-r from-[#17365D] via-[#1E4273] to-[#17365D] dark:from-[#0E1626] dark:via-[#142036] dark:to-[#0E1626] rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-700/50 mb-8 relative overflow-hidden">
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="bg-white dark:bg-gradient-to-r dark:from-[#0E1626] dark:via-[#142036] dark:to-[#0E1626] rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm dark:shadow-xl border border-slate-200 dark:border-slate-800 mb-6 sm:mb-8 transition-colors duration-200">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-2 border border-amber-400/30">
-                <Sparkles className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-800 dark:text-[#F4C76B] text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1.5 border border-amber-500/20">
+                <Sparkles className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B]" />
                 <span>Faculty Administration</span>
               </div>
-              <h1 className="font-display font-black text-2xl sm:text-3xl text-white">
+              <h1 className="font-display font-black text-xl sm:text-2xl md:text-3xl text-slate-900 dark:text-white">
                 Welcome back, {user?.name}!
               </h1>
-              <p className="mt-1 text-xs sm:text-sm text-slate-300 max-w-2xl">
-                Manage your assigned student cohorts, review attendance rosters, import registrations via Excel, and manage recorded YouTube lectures for your classes.
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                Manage assigned batches, student rosters, bulk imports, and recorded YouTube class lectures.
               </p>
             </div>
 
             {/* Quick Actions */}
-            <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
               <Link
                 to="/teacher/students"
-                className="py-2.5 px-4 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] hover:brightness-105 active:scale-[0.99] transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                className="flex-1 sm:flex-initial py-2 px-3.5 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] hover:brightness-105 active:scale-[0.99] transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <PlusCircle className="w-4 h-4" />
-                <span>Add / Manage Students</span>
+                <PlusCircle className="w-3.5 h-3.5" />
+                <span>Students</span>
               </Link>
               <Link
                 to="/teacher/lectures"
-                className="py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-white/10 hover:bg-white/20 border border-white/20 transition-all flex items-center gap-2"
+                className="flex-1 sm:flex-initial py-2 px-3.5 rounded-xl text-xs font-bold text-slate-700 dark:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-center gap-1.5"
               >
-                <Video className="w-4 h-4 text-[#F4C76B]" />
-                <span>Manage Lectures</span>
+                <Video className="w-3.5 h-3.5 text-amber-600 dark:text-[#F4C76B]" />
+                <span>Lectures</span>
               </Link>
             </div>
           </div>

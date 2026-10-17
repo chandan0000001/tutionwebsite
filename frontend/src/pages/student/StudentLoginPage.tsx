@@ -78,10 +78,10 @@ export const StudentLoginPage: React.FC = () => {
           </div>
 
           <h1 className="font-display font-black text-2xl sm:text-3xl text-[#17365D] dark:text-white tracking-tight">
-            Antariksh Academy <span className="gold-gradient-text">Portal</span>
+            Antariksh Academy <span className="gold-gradient-text">Portal Login</span>
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-            Sign in for Students, Faculty Teachers & Administrators
+            Enter your credentials to access your portal
           </p>
         </div>
 
@@ -107,7 +107,7 @@ export const StudentLoginPage: React.FC = () => {
                 htmlFor="username"
                 className="block text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-200 mb-1.5"
               >
-                Username / Portal ID
+                Username
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -120,7 +120,7 @@ export const StudentLoginPage: React.FC = () => {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="e.g. aa26_aarav, aa_teacher_subrat"
+                  placeholder="Enter your username"
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] transition-colors"
                 />
               </div>
@@ -176,7 +176,7 @@ export const StudentLoginPage: React.FC = () => {
               ) : (
                 <>
                   <LogIn className="w-4 h-4" />
-                  <span>Sign In to Portal</span>
+                  <span>Portal Login</span>
                 </>
               )}
             </button>
@@ -186,7 +186,7 @@ export const StudentLoginPage: React.FC = () => {
           <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800 flex items-start gap-2.5 text-slate-500 dark:text-slate-400 text-xs">
             <ShieldCheck className="w-4 h-4 text-[#C6922E] dark:text-[#F4C76B] shrink-0 mt-0.5" />
             <p>
-              Access is protected by role-based authorization. First-time sign-ins require changing your temporary 8-digit institute password.
+              Authorized access only. Logging in automatically directs you to your respective portal.
             </p>
           </div>
         </div>

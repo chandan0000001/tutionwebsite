@@ -1,0 +1,62 @@
+[
+  {
+    "name": "+2 Science Odisha CHSE Board",
+    "code": "BATCH-CHSE",
+    "academicYear": "2026-27",
+    "description": "CHSE +2 Science Council Board. Three daily sessions: Morning (6:30 AM - 8:30 AM), Afternoon (2:00 PM - 4:15 PM), Evening (5:00 PM - 8:00 PM).",
+    "isActive": true,
+    "classTiming": {
+      "morning": "6:30 AM - 8:30 AM",
+      "afternoon": "2:00 PM - 4:15 PM",
+      "evening": "5:00 PM - 8:00 PM"
+    }
+  },
+  {
+    "name": "JEE Main & JEE Advanced",
+    "code": "BATCH-JEE",
+    "academicYear": "2026-27",
+    "description": "IIT-JEE Engineering Entrance Preparation. Three daily sessions: Morning (6:30 AM - 8:30 AM), Afternoon (2:00 PM - 4:15 PM), Evening (5:00 PM - 8:00 PM).",
+    "isActive": true,
+    "classTiming": {
+      "morning": "6:30 AM - 8:30 AM",
+      "afternoon": "2:00 PM - 4:15 PM",
+      "evening": "5:00 PM - 8:00 PM"
+    }
+  },
+  {
+    "name": "NEET-UG Medical Preparation",
+    "code": "BATCH-NEET",
+    "academicYear": "2026-27",
+    "description": "National Eligibility cum Entrance Test (NEET-UG). Three daily sessions: Morning (6:30 AM - 8:30 AM), Afternoon (2:00 PM - 4:15 PM), Evening (5:00 PM - 8:00 PM).",
+    "isActive": true,
+    "classTiming": {
+      "morning": "6:30 AM - 8:30 AM",
+      "afternoon": "2:00 PM - 4:15 PM",
+      "evening": "5:00 PM - 8:00 PM"
+    }
+  },
+  {
+    "name": "Integrated Board + Entrance Preparation",
+    "code": "BATCH-INTG",
+    "academicYear": "2026-27",
+    "description": "Dual-Track Board + Entrance Program. Three daily sessions: Morning (6:30 AM - 8:30 AM), Afternoon (2:00 PM - 4:15 PM), Evening (5:00 PM - 8:00 PM).",
+    "isActive": true,
+    "classTiming": {
+      "morning": "6:30 AM - 8:30 AM",
+      "afternoon": "2:00 PM - 4:15 PM",
+      "evening": "5:00 PM - 8:00 PM"
+    }
+  },
+  {
+    "name": "OUAT & ICAR Preparation",
+    "code": "BATCH-OUAT-ICAR",
+    "academicYear": "2026-27",
+    "description": "Agricultural & Allied Science Entrance (OUAT & ICAR). Three daily sessions: Morning (6:30 AM - 8:30 AM), Afternoon (2:00 PM - 4:15 PM), Evening (5:00 PM - 8:00 PM).",
+    "isActive": true,
+    "classTiming": {
+      "morning": "6:30 AM - 8:30 AM",
+      "afternoon": "2:00 PM - 4:15 PM",
+      "evening": "5:00 PM - 8:00 PM"
+    }
+  }
+]

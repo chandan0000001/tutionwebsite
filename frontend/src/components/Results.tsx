@@ -6,7 +6,7 @@ export const Results: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<ResultYear | 'all'>('2026');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
-  const categories = ['All', 'JEE', 'NEET', 'NDA', '+2 Science Board'];
+  const categories = ['All', 'JEE', 'NEET', 'OUAT & ICAR', '+2 Science Board'];
 
   const filteredResults = RESULTS_DATA.filter((item) => {
     const yearMatch = selectedYear === 'all' || item.year === selectedYear;
@@ -50,8 +50,8 @@ export const Results: React.FC = () => {
               <span className="text-[11px] text-slate-500 dark:text-[#AAB4C3] font-semibold uppercase tracking-wider">Top +2 CHSE Board</span>
             </div>
             <div className="p-3 rounded-xl bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] text-center shadow-sm">
-              <span className="block text-xl sm:text-2xl font-black text-[#C6922E] dark:text-[#F4C76B] font-['Outfit',sans-serif]">AIR 142</span>
-              <span className="text-[11px] text-slate-500 dark:text-[#AAB4C3] font-semibold uppercase tracking-wider">UPSC NDA Rank</span>
+              <span className="block text-xl sm:text-2xl font-black text-[#C6922E] dark:text-[#F4C76B] font-['Outfit',sans-serif]">State Rank 14</span>
+              <span className="text-[11px] text-slate-500 dark:text-[#AAB4C3] font-semibold uppercase tracking-wider">Top OUAT / ICAR Rank</span>
             </div>
           </div>
 

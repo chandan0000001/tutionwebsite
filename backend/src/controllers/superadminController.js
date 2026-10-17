@@ -8,6 +8,8 @@ import { AuditLog } from '../models/AuditLog.js';
 import { recordAuditLog } from '../utils/auditLogger.js';
 import { parseStudentExcel, generateStudentTemplate } from '../services/excelService.js';
 import { ENV } from '../config/env.js';
+import { normalizeIndianPhone } from '../utils/phone.js';
+import { formatStudentUsername } from '../utils/usernameGenerator.js';
 
 // Helper: Generate teacher username
 function generateTeacherUsername(name, sequence = 0) {
@@ -16,12 +18,9 @@ function generateTeacherUsername(name, sequence = 0) {
   return `aa_teacher_${cleanName}${suffix}`;
 }
 
-// Helper: Generate student username
+// Helper: Generate student username (e.g. "Swati Biswal" -> "swati.biswal")
 function generateStudentUsername(name, batch, sequence = 0) {
-  const firstName = name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8);
-  const cleanBatch = String(batch || '').replace(/[^0-9]/g, '').slice(-2) || '26';
-  const suffix = sequence > 0 ? `${sequence}` : '';
-  return `aa${cleanBatch}_${firstName}${suffix}`;
+  return formatStudentUsername(name, sequence);
 }
 
 // Helper: Generate 8-digit numeric temporary password
@@ -236,7 +235,7 @@ export async function createTeacher(req, res, next) {
       });
     }
 
-    const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+    const cleanPhone = normalizeIndianPhone(phone);
     if (cleanPhone.length !== 10) {
       return res.status(400).json({
         success: false,
@@ -264,8 +263,9 @@ export async function createTeacher(req, res, next) {
       username = generateTeacherUsername(name, seq);
     }
 
-    // Generate 8-digit temporary password
+    // Generate 8-digit temporary password (valid for 1 hour)
     const temporaryPassword = generateNumericTempPassword();
+    const temporaryPasswordExpiresAt = new Date(Date.now() + 60 * 60 * 1000);
     const passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
 
     const safeBatches = Array.isArray(assignedBatches)
@@ -284,6 +284,7 @@ export async function createTeacher(req, res, next) {
       assignedBatches: safeBatches,
       isActive: true,
       mustChangePassword: true,
+      temporaryPasswordExpiresAt,
     });
 
     await recordAuditLog({
@@ -301,7 +302,8 @@ export async function createTeacher(req, res, next) {
       oneTimeCredentials: {
         username: teacher.username,
         temporaryPassword,
-        note: 'Provide these initial temporary credentials to the teacher. They must set their own password upon first sign-in.',
+        expiresAt: temporaryPasswordExpiresAt,
+        note: 'Provide these initial temporary credentials to the teacher. This temporary password is valid for 1 hour only.',
       },
     });
   } catch (error) {
@@ -328,7 +330,7 @@ export async function updateTeacher(req, res, next) {
     if (email !== undefined) teacher.email = email ? email.trim().toLowerCase() : '';
 
     if (phone) {
-      const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+      const cleanPhone = normalizeIndianPhone(phone);
       if (cleanPhone.length === 10 && cleanPhone !== teacher.phone) {
         const dup = await Staff.findOne({ phone: cleanPhone, _id: { $ne: teacher._id } });
         if (dup) {
@@ -409,8 +411,10 @@ export async function resetTeacherPassword(req, res, next) {
     }
 
     const temporaryPassword = generateNumericTempPassword();
+    const temporaryPasswordExpiresAt = new Date(Date.now() + 60 * 60 * 1000);
     teacher.passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
     teacher.mustChangePassword = true;
+    teacher.temporaryPasswordExpiresAt = temporaryPasswordExpiresAt;
     await teacher.save();
 
     await recordAuditLog({
@@ -427,7 +431,8 @@ export async function resetTeacherPassword(req, res, next) {
       oneTimeCredentials: {
         username: teacher.username,
         temporaryPassword,
-        note: 'Provide this temporary password to the teacher. They will be required to change it on their next login.',
+        expiresAt: temporaryPasswordExpiresAt,
+        note: 'Provide this temporary password to the teacher. This temporary password is valid for 1 hour only.',
       },
     });
   } catch (error) {
@@ -509,7 +514,7 @@ export async function createStudent(req, res, next) {
 
     const cleanBatch = batchCode.trim().toUpperCase();
     const academicYear = cleanBatch.replace('BATCH-', '');
-    const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+    const cleanPhone = normalizeIndianPhone(phone);
 
     if (cleanPhone.length !== 10) {
       return res.status(400).json({
@@ -533,14 +538,15 @@ export async function createStudent(req, res, next) {
       username = generateStudentUsername(name, academicYear, seq);
     }
 
-    const temporaryPassword = generateNumericTempPassword();
-    const passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
+    // Dynamic initial password is the student's 10-digit phone number
+    const initialPassword = cleanPhone;
+    const passwordHash = await bcrypt.hash(initialPassword, ENV.BCRYPT_SALT_ROUNDS);
 
     const newStudent = await Student.create({
       name: name.trim(),
       phone: cleanPhone,
       dateOfBirth: String(dateOfBirth).trim(),
-      email: email ? email.trim().toLowerCase() : '',
+      email: email ? email.trim().toLowerCase() : `${username}@student.antariksh.edu.in`,
       address: typeof address === 'string' ? { street: address } : address || {},
       college: college ? college.trim() : '',
       fatherName: fatherName ? fatherName.trim() : '',
@@ -550,7 +556,8 @@ export async function createStudent(req, res, next) {
       username,
       passwordHash,
       isActive: true,
-      mustChangePassword: true,
+      mustChangePassword: false,
+      temporaryPasswordExpiresAt: null,
     });
 
     await recordAuditLog({
@@ -567,8 +574,9 @@ export async function createStudent(req, res, next) {
       student: newStudent.toSafeObject(),
       oneTimeCredentials: {
         username: newStudent.username,
-        temporaryPassword,
-        note: 'Provide these credentials to the student. They will set their own password on first sign-in.',
+        temporaryPassword: initialPassword,
+        expiresAt: null,
+        note: `Initial login password is the student's mobile number (${cleanPhone}). The student can sign in immediately and change their password at any time.`,
       },
     });
   } catch (error) {
@@ -615,7 +623,7 @@ export async function updateStudent(req, res, next) {
     }
 
     if (phone) {
-      const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+      const cleanPhone = normalizeIndianPhone(phone);
       if (cleanPhone.length === 10 && cleanPhone !== student.phone) {
         const dup = await Student.findOne({ phone: cleanPhone, _id: { $ne: student._id } });
         if (dup) {
@@ -680,6 +688,47 @@ export async function toggleStudentStatus(req, res, next) {
   }
 }
 
+export async function resetStudentPassword(req, res, next) {
+  try {
+    const { id } = req.params;
+    const student = await Student.findById(id);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student record not found.',
+      });
+    }
+
+    const temporaryPassword = generateNumericTempPassword();
+    const temporaryPasswordExpiresAt = new Date(Date.now() + 60 * 60 * 1000);
+    student.passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
+    student.mustChangePassword = true;
+    student.temporaryPasswordExpiresAt = temporaryPasswordExpiresAt;
+    await student.save();
+
+    await recordAuditLog({
+      req,
+      action: 'PASSWORD_RESET',
+      targetType: 'Student',
+      targetId: student._id,
+      details: { username: student.username },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Student password reset successfully.',
+      oneTimeCredentials: {
+        username: student.username,
+        temporaryPassword,
+        expiresAt: temporaryPasswordExpiresAt,
+        note: 'Provide this temporary password to the student. This temporary password is valid for 1 hour only.',
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function bulkImportStudents(req, res, next) {
   try {
     if (!req.file || !req.file.buffer) {
@@ -730,14 +779,15 @@ export async function bulkImportStudents(req, res, next) {
         username = generateStudentUsername(record.name, academicYear, seq);
       }
 
-      const temporaryPassword = generateNumericTempPassword();
-      const passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
+      // Initial password is the student's 10-digit mobile number
+      const initialPassword = record.phone;
+      const passwordHash = await bcrypt.hash(initialPassword, ENV.BCRYPT_SALT_ROUNDS);
 
       const newStudent = await Student.create({
         name: record.name,
         phone: record.phone,
         dateOfBirth: record.dateOfBirth,
-        email: record.email || '',
+        email: record.email || `${username}@student.antariksh.edu.in`,
         address: record.address ? { street: record.address } : {},
         college: record.college || '',
         fatherName: record.fatherName || '',
@@ -747,7 +797,8 @@ export async function bulkImportStudents(req, res, next) {
         username,
         passwordHash,
         isActive: true,
-        mustChangePassword: true,
+        mustChangePassword: false,
+        temporaryPasswordExpiresAt: null,
       });
 
       importedCount++;
@@ -755,7 +806,8 @@ export async function bulkImportStudents(req, res, next) {
         name: record.name,
         username: newStudent.username,
         phone: record.phone,
-        temporaryPassword,
+        temporaryPassword: initialPassword,
+        expiresAt: null,
       });
     }
 
@@ -1005,3 +1057,38 @@ export async function getAuditLogs(req, res, next) {
     next(error);
   }
 }
+
+/**
+ * DELETE /api/superadmin/students/:id
+ * Permanently delete a student record directly from the database
+ */
+export async function deleteStudent(req, res, next) {
+  try {
+    const { id } = req.params;
+    const student = await Student.findById(id);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student record not found.',
+      });
+    }
+
+    await Student.findByIdAndDelete(id);
+
+    await recordAuditLog({
+      req,
+      action: 'STUDENT_DELETE',
+      targetType: 'Student',
+      targetId: id,
+      details: { name: student.name, username: student.username, batchCode: student.batchCode },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `Student '${student.name}' (@${student.username}) has been permanently deleted from the database.`,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+

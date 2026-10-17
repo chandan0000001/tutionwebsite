@@ -54,10 +54,10 @@ export const TESTIMONIALS_DATA: TestimonialItem[] = [
     id: 'test-4',
     authorType: 'Student',
     displayName: 'Aditya Narayan Pradhan',
-    subTitle: 'Defence Wing Aspirant (NDA Cadet)',
-    courseTag: 'NDA Written Examination',
+    subTitle: 'B.Sc. Agriculture Aspirant (OUAT Qualified)',
+    courseTag: 'OUAT & ICAR Entrance Program',
     quote:
-      'The speed techniques taught for the NDA Mathematics paper cut down my solving time drastically. Combined with concise current affairs summaries and English drills, it provided complete preparation under one roof.',
+      'The speed techniques taught for Physics, Chemistry, and Agro-mental aptitude cut down my solving time drastically. Combined with concise revision notes and mock drills, it gave me complete confidence to secure my OUAT seat.',
     rating: 5,
     avatarUrl:
       'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80',

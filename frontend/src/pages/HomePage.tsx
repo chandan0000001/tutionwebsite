@@ -287,7 +287,7 @@ export const HomePage: React.FC = () => {
               Admissions 2026–27
             </span>
             <span className="text-[#AAB4C3] font-medium text-[11px] sm:text-xs">
-              Class 11 & 12 (+2 Science CHSE) • JEE Main/Adv • NEET-UG • NDA
+              Class 11 & 12 (+2 Science CHSE) • JEE Main/Adv • NEET-UG • OUAT & ICAR
             </span>
           </div>
           <a
@@ -339,7 +339,7 @@ export const HomePage: React.FC = () => {
 
               {/* Business Description - Concise on mobile to eliminate vertical bloat */}
               <p className="text-slate-600 dark:text-[#AAB4C3] text-xs sm:text-base leading-relaxed max-w-2xl font-normal">
-                <span className="hidden sm:inline">Odisha CHSE Council Board preparation alongside national competitive exams (JEE Main & Adv, NEET-UG, NDA). </span>
+                <span className="hidden sm:inline">Odisha CHSE Council Board preparation alongside national competitive exams (JEE Main & Adv, NEET-UG, OUAT & ICAR). </span>
                 Strict 30-student batch capacity, dedicated daily faculty doubt desks, and 10+ years of proven academic excellence in Brahmapur.
               </p>
 
@@ -573,7 +573,7 @@ export const HomePage: React.FC = () => {
                         <option value="JEE Main & JEE Advanced">JEE Main & JEE Advanced</option>
                         <option value="NEET-UG Medical">NEET-UG Medical</option>
                         <option value="+2 Science Board (CHSE)">+2 Science Board (CHSE)</option>
-                        <option value="NDA Defence Academy">NDA Defence Academy</option>
+                        <option value="OUAT & ICAR Preparation">OUAT & ICAR Preparation</option>
                       </select>
                     </div>
                   </div>
@@ -1042,7 +1042,7 @@ export const HomePage: React.FC = () => {
               Targeted Science & Entrance Programs
             </h2>
             <p className="text-xs text-slate-600 dark:text-[#AAB4C3] leading-relaxed">
-              Odisha CHSE +2 Science, JEE Main/Adv, NEET-UG & NDA batches with dedicated daily doubt desks and 30-student batch capacity.
+              Odisha CHSE +2 Science, JEE Main/Adv, NEET-UG, OUAT & ICAR batches with dedicated daily doubt desks and 30-student batch capacity.
             </p>
             <Link
               to="/courses"

@@ -6,13 +6,12 @@ import { Lecture } from '../models/Lecture.js';
 import { recordAuditLog } from '../utils/auditLogger.js';
 import { parseStudentExcel, generateStudentTemplate } from '../services/excelService.js';
 import { ENV } from '../config/env.js';
+import { normalizeIndianPhone } from '../utils/phone.js';
+import { formatStudentUsername } from '../utils/usernameGenerator.js';
 
-// Helper: Generate student username
+// Helper: Generate student username (e.g. "Swati Biswal" -> "swati.biswal")
 function generateStudentUsername(name, batch, sequence = 0) {
-  const firstName = name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8);
-  const cleanBatch = String(batch || '').replace(/[^0-9]/g, '').slice(-2) || '26';
-  const suffix = sequence > 0 ? `${sequence}` : '';
-  return `aa${cleanBatch}_${firstName}${suffix}`;
+  return formatStudentUsername(name, sequence);
 }
 
 // Helper: Generate 8-digit numeric temporary password
@@ -168,7 +167,7 @@ export async function createStudent(req, res, next) {
       });
     }
 
-    const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+    const cleanPhone = normalizeIndianPhone(phone);
     if (cleanPhone.length !== 10) {
       return res.status(400).json({
         success: false,
@@ -193,15 +192,15 @@ export async function createStudent(req, res, next) {
       username = generateStudentUsername(name, academicYear, seq);
     }
 
-    // Generate random 8-digit temporary password
-    const temporaryPassword = generateNumericTempPassword();
-    const passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
+    // Dynamic initial password is the student's 10-digit mobile phone number
+    const initialPassword = cleanPhone;
+    const passwordHash = await bcrypt.hash(initialPassword, ENV.BCRYPT_SALT_ROUNDS);
 
     const newStudent = await Student.create({
       name: name.trim(),
       phone: cleanPhone,
       dateOfBirth: String(dateOfBirth).trim(),
-      email: email ? String(email).trim().toLowerCase() : '',
+      email: email ? String(email).trim().toLowerCase() : `${username}@student.antariksh.edu.in`,
       address: typeof address === 'string' ? { street: address } : address || {},
       college: college ? String(college).trim() : '',
       fatherName: fatherName ? String(fatherName).trim() : '',
@@ -211,7 +210,8 @@ export async function createStudent(req, res, next) {
       username,
       passwordHash,
       isActive: true,
-      mustChangePassword: true,
+      mustChangePassword: false,
+      temporaryPasswordExpiresAt: null,
     });
 
     await recordAuditLog({
@@ -235,8 +235,9 @@ export async function createStudent(req, res, next) {
       student: safeStudent,
       oneTimeCredentials: {
         username: newStudent.username,
-        temporaryPassword,
-        note: 'Display these credentials to the student or parent. They will be required to change it upon first sign-in.',
+        temporaryPassword: initialPassword,
+        expiresAt: null,
+        note: `Initial login password is the student's mobile number (${cleanPhone}). The student can sign in immediately and update their password at any time.`,
       },
     });
   } catch (error) {
@@ -288,7 +289,7 @@ export async function updateStudent(req, res, next) {
     if (motherName !== undefined) student.motherName = String(motherName || '').trim();
 
     if (phone) {
-      const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+      const cleanPhone = normalizeIndianPhone(phone);
       if (cleanPhone.length === 10) {
         // Check uniqueness if changing
         if (cleanPhone !== student.phone) {
@@ -368,6 +369,47 @@ export async function toggleStudentStatus(req, res, next) {
 }
 
 /**
+ * DELETE /api/teacher/batches/:batchCode/students/:id
+ * Permanently delete a student record in teacher's assigned batch directly from the database
+ */
+export async function deleteStudent(req, res, next) {
+  try {
+    const rawBatch = req.params.batchCode.trim().toUpperCase();
+    const academicYear = rawBatch.replace('BATCH-', '');
+    const { id } = req.params;
+
+    const student = await Student.findOne({
+      _id: id,
+      $or: [{ batchCode: rawBatch }, { batch: academicYear }],
+    });
+
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student not found in your assigned batch.',
+      });
+    }
+
+    await Student.findByIdAndDelete(id);
+
+    await recordAuditLog({
+      req,
+      action: 'STUDENT_DELETE',
+      targetType: 'Student',
+      targetId: id,
+      details: { name: student.name, username: student.username, batchCode: rawBatch },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `Student '${student.name}' (@${student.username}) has been permanently deleted from the database.`,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
  * GET /api/teacher/batches/:batchCode/students/template
  * Download blank Excel template
  */
@@ -439,15 +481,15 @@ export async function bulkImportStudents(req, res, next) {
         username = generateStudentUsername(record.name, academicYear, seq);
       }
 
-      // Generate 8-digit temporary password
-      const temporaryPassword = generateNumericTempPassword();
-      const passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
+      // Initial password is the student's 10-digit phone number
+      const initialPassword = record.phone;
+      const passwordHash = await bcrypt.hash(initialPassword, ENV.BCRYPT_SALT_ROUNDS);
 
       const newStudent = await Student.create({
         name: record.name,
         phone: record.phone,
         dateOfBirth: record.dateOfBirth,
-        email: record.email || '',
+        email: record.email || `${username}@student.antariksh.edu.in`,
         address: record.address ? { street: record.address } : {},
         college: record.college || '',
         fatherName: record.fatherName || '',
@@ -457,7 +499,8 @@ export async function bulkImportStudents(req, res, next) {
         username,
         passwordHash,
         isActive: true,
-        mustChangePassword: true,
+        mustChangePassword: false,
+        temporaryPasswordExpiresAt: null,
       });
 
       importedCount++;
@@ -465,7 +508,8 @@ export async function bulkImportStudents(req, res, next) {
         name: record.name,
         username: newStudent.username,
         phone: record.phone,
-        temporaryPassword,
+        temporaryPassword: initialPassword,
+        expiresAt: null,
       });
     }
 

@@ -10,10 +10,26 @@ import {
   KeyRound,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { API_BASE_URL } from '../../config/apiConfig';
 import { TeacherHeader } from '../../components/teacher/TeacherHeader';
 
 export const TeacherProfilePage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
+  const [profile, setProfile] = React.useState(user);
+
+  React.useEffect(() => {
+    if (!token) return;
+    fetch(`${API_BASE_URL}/teacher/profile`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && (data.data || data.teacher)) {
+          setProfile(data.data || data.teacher);
+        }
+      })
+      .catch(() => {});
+  }, [token]);
 
   return (
     <div className="w-full min-h-[85vh] bg-[#F8FAFC] dark:bg-[#0B1120] pb-12 transition-colors duration-200">
@@ -25,8 +41,8 @@ export const TeacherProfilePage: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-8 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-4 sm:gap-6">
               <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#17365D] to-[#244b7d] text-[#F4C76B] flex items-center justify-center font-black text-2xl shadow-lg border-2 border-[#F4C76B]/40 shrink-0">
-                {user?.name
-                  ? user.name
+                {profile?.name
+                  ? profile.name
                       .split(' ')
                       .map((n) => n[0])
                       .join('')
@@ -44,10 +60,10 @@ export const TeacherProfilePage: React.FC = () => {
                   </span>
                 </div>
                 <h1 className="font-display font-black text-2xl sm:text-3xl text-[#17365D] dark:text-white">
-                  {user?.name}
+                  {profile?.name || user?.name}
                 </h1>
                 <p className="font-mono text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                  @{user?.username}
+                  @{profile?.username || user?.username}
                 </p>
               </div>
             </div>
@@ -72,7 +88,7 @@ export const TeacherProfilePage: React.FC = () => {
                   Academic Qualification
                 </p>
                 <p className="text-sm font-bold text-slate-900 dark:text-white mt-0.5">
-                  {user?.qualification || 'Not specified'}
+                  {profile?.qualification || 'Not specified'}
                 </p>
               </div>
             </div>
@@ -86,7 +102,7 @@ export const TeacherProfilePage: React.FC = () => {
                   Date of Birth
                 </p>
                 <p className="text-sm font-bold text-slate-900 dark:text-white mt-0.5">
-                  {user?.dateOfBirth || 'Not provided'}
+                  {profile?.dateOfBirth || 'Not provided'}
                 </p>
               </div>
             </div>
@@ -100,7 +116,7 @@ export const TeacherProfilePage: React.FC = () => {
                   Contact Mobile Phone
                 </p>
                 <p className="text-sm font-bold font-mono text-slate-900 dark:text-white mt-0.5">
-                  {user?.phone || 'Not provided'}
+                  {profile?.phone || 'Not provided'}
                 </p>
               </div>
             </div>
@@ -114,7 +130,7 @@ export const TeacherProfilePage: React.FC = () => {
                   Email Address
                 </p>
                 <p className="text-sm font-bold text-slate-900 dark:text-white mt-0.5 truncate max-w-[220px]">
-                  {user?.email || 'Not specified'}
+                  {profile?.email || 'Not specified'}
                 </p>
               </div>
             </div>
@@ -127,9 +143,9 @@ export const TeacherProfilePage: React.FC = () => {
               <span>Assigned Batches & Permissions</span>
             </h3>
 
-            {user?.assignedBatches && user.assignedBatches.length > 0 ? (
+            {(profile?.assignedBatches || user?.assignedBatches) && (profile?.assignedBatches || user?.assignedBatches)!.length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                {user.assignedBatches.map((batchCode) => (
+                {(profile?.assignedBatches || user?.assignedBatches)!.map((batchCode) => (
                   <span
                     key={batchCode}
                     className="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/10 text-[#C6922E] dark:text-[#F4C76B] border border-amber-500/20"

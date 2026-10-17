@@ -130,7 +130,7 @@ export const PrivacyPolicyPage: React.FC = () => {
               </li>
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-[#17365D] dark:text-[#F4C76B] shrink-0 mt-0.5" />
-                <span><strong>Target Entrance Exam & Course Interest:</strong> (Odisha CHSE +2 Science, JEE Main/Adv, NEET-UG, NDA Prep, or Integrated Batch).</span>
+                <span><strong>Target Entrance Exam & Course Interest:</strong> (Odisha CHSE +2 Science, JEE Main/Adv, NEET-UG, OUAT & ICAR Prep, or Integrated Batch).</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-[#17365D] dark:text-[#F4C76B] shrink-0 mt-0.5" />

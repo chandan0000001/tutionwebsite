@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, Copy, KeyRound, ShieldAlert, X } from 'lucide-react';
+import { Check, Clock, Copy, KeyRound, ShieldAlert, X } from 'lucide-react';
 
 interface CredentialsModalProps {
   isOpen: boolean;
@@ -25,7 +25,7 @@ export const CredentialsModal: React.FC<CredentialsModalProps> = ({
   if (!isOpen) return null;
 
   const handleCopy = () => {
-    const text = `Antariksh Academy Login Credentials\nRole: ${roleName}\nUsername: ${username}\nTemporary Password: ${temporaryPassword}\nLogin Portal: ${window.location.origin}/student/login\nNote: Please sign in and update your password immediately upon first login.`;
+    const text = `Antariksh Academy Login Credentials\nRole: ${roleName}\nUsername: ${username}\nTemporary Password: ${temporaryPassword}\nLogin Portal: ${window.location.origin}/student/login\n⏳ IMPORTANT: This temporary password is valid for 1 hour only. Please sign in and update your password immediately upon first login.`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 3000);
@@ -74,6 +74,13 @@ export const CredentialsModal: React.FC<CredentialsModalProps> = ({
               {temporaryPassword}
             </span>
           </div>
+
+          <div className="flex items-center justify-end gap-1.5 pt-1">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              <Clock className="w-3 h-3" />
+              Valid for 1 hour only (auto-expires)
+            </span>
+          </div>
         </div>
 
         {/* Important Warning Alert */}
@@ -81,7 +88,7 @@ export const CredentialsModal: React.FC<CredentialsModalProps> = ({
           <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
           <p>
             {note ||
-              'Upon their first sign-in, the user will be automatically prompted to configure their private personal password before access is granted.'}
+              'This temporary password is cryptographically protected and will automatically expire in 1 hour. Upon their first sign-in, the user will configure their personal password.'}
           </p>
         </div>
 

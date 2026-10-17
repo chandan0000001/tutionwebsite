@@ -2,181 +2,101 @@
   {
     "slNo": 1,
     "topicName": "Vectors & Scalars: Fundamental Operations & Resolution",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
+    "ytVideoLink": "https://youtu.be/Vpj8qro50n0",
     "subject": "Physics",
-    "description": "Comprehensive review of vector addition, subtraction, dot product, and cross product for CHSE Board and Entrance.",
+    "description": "Comprehensive review of vector addition, subtraction, dot product, and cross product for CHSE Board.",
+    "batch": "BATCH-CHSE",
+    "batchCode": "BATCH-CHSE",
     "isPublished": true
   },
   {
     "slNo": 2,
-    "topicName": "Kinematics 1D: Motion with Constant Acceleration",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Physics",
-    "description": "Calculus-based derivations of kinematic equations and graphical motion analysis.",
-    "isPublished": true
-  },
-  {
-    "slNo": 3,
-    "topicName": "Newton's Laws of Motion & Free Body Diagrams",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Physics",
-    "description": "Step-by-step problem-solving for connected bodies, pulley systems, and friction.",
-    "isPublished": true
-  },
-  {
-    "slNo": 4,
-    "topicName": "Structure of Atom: Bohr Model & Quantum Numbers",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
+    "topicName": "Chemical Thermodynamics: First Law & Enthalpy Calculations",
+    "ytVideoLink": "https://youtu.be/_STBs8AhDIE",
     "subject": "Chemistry",
-    "description": "Electromagnetic radiation, Bohr postulates, de Broglie relation, and Heisenberg uncertainty principle.",
+    "description": "State functions, heat capacities, and standard enthalpies for council subjective answers.",
+    "batch": "BATCH-CHSE",
+    "batchCode": "BATCH-CHSE",
     "isPublished": true
-  },
-  {
-    "slNo": 5,
-    "topicName": "Chemical Bonding: VSEPR Theory & Molecular Orbitals",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Chemistry",
-    "description": "Predicting molecular geometry, hybridization, bond orders, and magnetic properties.",
-    "isPublished": true
-  },
-  {
-    "slNo": 6,
-    "topicName": "Thermodynamics: First & Second Laws, Enthalpy & Entropy",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Chemistry",
-    "description": "State functions, Hess's Law, heat capacities, and spontaneous criterion using Gibbs free energy.",
-    "isPublished": true
-  },
-  {
-    "slNo": 7,
-    "topicName": "Sets, Relations & Functions: Classification & Inverses",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Mathematics",
-    "description": "Equivalence relations, injective, surjective, and bijective mappings with board proofs.",
-    "isPublished": true
-  },
-  {
-    "slNo": 8,
-    "topicName": "Trigonometric Functions & General Solutions",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Mathematics",
-    "description": "Compound angles, transformation formulae, multiple angles, and trigonometric equations.",
-    "isPublished": true
-  },
-  {
-    "slNo": 9,
-    "topicName": "Complex Numbers: Argand Plane & Polar Form",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Mathematics",
-    "description": "Modulus, argument, triangle inequality, and square roots of complex numbers.",
-    "isPublished": true
-  },
-  {
-    "slNo": 10,
-    "topicName": "Cell: The Unit of Life - Membrane Structure & Organelles",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Biology",
-    "description": "Fluid mosaic model, endomembrane system, mitochondria, and chloroplast ultrastructure.",
-    "isPublished": true
-  },
-  {
-    "slNo": 11,
-    "topicName": "Cell Cycle & Cell Division: Mitosis & Meiosis",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Biology",
-    "description": "Detailed phase analysis, crossing over in pachytene, and chromosomal segregation.",
-    "isPublished": true
-  },
-  {
-    "slNo": 12,
-    "topicName": "Work, Energy & Power: Work-Energy Theorem",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Physics",
-    "description": "Conservative vs non-conservative forces, potential energy curves, and spring potential energy.",
-    "isPublished": true
-  },
-  {
-    "slNo": 13,
-    "topicName": "System of Particles & Rotational Motion: Torque & Angular Momentum",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Physics",
-    "description": "Moment of inertia calculations, radius of gyration, and conservation of angular momentum.",
-    "isPublished": true
-  },
-  {
-    "slNo": 14,
-    "topicName": "Equilibrium: Chemical & Ionic Equilibrium Principles",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Chemistry",
-    "description": "Le Chatelier's principle, pH calculations, buffer solutions, and solubility product constants.",
-    "isPublished": true
-  },
-  {
-    "slNo": 15,
-    "topicName": "Permutations & Combinations: Fundamental Counting Principle",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Mathematics",
-    "description": "Circular permutations, restricted selections, and combinatorial proofs for entrance examination.",
-    "isPublished": true
-  },
-  {
-    "slNo": 999,
-    "topicName": "Internal Faculty Draft: Advanced Electrostatics (Draft)",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2026",
-    "subject": "Physics",
-    "description": "Draft unverified recording - not for student release.",
-    "isPublished": false
   },
   {
     "slNo": 1,
-    "topicName": "Physical World, Units & Dimensions",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2027",
+    "topicName": "Electrostatics: Gauss Law & Charge Distribution Analysis",
+    "ytVideoLink": "https://youtu.be/V17N4ywkYn4",
     "subject": "Physics",
-    "description": "SI units, dimensional analysis, and error analysis for Class 11 beginners.",
+    "description": "Bridging council board derivations with objective speed problems.",
+    "batch": "INTG",
+    "batchCode": "BATCH-INTG",
     "isPublished": true
   },
   {
     "slNo": 2,
-    "topicName": "Some Basic Concepts of Chemistry: Mole Concept & Stoichiometry",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2027",
-    "subject": "Chemistry",
-    "description": "Atomic mass, molar mass, empirical formulae, and limiting reagents calculations.",
-    "isPublished": true
-  },
-  {
-    "slNo": 3,
-    "topicName": "Sets & Intervals: Notation & Venn Diagrams",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2027",
+    "topicName": "Definite Integrals & Properties: Dual Approach for Board and Entrance",
+    "ytVideoLink": "https://youtu.be/yMAyao2BBAE",
     "subject": "Mathematics",
-    "description": "Subsets, power sets, universal sets, and algebraic operations on sets.",
+    "description": "Symmetry properties, King theorem, and subjective writing steps.",
+    "batch": "INTG",
+    "batchCode": "BATCH-INTG",
     "isPublished": true
   },
   {
-    "slNo": 4,
-    "topicName": "The Living World: Taxonomy & Binomial Nomenclature",
-    "ytVideoLink": "https://www.youtube.com/watch?v=b0mFhQeNwtA",
-    "batch": "2027",
+    "slNo": 1,
+    "topicName": "Calculus: Continuity, Differentiability & L Hopital Rules",
+    "ytVideoLink": "https://youtu.be/Gh48aOvWcxw",
+    "subject": "Mathematics",
+    "description": "Advanced JEE Main & Advanced problem drills with graphical methods.",
+    "batch": "JEE",
+    "batchCode": "BATCH-JEE",
+    "isPublished": true
+  },
+  {
+    "slNo": 2,
+    "topicName": "Rotational Dynamics & Moment of Inertia Theorems",
+    "ytVideoLink": "https://youtu.be/muwdKwRddHU",
+    "subject": "Physics",
+    "description": "Parallel and perpendicular axis theorems applied to composite bodies with numerical traps.",
+    "batch": "JEE",
+    "batchCode": "BATCH-JEE",
+    "isPublished": true
+  },
+  {
+    "slNo": 1,
+    "topicName": "Human Physiology: Cardiac Cycle & ECG Tracing Decoding",
+    "ytVideoLink": "https://youtu.be/2QhxEThVVdY",
     "subject": "Biology",
-    "description": "Taxonomical categories, herbarium, botanical gardens, and keys.",
+    "description": "NCERT line-by-line breakdown of circulation, nodal tissues, and high-yield NEET questions.",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isPublished": true
+  },
+  {
+    "slNo": 2,
+    "topicName": "Organic Reaction Mechanisms: Electrophilic & Nucleophilic Additions",
+    "ytVideoLink": "https://youtu.be/vgB9WBHlsUQ",
+    "subject": "Chemistry",
+    "description": "Markovnikov addition, carbocation stability, and stereochemical outcomes for NEET.",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isPublished": true
+  },
+  {
+    "slNo": 1,
+    "topicName": "Plant Genetics & Mendelian Principles for OUAT / ICAR",
+    "ytVideoLink": "https://youtu.be/fuglbkNZ7ac",
+    "subject": "Biology",
+    "description": "Monohybrid/dihybrid ratios, test crosses, and agricultural genetic applications.",
+    "batch": "OUAT-ICAR",
+    "batchCode": "BATCH-OUAT-ICAR",
+    "isPublished": true
+  },
+  {
+    "slNo": 2,
+    "topicName": "Mental Aptitude & Agro-Reasoning: Series, Patterns & Number Drills",
+    "ytVideoLink": "https://youtu.be/Pe-D7zFe-wg",
+    "subject": "Mental Aptitude",
+    "description": "Rapid shortcuts for OUAT Section-A mental aptitude and spatial reasoning.",
+    "batch": "OUAT-ICAR",
+    "batchCode": "BATCH-OUAT-ICAR",
     "isPublished": true
   }
 ]

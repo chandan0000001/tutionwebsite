@@ -50,7 +50,7 @@ export const Navbar: React.FC = () => {
             </span>
             <span className="text-slate-700 dark:text-[#344054]">|</span>
             <span className="text-[#FDE68A] dark:text-[#F4C76B] font-semibold hidden lg:inline">
-              Admissions Open 2026–27: +2 Science, JEE Main/Adv, NEET-UG & NDA
+              Admissions Open 2026–27: +2 Science, JEE Main/Adv, NEET-UG, OUAT & ICAR
             </span>
           </div>
 
@@ -165,7 +165,7 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/student/login"
                 className="px-2.5 py-1.5 2xl:px-3 text-xs font-bold text-slate-700 hover:text-[#17365D] bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-[#1E293B] dark:hover:bg-[#2A374D] border border-slate-300 dark:border-slate-700 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
-                title="Student, Teacher & Admin Login"
+                title="Portal Login"
               >
                 <GraduationCap className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B] shrink-0" />
                 <span>Portal Login</span>
@@ -290,7 +290,7 @@ export const Navbar: React.FC = () => {
                     : role === 'teacher'
                     ? `Teacher Desk (${user.name.split(' ')[0]})`
                     : `Student Portal (${user.name.split(' ')[0]})`
-                  : 'Portal Sign In (Student / Teacher / Admin)'}
+                  : 'Portal Login'}
               </span>
             </Link>
 

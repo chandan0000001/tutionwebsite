@@ -1,0 +1,422 @@
+[
+  {
+    "name": "Abhisek Gouda",
+    "username": "abhisek.gouda",
+    "phone": "9437101053",
+    "initialPassword": "9437101053",
+    "dateOfBirth": "13/01/2007",
+    "email": "abhisek.gouda@student.antariksh.edu.in",
+    "address": {
+      "street": "Gandhi Nagar, Main Road",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Khallikote Higher Secondary School",
+    "fatherName": "Pradeep Gouda",
+    "motherName": "Sabita Gouda",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Bandana Mohanty",
+    "username": "bandana.mohanty",
+    "phone": "9437101050",
+    "initialPassword": "9437101050",
+    "dateOfBirth": "10/04/2008",
+    "email": "bandana.mohanty@student.antariksh.edu.in",
+    "address": {
+      "street": "Neelakantha Nagar, Ward 12",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "S.B.R. Women's Junior College",
+    "fatherName": "Suresh Mohanty",
+    "motherName": "Geeta Mohanty",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Biswa Ranjan Parida",
+    "username": "biswa.ranjan.parida",
+    "phone": "9437101049",
+    "initialPassword": "9437101049",
+    "dateOfBirth": "09/01/2007",
+    "email": "biswa.ranjan.parida@student.antariksh.edu.in",
+    "address": {
+      "street": "Bhavani Nagar, 2nd Lane",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Binayak Acharya Higher Secondary School",
+    "fatherName": "Ramesh Parida",
+    "motherName": "Sunita Parida",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Deepshikha Padhi",
+    "username": "deepshikha.padhi",
+    "phone": "9437101052",
+    "initialPassword": "9437101052",
+    "dateOfBirth": "12/10/2008",
+    "email": "deepshikha.padhi@student.antariksh.edu.in",
+    "address": {
+      "street": "Kommapalli, Main Road",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "City Higher Secondary School, Brahmapur",
+    "fatherName": "Ashok Padhi",
+    "motherName": "Pravati Padhi",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Druti Sundar Nayak",
+    "username": "druti.sundar.nayak",
+    "phone": "9437101041",
+    "initialPassword": "9437101041",
+    "dateOfBirth": "01/01/2007",
+    "email": "druti.sundar.nayak@student.antariksh.edu.in",
+    "address": {
+      "street": "Gandhi Nagar, Main Road",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Khallikote Higher Secondary School",
+    "fatherName": "Ramesh Nayak",
+    "motherName": "Sunita Nayak",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Hitesh Kumar Panda",
+    "username": "hitesh.kumar.panda",
+    "phone": "9437101043",
+    "initialPassword": "9437101043",
+    "dateOfBirth": "03/07/2007",
+    "email": "hitesh.kumar.panda@student.antariksh.edu.in",
+    "address": {
+      "street": "Courtpeta, Near Medical College",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "City Higher Secondary School, Brahmapur",
+    "fatherName": "Bikash Panda",
+    "motherName": "Manju Panda",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Kaustav Roy Choudhury",
+    "username": "kaustav.roy.choudhury",
+    "phone": "9437101045",
+    "initialPassword": "9437101045",
+    "dateOfBirth": "05/01/2007",
+    "email": "kaustav.roy.choudhury@student.antariksh.edu.in",
+    "address": {
+      "street": "Ankoli, Berhampur Bypass",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Khallikote Higher Secondary School",
+    "fatherName": "Pradeep Choudhury",
+    "motherName": "Sabita Choudhury",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Kunal Kishore Rout",
+    "username": "kunal.kishore.rout",
+    "phone": "9437101057",
+    "initialPassword": "9437101057",
+    "dateOfBirth": "17/01/2007",
+    "email": "kunal.kishore.rout@student.antariksh.edu.in",
+    "address": {
+      "street": "Ankoli, Berhampur Bypass",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Khallikote Higher Secondary School",
+    "fatherName": "Ramesh Rout",
+    "motherName": "Sunita Rout",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Lipika Rani Sahoo",
+    "username": "lipika.rani.sahoo",
+    "phone": "9437101054",
+    "initialPassword": "9437101054",
+    "dateOfBirth": "14/04/2008",
+    "email": "lipika.rani.sahoo@student.antariksh.edu.in",
+    "address": {
+      "street": "Hillpatna, Near Railway Station",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "S.B.R. Women's Junior College",
+    "fatherName": "Santosh Sahoo",
+    "motherName": "Kalyani Sahoo",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Mamata Panigrahi",
+    "username": "mamata.panigrahi",
+    "phone": "9437101060",
+    "initialPassword": "9437101060",
+    "dateOfBirth": "20/10/2008",
+    "email": "mamata.panigrahi@student.antariksh.edu.in",
+    "address": {
+      "street": "Barracks Ground, Near City High School",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Khallikote Higher Secondary School",
+    "fatherName": "Ashok Panigrahi",
+    "motherName": "Pravati Panigrahi",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Meenakshi Biswal",
+    "username": "meenakshi.biswal",
+    "phone": "9437101058",
+    "initialPassword": "9437101058",
+    "dateOfBirth": "18/04/2008",
+    "email": "meenakshi.biswal@student.antariksh.edu.in",
+    "address": {
+      "street": "Gosani Nuagaon, Main Street",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "S.B.R. Women's Junior College",
+    "fatherName": "Suresh Biswal",
+    "motherName": "Geeta Biswal",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Nilakantha Tripathy",
+    "username": "nilakantha.tripathy",
+    "phone": "9437101055",
+    "initialPassword": "9437101055",
+    "dateOfBirth": "15/07/2007",
+    "email": "nilakantha.tripathy@student.antariksh.edu.in",
+    "address": {
+      "street": "Courtpeta, Near Medical College",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Binayak Acharya Higher Secondary School",
+    "fatherName": "Dillip Tripathy",
+    "motherName": "Anita Tripathy",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Prangya Paramita Das",
+    "username": "prangya.paramita.das",
+    "phone": "9437101048",
+    "initialPassword": "9437101048",
+    "dateOfBirth": "08/10/2008",
+    "email": "prangya.paramita.das@student.antariksh.edu.in",
+    "address": {
+      "street": "Barracks Ground, Near City High School",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Khallikote Higher Secondary School",
+    "fatherName": "Manoj Das",
+    "motherName": "Binodini Das",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Praveen Kumar Jena",
+    "username": "praveen.kumar.jena",
+    "phone": "9437101059",
+    "initialPassword": "9437101059",
+    "dateOfBirth": "19/07/2007",
+    "email": "praveen.kumar.jena@student.antariksh.edu.in",
+    "address": {
+      "street": "Engineering School Road",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "City Higher Secondary School, Brahmapur",
+    "fatherName": "Bikash Jena",
+    "motherName": "Manju Jena",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Sanghamitra Sethi",
+    "username": "sanghamitra.sethi",
+    "phone": "9437101056",
+    "initialPassword": "9437101056",
+    "dateOfBirth": "16/10/2008",
+    "email": "sanghamitra.sethi@student.antariksh.edu.in",
+    "address": {
+      "street": "Gochhi Sahi, Prem Nagar",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Rama Devi Higher Secondary School",
+    "fatherName": "Manoj Sethi",
+    "motherName": "Binodini Sethi",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Satyam Sekhar Mishra",
+    "username": "satyam.sekhar.mishra",
+    "phone": "9437101047",
+    "initialPassword": "9437101047",
+    "dateOfBirth": "07/07/2007",
+    "email": "satyam.sekhar.mishra@student.antariksh.edu.in",
+    "address": {
+      "street": "Engineering School Road",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Buxi Jagabandhu Bidyadhar College",
+    "fatherName": "Dillip Mishra",
+    "motherName": "Anita Mishra",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Sonali Priyadarsini Sahu",
+    "username": "sonali.priyadarsini.sahu",
+    "phone": "9437101044",
+    "initialPassword": "9437101044",
+    "dateOfBirth": "04/10/2008",
+    "email": "sonali.priyadarsini.sahu@student.antariksh.edu.in",
+    "address": {
+      "street": "Gochhi Sahi, Prem Nagar",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Rama Devi Higher Secondary School",
+    "fatherName": "Ashok Sahu",
+    "motherName": "Pravati Sahu",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Subhashree Barik",
+    "username": "subhashree.barik",
+    "phone": "9437101046",
+    "initialPassword": "9437101046",
+    "dateOfBirth": "06/04/2008",
+    "email": "subhashree.barik@student.antariksh.edu.in",
+    "address": {
+      "street": "Gosani Nuagaon, Main Street",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "S.B.R. Women's Junior College",
+    "fatherName": "Santosh Barik",
+    "motherName": "Kalyani Barik",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Suryakanta Behera",
+    "username": "suryakanta.behera",
+    "phone": "9437101051",
+    "initialPassword": "9437101051",
+    "dateOfBirth": "11/07/2007",
+    "email": "suryakanta.behera@student.antariksh.edu.in",
+    "address": {
+      "street": "Lochapada Road, Near ITI",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Khallikote Higher Secondary School",
+    "fatherName": "Bikash Behera",
+    "motherName": "Manju Behera",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  },
+  {
+    "name": "Swarnalata Mahapatra",
+    "username": "swarnalata.mahapatra",
+    "phone": "9437101042",
+    "initialPassword": "9437101042",
+    "dateOfBirth": "02/04/2008",
+    "email": "swarnalata.mahapatra@student.antariksh.edu.in",
+    "address": {
+      "street": "Hillpatna, Near Railway Station",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "S.B.R. Women's Junior College",
+    "fatherName": "Suresh Mahapatra",
+    "motherName": "Geeta Mahapatra",
+    "batch": "NEET",
+    "batchCode": "BATCH-NEET",
+    "isActive": true
+  }
+]

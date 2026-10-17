@@ -75,44 +75,44 @@ export const SuperadminDashboardPage: React.FC = () => {
     <div className="w-full min-h-[85vh] bg-[#F8FAFC] dark:bg-[#070B14] pb-12 transition-colors duration-200">
       <SuperadminHeader />
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
         {/* Banner */}
-        <div className="bg-gradient-to-r from-[#0B1120] via-[#131D33] to-[#0B1120] rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-slate-800 mb-8 relative overflow-hidden">
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="bg-white dark:bg-gradient-to-r dark:from-[#0B1120] dark:via-[#131D33] dark:to-[#0B1120] rounded-2xl sm:rounded-3xl p-5 sm:p-7 shadow-sm dark:shadow-2xl border border-slate-200 dark:border-slate-800 mb-6 sm:mb-8 transition-colors duration-200">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-2 border border-amber-500/30">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Institute Command Center</span>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-800 dark:text-[#F4C76B] text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1.5 border border-amber-500/20">
+                <Sparkles className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B]" />
+                <span>Command Center</span>
               </div>
-              <h1 className="font-display font-black text-2xl sm:text-3xl text-white">
-                Superadmin Console
+              <h1 className="font-display font-black text-xl sm:text-2xl md:text-3xl text-slate-900 dark:text-white">
+                Superadmin Overview
               </h1>
-              <p className="mt-1 text-xs sm:text-sm text-slate-300 max-w-2xl">
-                Comprehensive oversight across all Antariksh Academy batches, faculty teacher profiles, student enrollments, video content distribution, and administrative audit trails.
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                Institute operations, active cohorts, faculty assignments, and enrollment metrics.
               </p>
             </div>
 
             {/* Quick Actions */}
-            <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
               <Link
                 to="/superadmin/batches"
-                className="py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700 transition-all flex items-center gap-1.5"
+                className="flex-1 sm:flex-initial py-2 px-3.5 rounded-xl text-xs font-bold text-slate-700 dark:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-center gap-1.5"
               >
-                <Layers className="w-4 h-4 text-blue-400" />
-                <span>Manage Batches</span>
+                <Layers className="w-3.5 h-3.5 text-blue-500" />
+                <span>Batches</span>
               </Link>
               <Link
                 to="/superadmin/teachers"
-                className="py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700 transition-all flex items-center gap-1.5"
+                className="flex-1 sm:flex-initial py-2 px-3.5 rounded-xl text-xs font-bold text-slate-700 dark:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-all flex items-center justify-center gap-1.5"
               >
-                <GraduationCap className="w-4 h-4 text-emerald-400" />
+                <GraduationCap className="w-3.5 h-3.5 text-emerald-500" />
                 <span>Teachers</span>
               </Link>
               <Link
                 to="/superadmin/students"
-                className="py-2.5 px-4 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] hover:brightness-105 active:scale-[0.99] transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                className="w-full sm:w-auto py-2 px-3.5 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] hover:brightness-105 active:scale-[0.99] transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <PlusCircle className="w-4 h-4" />
+                <PlusCircle className="w-3.5 h-3.5" />
                 <span>Enroll Student</span>
               </Link>
             </div>
@@ -220,11 +220,11 @@ export const SuperadminDashboardPage: React.FC = () => {
         {/* Two Column Grid: Recent Audit Activity & Recent Students */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Administrative Audit Feed */}
-          <div className="bg-white dark:bg-[#0E1524] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
+          <div className="bg-white dark:bg-[#0E1524] rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
               <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-amber-500" />
-                <h2 className="font-display font-black text-base text-slate-900 dark:text-white">
+                <FileText className="w-4 h-4 text-amber-500 shrink-0" />
+                <h2 className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white">
                   Recent Audit Activity
                 </h2>
               </div>
@@ -241,21 +241,21 @@ export const SuperadminDashboardPage: React.FC = () => {
             ) : !stats?.recentActivity || stats.recentActivity.length === 0 ? (
               <p className="text-xs text-slate-400 py-6 text-center">No recent activity recorded.</p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {stats.recentActivity.slice(0, 6).map((log) => (
                   <div
                     key={log._id}
-                    className="p-3 rounded-xl bg-slate-50 dark:bg-[#151F33] flex items-center justify-between gap-3 text-xs"
+                    className="p-2.5 sm:p-3 rounded-xl bg-slate-50 dark:bg-[#151F33] flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-3 text-xs"
                   >
-                    <div className="flex items-center gap-2.5">
-                      <span className="px-2 py-0.5 rounded-md font-mono text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-300">
+                    <div className="flex items-center gap-2 flex-wrap min-w-0">
+                      <span className="px-2 py-0.5 rounded-md font-mono text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-300 shrink-0">
                         {log.action}
                       </span>
-                      <span className="text-slate-700 dark:text-slate-300">
-                        by <strong className="font-mono">@{log.actorUsername}</strong>
+                      <span className="text-slate-700 dark:text-slate-300 truncate">
+                        by <strong className="font-mono text-slate-900 dark:text-white">@{log.actorUsername}</strong>
                       </span>
                     </div>
-                    <span className="text-[11px] text-slate-400 whitespace-nowrap">
+                    <span className="text-[10px] sm:text-[11px] text-slate-400 shrink-0">
                       {new Date(log.createdAt).toLocaleTimeString([], {
                         hour: '2-digit',
                         minute: '2-digit',
@@ -268,11 +268,11 @@ export const SuperadminDashboardPage: React.FC = () => {
           </div>
 
           {/* Recently Enrolled Students */}
-          <div className="bg-white dark:bg-[#0E1524] rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
+          <div className="bg-white dark:bg-[#0E1524] rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-emerald-500" />
-                <h2 className="font-display font-black text-base text-slate-900 dark:text-white">
+                <Users className="w-4 h-4 text-emerald-500 shrink-0" />
+                <h2 className="font-display font-black text-sm sm:text-base text-slate-900 dark:text-white">
                   Recently Enrolled Students
                 </h2>
               </div>
@@ -289,17 +289,17 @@ export const SuperadminDashboardPage: React.FC = () => {
             ) : !stats?.recentStudents || stats.recentStudents.length === 0 ? (
               <p className="text-xs text-slate-400 py-6 text-center">No students registered yet.</p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {stats.recentStudents.map((st) => (
                   <div
                     key={st._id}
-                    className="p-3 rounded-xl bg-slate-50 dark:bg-[#151F33] flex items-center justify-between gap-3 text-xs"
+                    className="p-2.5 sm:p-3 rounded-xl bg-slate-50 dark:bg-[#151F33] flex items-center justify-between gap-2 text-xs"
                   >
-                    <div>
-                      <p className="font-bold text-slate-900 dark:text-white">{st.name}</p>
-                      <p className="text-[11px] text-slate-500 font-mono">@{st.username}</p>
+                    <div className="min-w-0 flex-1 pr-1">
+                      <p className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm truncate">{st.name}</p>
+                      <p className="text-[11px] text-slate-500 font-mono truncate">@{st.username}</p>
                     </div>
-                    <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-500/10 text-[#C6922E] dark:text-[#F4C76B] border border-amber-500/20">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/10 text-[#C6922E] dark:text-[#F4C76B] border border-amber-500/20 whitespace-nowrap shrink-0">
                       {st.batchCode}
                     </span>
                   </div>

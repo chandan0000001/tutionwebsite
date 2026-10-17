@@ -67,7 +67,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreCourses, onBookConsultation
               </div>
               <div className="flex items-center gap-2 bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-200 shadow-sm transition-colors">
                 <ShieldCheck className="w-4 h-4 text-sky-600 dark:text-sky-400 shrink-0" />
-                <span className="font-bold">NDA Defense</span>
+                <span className="font-bold">OUAT & ICAR</span>
               </div>
             </div>
 

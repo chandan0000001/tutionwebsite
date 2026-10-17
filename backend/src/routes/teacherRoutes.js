@@ -13,6 +13,7 @@ import {
   getBatchStudents,
   createStudent,
   updateStudent,
+  deleteStudent,
   toggleStudentStatus,
   getExcelTemplate,
   bulkImportStudents,
@@ -56,6 +57,7 @@ router.get('/batches/:batchCode/students/template', requireAssignedBatch, getExc
 router.get('/batches/:batchCode/students', requireAssignedBatch, getBatchStudents);
 router.post('/batches/:batchCode/students', requireAssignedBatch, createStudent);
 router.put('/batches/:batchCode/students/:id', requireAssignedBatch, updateStudent);
+router.delete('/batches/:batchCode/students/:id', requireAssignedBatch, deleteStudent);
 router.patch('/batches/:batchCode/students/:id/status', requireAssignedBatch, toggleStudentStatus);
 router.post(
   '/batches/:batchCode/students/import',

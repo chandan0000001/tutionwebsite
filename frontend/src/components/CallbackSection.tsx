@@ -439,7 +439,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
                     <option value="JEE Main & JEE Advanced">JEE Main & JEE Advanced</option>
                     <option value="NEET-UG Medical Preparation">NEET-UG Medical Preparation</option>
                     <option value="+2 Science Odisha CHSE Board">+2 Science Odisha CHSE Board</option>
-                    <option value="NDA (National Defence Academy) Preparation">NDA (National Defence Academy) Preparation</option>
+                    <option value="OUAT & ICAR Preparation">OUAT & ICAR Preparation</option>
                   </select>
                 </div>
               </div>

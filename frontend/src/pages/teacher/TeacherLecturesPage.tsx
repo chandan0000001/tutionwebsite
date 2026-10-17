@@ -7,7 +7,6 @@ import {
   Trash2,
   Eye,
   EyeOff,
-  Play,
   X,
   AlertCircle,
   CheckCircle2,
@@ -16,6 +15,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../config/apiConfig';
 import { TeacherHeader } from '../../components/teacher/TeacherHeader';
+import { ConfirmModal, type ConfirmVariant } from '../../components/common/ConfirmModal';
 
 interface LectureItem {
   _id: string;
@@ -55,11 +55,27 @@ export const TeacherLecturesPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  // Custom confirmation modal state
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: React.ReactNode;
+    confirmText?: string;
+    cancelText?: string;
+    variant?: ConfirmVariant;
+    onConfirm: () => void;
+    isLoading?: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
+
   // Modals
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingLecture, setEditingLecture] = useState<LectureItem | null>(null);
-  const [previewVideo, setPreviewVideo] = useState<{ id: string; title: string } | null>(null);
 
   // Form data
   const [formData, setFormData] = useState({
@@ -253,11 +269,7 @@ export const TeacherLecturesPage: React.FC = () => {
   };
 
   // Delete Lecture
-  const handleDeleteLecture = async (lec: LectureItem) => {
-    if (!window.confirm(`Delete lecture "${lec.topicName}"? This action cannot be undone.`)) {
-      return;
-    }
-
+  const executeDeleteLecture = async (lec: LectureItem) => {
     try {
       const res = await fetch(
         `${API_BASE_URL}/teacher/batches/${selectedBatch}/lectures/${lec._id}`,
@@ -276,7 +288,24 @@ export const TeacherLecturesPage: React.FC = () => {
       }
     } catch {
       setErrorMessage('Network error while removing lecture.');
+    } finally {
+      setConfirmState((prev) => ({ ...prev, isOpen: false }));
     }
+  };
+
+  const handleDeleteLecture = (lec: LectureItem) => {
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Lecture',
+      message: (
+        <span>
+          Are you sure you want to delete lecture <strong>"{lec.topicName}"</strong> (#{lec.slNo}) from batch <strong>{lec.batchCode}</strong>? This action cannot be undone.
+        </span>
+      ),
+      confirmText: 'Delete Lecture',
+      variant: 'danger',
+      onConfirm: () => executeDeleteLecture(lec),
+    });
   };
 
   const previewYtId = getYouTubeId(formData.ytVideoLink);
@@ -319,22 +348,24 @@ export const TeacherLecturesPage: React.FC = () => {
         </div>
 
         {/* Batch Selection */}
-        <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm mb-6 flex items-center gap-3">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
-            Batch Selection:
-          </label>
-          <select
-            value={selectedBatch}
-            onChange={(e) => handleBatchChange(e.target.value)}
-            className="py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#C6922E]"
-          >
-            {batches.map((b) => (
-              <option key={b.code} value={b.code}>
-                {b.name} ({b.code})
-              </option>
-            ))}
-          </select>
-          <span className="text-xs text-slate-400 ml-auto">
+        <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto min-w-0">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-500 shrink-0">
+              Batch Selection:
+            </label>
+            <select
+              value={selectedBatch}
+              onChange={(e) => handleBatchChange(e.target.value)}
+              className="w-full sm:w-auto max-w-full truncate py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#C6922E]"
+            >
+              {batches.map((b) => (
+                <option key={b.code} value={b.code}>
+                  {b.name} ({b.code})
+                </option>
+              ))}
+            </select>
+          </div>
+          <span className="text-xs text-slate-400 shrink-0">
             {lectures.length} {lectures.length === 1 ? 'class recorded' : 'classes recorded'}
           </span>
         </div>
@@ -366,9 +397,23 @@ export const TeacherLecturesPage: React.FC = () => {
           </div>
         )}
 
-        {/* Lectures Table / Grid */}
+        {/* Custom Confirmation Modal */}
+        <ConfirmModal
+          isOpen={confirmState.isOpen}
+          onClose={() => setConfirmState((prev) => ({ ...prev, isOpen: false }))}
+          onConfirm={confirmState.onConfirm}
+          title={confirmState.title}
+          message={confirmState.message}
+          confirmText={confirmState.confirmText}
+          cancelText={confirmState.cancelText}
+          variant={confirmState.variant}
+          isLoading={confirmState.isLoading}
+        />
+
+        {/* Lectures Table & Mobile Cards */}
         <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 dark:bg-[#1E293B]/70 border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider font-extrabold text-slate-500 dark:text-slate-400">
                 <tr>
@@ -401,128 +446,167 @@ export const TeacherLecturesPage: React.FC = () => {
                     </td>
                   </tr>
                 ) : (
-                  lectures.map((lec) => {
-                    const ytId = getYouTubeId(lec.ytVideoLink);
-                    return (
-                      <tr
-                        key={lec._id}
-                        className="hover:bg-slate-50/80 dark:hover:bg-[#1E293B]/40 transition-colors"
-                      >
-                        <td className="py-3 px-4 text-center font-mono font-bold text-slate-700 dark:text-slate-300">
-                          #{lec.slNo}
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                            {lec.subject}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 max-w-sm">
-                          <p className="font-bold text-slate-900 dark:text-white">{lec.topicName}</p>
-                          {lec.description && (
-                            <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
-                              {lec.description}
-                            </p>
-                          )}
-                        </td>
-                        <td className="py-3 px-4">
-                          {ytId ? (
-                            <button
-                              onClick={() => setPreviewVideo({ id: ytId, title: lec.topicName })}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 font-medium transition-colors"
-                            >
-                              <Play className="w-3 h-3 fill-current" />
-                              <span>Preview Video</span>
-                            </button>
+                  lectures.map((lec) => (
+                    <tr
+                      key={lec._id}
+                      className="hover:bg-slate-50/80 dark:hover:bg-[#1E293B]/40 transition-colors"
+                    >
+                      <td className="py-3 px-4 text-center font-mono font-bold text-slate-700 dark:text-slate-300">
+                        #{lec.slNo}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="whitespace-nowrap inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                          {lec.subject}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 max-w-sm">
+                        <p className="font-bold text-slate-900 dark:text-white">{lec.topicName}</p>
+                        {lec.description && (
+                          <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                            {lec.description}
+                          </p>
+                        )}
+                      </td>
+                      <td className="py-3 px-4">
+                        <a
+                          href={lec.ytVideoLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] shadow-xs transition-colors"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          <span>YouTube ↗</span>
+                        </a>
+                      </td>
+                      <td className="py-3 px-4">
+                        <button
+                          onClick={() => handleTogglePublish(lec)}
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors cursor-pointer ${
+                            lec.isPublished
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-rose-50 hover:text-rose-600'
+                              : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-emerald-50 hover:text-emerald-600'
+                          }`}
+                          title="Click to toggle published status"
+                        >
+                          {lec.isPublished ? (
+                            <>
+                              <Eye className="w-3 h-3" />
+                              <span>Published</span>
+                            </>
                           ) : (
-                            <a
-                              href={lec.ytVideoLink}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-slate-400 hover:text-slate-600 inline-flex items-center gap-1"
-                            >
-                              <ExternalLink className="w-3 h-3" />
-                              <span>Open Link</span>
-                            </a>
+                            <>
+                              <EyeOff className="w-3 h-3" />
+                              <span>Unpublished</span>
+                            </>
                           )}
-                        </td>
-                        <td className="py-3 px-4">
+                        </button>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <div className="inline-flex items-center gap-1.5">
                           <button
-                            onClick={() => handleTogglePublish(lec)}
-                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors cursor-pointer ${
-                              lec.isPublished
-                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-rose-50 hover:text-rose-600'
-                                : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-emerald-50 hover:text-emerald-600'
-                            }`}
-                            title="Click to toggle published status"
+                            onClick={() => openEdit(lec)}
+                            className="p-1.5 rounded-lg text-slate-600 hover:text-[#17365D] dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            title="Edit Lecture"
                           >
-                            {lec.isPublished ? (
-                              <>
-                                <Eye className="w-3 h-3" />
-                                <span>Published</span>
-                              </>
-                            ) : (
-                              <>
-                                <EyeOff className="w-3 h-3" />
-                                <span>Unpublished</span>
-                              </>
-                            )}
+                            <Edit className="w-3.5 h-3.5" />
                           </button>
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          <div className="inline-flex items-center gap-1.5">
-                            <button
-                              onClick={() => openEdit(lec)}
-                              className="p-1.5 rounded-lg text-slate-600 hover:text-[#17365D] dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                              title="Edit Lecture"
-                            >
-                              <Edit className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteLecture(lec)}
-                              className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
-                              title="Delete Lecture"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
+                          <button
+                            onClick={() => handleDeleteLecture(lec)}
+                            className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                            title="Delete Lecture"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
           </div>
-        </div>
 
-        {/* Video Player Modal */}
-        {previewVideo && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-in fade-in duration-200">
-            <div className="bg-[#111827] rounded-3xl shadow-2xl border border-slate-800 max-w-3xl w-full p-4 sm:p-6 overflow-hidden">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-                <h3 className="font-bold text-sm text-white truncate max-w-[85%]">
-                  {previewVideo.title}
-                </h3>
-                <button
-                  onClick={() => setPreviewVideo(null)}
-                  className="p-1 text-slate-400 hover:text-white rounded-lg"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+          {/* Dedicated Mobile Cards View */}
+          <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800/80">
+            {isLoading ? (
+              <div className="py-12 text-center text-slate-500">
+                <div className="w-7 h-7 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
+                <p className="mt-2 text-xs">Loading lectures...</p>
               </div>
+            ) : lectures.length === 0 ? (
+              <div className="py-12 text-center text-slate-500">
+                <Video className="w-8 h-8 mx-auto text-slate-400 mb-2" />
+                <p className="font-bold text-slate-800 dark:text-slate-200">No lectures in this batch</p>
+                <p className="text-xs text-slate-400 mt-0.5">Click "Add New Lecture" above to publish recordings.</p>
+              </div>
+            ) : (
+              lectures.map((lec) => (
+                <div key={lec._id} className="p-4 space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-xs text-slate-500 dark:text-slate-400">
+                        #{lec.slNo}
+                      </span>
+                      <span className="whitespace-nowrap px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                        {lec.subject}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => handleTogglePublish(lec)}
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shrink-0 ${
+                        lec.isPublished
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                          : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                      }`}
+                    >
+                      {lec.isPublished ? 'Published' : 'Unpublished'}
+                    </button>
+                  </div>
 
-              <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-lg">
-                <iframe
-                  src={`https://www.youtube.com/embed/${previewVideo.id}?autoplay=1&rel=0`}
-                  title={previewVideo.title}
-                  className="w-full h-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </div>
+                  <div>
+                    <h3 className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm leading-snug">
+                      {lec.topicName}
+                    </h3>
+                    {lec.description && (
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                        {lec.description}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <a
+                      href={lec.ytVideoLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-2.5 py-1 rounded-lg text-xs font-bold text-white bg-red-600 hover:bg-red-700 flex items-center gap-1 shadow-xs"
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      <span>YouTube ↗</span>
+                    </a>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => openEdit(lec)}
+                        className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 dark:bg-slate-800"
+                        title="Edit Lecture"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteLecture(lec)}
+                        className="p-1.5 rounded-lg text-rose-600 bg-rose-50 dark:bg-rose-950/40"
+                        title="Delete Lecture"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-        )}
+        </div>
 
         {/* Add Lecture Modal */}
         {showAddModal && (

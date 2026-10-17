@@ -92,7 +92,7 @@ export const ACADEMY_CONFIG = {
   // Trust Indicators
   highlights: [
     { label: 'Targeted Prep', value: '+2 Science CHSE' },
-    { label: 'Competitive Streams', value: 'JEE • NEET • NDA' },
+    { label: 'Competitive Streams', value: 'JEE • NEET • OUAT • ICAR' },
     { label: 'Academic Mentoring', value: 'Daily Doubt Clearing' },
     { label: 'Center Location', value: 'Bijipur, Brahmapur' },
   ],

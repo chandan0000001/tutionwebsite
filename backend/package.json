@@ -7,8 +7,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "seed": "node scripts/seedStudents.js",
-    "bootstrap:staff": "node scripts/seedStaff.js",
+    "seed": "node scripts/seed.js",
+    "seed:staff": "node scripts/seedStaff.js",
+    "seed:students": "node scripts/seedStudents.js",
     "test": "node --test tests/*.test.js"
   },
   "dependencies": {

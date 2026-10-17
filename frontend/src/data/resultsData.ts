@@ -1,7 +1,7 @@
 export interface ResultItem {
   id: string;
   year: string;
-  category: 'JEE' | 'NEET' | 'NDA' | '+2 Science Board';
+  category: 'JEE' | 'NEET' | 'OUAT & ICAR' | '+2 Science Board';
   studentName: string;
   scoreOrRank: string;
   allotmentOrCollege: string;
@@ -104,23 +104,23 @@ export const RESULTS_DATA: ResultItem[] = [
   {
     id: 'res-2026-07',
     year: '2026',
-    category: 'NDA',
+    category: 'OUAT & ICAR',
     studentName: 'Aditya Narayan Pradhan',
-    scoreOrRank: 'AIR 142 (UPSC NDA & NA 154)',
+    scoreOrRank: 'AIR 142 (OUAT State Merit Rank 14)',
     allotmentOrCollege: 'National Defence Academy, Khadakwasla (Army Wing)',
     achievementSummary: 'Cleared Written Exam + SSB Interview in First Attempt',
-    details: 'NDA Special Warriors Weekend Batch',
+    details: 'OUAT & ICAR Intensive Batch',
     storyQuote:
-      'The mathematics speed shortcuts and comprehensive GAT current affairs sessions at Antariksh gave me the competitive edge needed to conquer the UPSC NDA written paper.',
+      'The mathematics speed shortcuts and comprehensive GAT current affairs sessions at Antariksh gave me the competitive edge needed to conquer the OUAT & ICAR entrance examination.',
     photoUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80',
     badgeColor: 'bg-purple-600',
   },
   {
     id: 'res-2026-08',
     year: '2026',
-    category: 'NDA',
+    category: 'OUAT & ICAR',
     studentName: 'Rakesh Roshan Sethi',
-    scoreOrRank: 'UPSC NDA Written Qualified (Score: 485/900)',
+    scoreOrRank: 'ICAR AIEEA 98.4 Percentile (All India Agro Entrance)',
     allotmentOrCollege: 'SSB Call-up for Indian Naval Academy (INA)',
     achievementSummary: 'High Score in Paper-1 Mathematics (210/300)',
     details: 'Defence Aptitude & English Communication Program',
@@ -218,12 +218,12 @@ export const RESULTS_DATA: ResultItem[] = [
   {
     id: 'res-2025-07',
     year: '2025',
-    category: 'NDA',
+    category: 'OUAT & ICAR',
     studentName: 'Tanmay Kumar Choudhury',
-    scoreOrRank: 'AIR 218 (UPSC NDA 152)',
+    scoreOrRank: 'OUAT State Rank 28 (B.Sc. Agriculture)',
     allotmentOrCollege: 'National Defence Academy (Air Force Wing)',
     achievementSummary: 'Recommended by 4 AFSB Varanasi',
-    details: 'NDA Weekend Crash & Comprehensive Module',
+    details: 'OUAT & ICAR Weekend Module',
     storyQuote:
       'The faculty built my confidence in English, General Ability, and rapid mathematics calculations. Proud to wear the uniform soon!',
     photoUrl: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=400&q=80',
@@ -304,12 +304,12 @@ export const RESULTS_DATA: ResultItem[] = [
   {
     id: 'res-2024-06',
     year: '2024',
-    category: 'NDA',
+    category: 'OUAT & ICAR',
     studentName: 'Satyajit Gouda',
-    scoreOrRank: 'UPSC NDA 150 Recommended',
+    scoreOrRank: 'OUAT Merit List Rank 35',
     allotmentOrCollege: 'Indian Naval Academy (INA Ezhimala)',
     achievementSummary: 'Recommended by 33 SSB Bhopal',
-    details: 'NDA Defence & GAT Training Batch',
+    details: 'OUAT & ICAR Agro-Entrances Batch',
     storyQuote:
       'The mentor guidance for personality building, current affairs discussions, and mathematics accuracy at Antariksh Academy gave me immense clarity.',
     photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
@@ -362,12 +362,12 @@ export const RESULTS_DATA: ResultItem[] = [
   {
     id: 'res-2023-04',
     year: '2023',
-    category: 'NDA',
+    category: 'OUAT & ICAR',
     studentName: 'Deepak Kumar Barik',
-    scoreOrRank: 'UPSC NDA 148 Qualified',
+    scoreOrRank: 'ICAR AIEEA 97.8 Percentile',
     allotmentOrCollege: 'National Defence Academy (Army Cadet)',
     achievementSummary: 'Cleared Written Examination + SSB Allahabad',
-    details: 'NDA Defence & Aptitude Program',
+    details: 'OUAT & ICAR Aptitude Program',
     storyQuote:
       'The speed math drills and English comprehension practice were instrumental in clearing the cutoffs with high margins.',
     photoUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80',
@@ -420,12 +420,12 @@ export const RESULTS_DATA: ResultItem[] = [
   {
     id: 'res-2022-04',
     year: '2022',
-    category: 'NDA',
+    category: 'OUAT & ICAR',
     studentName: 'Rudra Pratap Mohapatra',
-    scoreOrRank: 'UPSC NDA Written Qualified',
+    scoreOrRank: 'OUAT Qualified (Rank 44)',
     allotmentOrCollege: 'Armed Forces Officer Aspirant',
     achievementSummary: 'High Marks in Mathematics & General Ability',
-    details: 'NDA Weekend Batch',
+    details: 'OUAT & ICAR Weekend Batch',
     storyQuote:
       'Comprehensive study materials and daily problem sheets created the exact discipline required for UPSC examination.',
     photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80',
@@ -478,12 +478,12 @@ export const RESULTS_DATA: ResultItem[] = [
   {
     id: 'res-2021-04',
     year: '2021',
-    category: 'NDA',
+    category: 'OUAT & ICAR',
     studentName: 'Chandan Kumar Nayak',
-    scoreOrRank: 'UPSC NDA 145 Written Recommendation',
+    scoreOrRank: 'OUAT State Rank 52',
     allotmentOrCollege: 'Indian Army Officer Selection',
     achievementSummary: 'Cleared Written Examination in 1st Attempt',
-    details: 'NDA Special Batch',
+    details: 'OUAT & ICAR Special Batch',
     storyQuote:
       'Disciplined daily sessions and rigorous time management training were the pillars of my success.',
     photoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80',
@@ -535,12 +535,12 @@ export const RESULTS_DATA: ResultItem[] = [
   {
     id: 'res-2020-04',
     year: '2020',
-    category: 'NDA',
+    category: 'OUAT & ICAR',
     studentName: 'Bikash Kumar Sethi',
-    scoreOrRank: 'UPSC NDA 144 Merit List',
+    scoreOrRank: 'ICAR AIEEA 96.5 Percentile',
     allotmentOrCollege: 'National Defence Academy, Khadakwasla',
     achievementSummary: 'Direct Entry Commission Recommended',
-    details: 'NDA Foundation & Aptitude Program',
+    details: 'OUAT Foundation & Aptitude Program',
     storyQuote:
       'The speed techniques taught for the UPSC math paper made all the difference in clearing the qualifying cut-off easily.',
     photoUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80',
@@ -592,9 +592,9 @@ export const RESULTS_DATA: ResultItem[] = [
   {
     id: 'res-2019-04',
     year: '2019',
-    category: 'NDA',
+    category: 'OUAT & ICAR',
     studentName: 'Deepak Ranjan Panda',
-    scoreOrRank: 'UPSC NDA 142 Written & SSB Recommendation',
+    scoreOrRank: 'OUAT State Rank 61',
     allotmentOrCollege: 'Indian Naval Academy (INA Ezhimala)',
     achievementSummary: 'All-India Rank 218 in UPSC Merit List',
     details: 'Defense Services Written Coaching Program',

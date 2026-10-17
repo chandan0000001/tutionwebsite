@@ -30,7 +30,7 @@ export const Courses: React.FC<CoursesProps> = ({
       return (
         course.id === 'jee-main-adv' ||
         course.id === 'neet-ug' ||
-        course.id === 'nda-entrance'
+        course.id === 'ouat-icar-entrance'
       );
     }
     if (activeFilter === 'board') {
@@ -97,7 +97,7 @@ export const Courses: React.FC<CoursesProps> = ({
                   : 'bg-white text-slate-700 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-xs dark:bg-[#202B3D] dark:text-[#AAB4C3] dark:hover:text-white dark:hover:bg-[#2A374D] dark:border-[#344054]'
               }`}
             >
-              Competitive Entrances (JEE, NEET, NDA)
+              Competitive Entrances (JEE, NEET, OUAT, ICAR)
             </button>
             <button
               onClick={() => setActiveFilter('board')}

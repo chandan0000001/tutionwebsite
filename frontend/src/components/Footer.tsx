@@ -153,7 +153,7 @@ export const Footer: React.FC = () => {
             </div>
 
             <p className="text-xs text-slate-600 dark:text-[#AAB4C3] leading-relaxed max-w-sm">
-              Premier institute for Class 11 & 12 (+2 Science) and competitive entrance coaching (JEE, NEET, NDA) in Brahmapur, Odisha.
+              Premier institute for Class 11 & 12 (+2 Science) and competitive entrance coaching (JEE, NEET, OUAT, ICAR) in Brahmapur, Odisha.
             </p>
 
             <div className="text-xs text-slate-600 dark:text-[#AAB4C3] space-y-1.5 pt-1">

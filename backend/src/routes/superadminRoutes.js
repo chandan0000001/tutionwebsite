@@ -19,7 +19,9 @@ import {
   getAllStudents,
   createStudent,
   updateStudent,
+  deleteStudent,
   toggleStudentStatus,
+  resetStudentPassword,
   bulkImportStudents,
   getAllLectures,
   createLecture,
@@ -71,7 +73,9 @@ router.post('/teachers/:id/reset-password', resetTeacherPassword);
 router.get('/students', getAllStudents);
 router.post('/students', createStudent);
 router.put('/students/:id', updateStudent);
+router.delete('/students/:id', deleteStudent);
 router.patch('/students/:id/status', toggleStudentStatus);
+router.post('/students/:id/reset-password', resetStudentPassword);
 router.get('/students/template', async (req, res, next) => {
   try {
     const buffer = await generateStudentTemplate();

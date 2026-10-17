@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Academy Director & Chief Administrator",
+    "role": "superadmin",
+    "username": "aa_superadmin",
+    "initialPassword": "SuperAdmin@Antariksh2026",
+    "phone": "9861000000",
+    "qualification": "Academic Leadership & Direction",
+    "dateOfBirth": "",
+    "email": "director@antariksh.edu.in",
+    "assignedBatches": [
+      "BATCH-CHSE",
+      "BATCH-JEE",
+      "BATCH-NEET",
+      "BATCH-INTG",
+      "BATCH-OUAT-ICAR"
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Prasant Kumar Behera",
+    "role": "teacher",
+    "username": "prasantbehera",
+    "initialPassword": "prasant@Accademy02",
+    "phone": "9090160793",
+    "qualification": "M.Sc. Physics, Senior Faculty & NEET/CHSE Physics Mentor",
+    "dateOfBirth": "22/10/1986",
+    "email": "prasant.behera@antariksh.edu.in",
+    "assignedBatches": [
+      "BATCH-CHSE",
+      "BATCH-JEE",
+      "BATCH-NEET",
+      "BATCH-INTG",
+      "BATCH-OUAT-ICAR"
+    ],
+    "isActive": true
+  },
+  {
+    "name": "Sudeep Dash",
+    "role": "teacher",
+    "username": "sudeepdash",
+    "initialPassword": "sudeep@Accademy01",
+    "phone": "8763654489",
+    "qualification": "M.Sc. Mathematics, Senior Faculty & Entrance Specialist",
+    "dateOfBirth": "15/06/1985",
+    "email": "sudeep.dash@antariksh.edu.in",
+    "assignedBatches": [
+      "BATCH-CHSE",
+      "BATCH-JEE",
+      "BATCH-NEET",
+      "BATCH-INTG",
+      "BATCH-OUAT-ICAR"
+    ],
+    "isActive": true
+  }
+]

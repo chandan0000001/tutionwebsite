@@ -13,6 +13,7 @@ import {
   RefreshCw,
   BookOpen,
   Calendar,
+  ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../config/apiConfig';
@@ -372,16 +373,29 @@ export const RecordedLecturesPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Watch Action Button */}
-                <button
-                  type="button"
-                  onClick={() => setActiveVideo(lecture)}
-                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-extrabold text-white bg-gradient-to-r from-[#17365D] to-[#1E4273] dark:from-[#F4C76B] dark:to-[#E5B555] dark:text-[#0B1120] hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0 shadow-sm cursor-pointer"
-                  aria-label={`Watch ${lecture.topicName}`}
-                >
-                  <Play className="w-3.5 h-3.5 fill-current" />
-                  <span>Watch Class</span>
-                </button>
+                {/* Action Buttons: Direct YouTube Platform Link & In-App Player */}
+                <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                  <a
+                    href={lecture.ytVideoLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-extrabold text-white bg-red-600 hover:bg-red-700 active:scale-95 transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                    aria-label={`Watch ${lecture.topicName} on YouTube`}
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Watch on YouTube ↗</span>
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveVideo(lecture)}
+                    className="px-3 py-2.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-1.5 shrink-0"
+                    title="Play inside website"
+                  >
+                    <Play className="w-3.5 h-3.5 fill-current text-amber-500" />
+                    <span className="hidden sm:inline">In-App</span>
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -437,7 +451,7 @@ export const RecordedLecturesPage: React.FC = () => {
           >
             <div className="w-full max-w-4xl bg-[#0F172A] rounded-2xl sm:rounded-3xl border border-slate-800 shadow-2xl overflow-hidden flex flex-col">
               {/* Modal Header */}
-              <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between gap-4">
+              <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span
                     className={`px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider shrink-0 border ${getSubjectColorBadge(
@@ -454,14 +468,27 @@ export const RecordedLecturesPage: React.FC = () => {
                   </h3>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setActiveVideo(null)}
-                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer shrink-0"
-                  aria-label="Close video player"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <a
+                    href={activeVideo.ytVideoLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 rounded-lg text-xs font-extrabold text-white bg-red-600 hover:bg-red-700 flex items-center gap-1.5 transition-colors shadow-xs"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Watch on YouTube</span>
+                    <span className="sm:hidden">YouTube</span>
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveVideo(null)}
+                    className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                    aria-label="Close video player"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
               {/* YouTube Embed Player */}

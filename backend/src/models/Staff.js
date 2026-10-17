@@ -37,8 +37,8 @@ const staffSchema = new mongoose.Schema(
       trim: true,
       index: true,
       match: [
-        /^[a-z0-9_-]{3,30}$/,
-        'Username must be between 3 and 30 alphanumeric characters, dashes, or underscores',
+        /^[a-z0-9._-]{3,60}$/,
+        'Username must be between 3 and 60 alphanumeric characters, dots, dashes, or underscores',
       ],
     },
     passwordHash: {
@@ -65,6 +65,10 @@ const staffSchema = new mongoose.Schema(
     mustChangePassword: {
       type: Boolean,
       default: true,
+    },
+    temporaryPasswordExpiresAt: {
+      type: Date,
+      default: null,
     },
   },
   {

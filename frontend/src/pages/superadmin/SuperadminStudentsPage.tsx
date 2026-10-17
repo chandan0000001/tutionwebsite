@@ -7,8 +7,10 @@ import {
   Download,
   Upload,
   Edit,
+  KeyRound,
   UserCheck,
   UserX,
+  Trash2,
   AlertCircle,
   CheckCircle2,
   X,
@@ -20,6 +22,7 @@ import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../config/apiConfig';
 import { SuperadminHeader } from '../../components/superadmin/SuperadminHeader';
 import { CredentialsModal } from '../../components/common/CredentialsModal';
+import { ConfirmModal, type ConfirmVariant } from '../../components/common/ConfirmModal';
 
 interface StudentItem {
   _id: string;
@@ -70,6 +73,23 @@ export const SuperadminStudentsPage: React.FC = () => {
     temporaryPassword: string;
     note?: string;
   } | null>(null);
+
+  // Custom confirmation modal state
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: React.ReactNode;
+    confirmText?: string;
+    cancelText?: string;
+    variant?: ConfirmVariant;
+    onConfirm: () => void;
+    isLoading?: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
 
   // Form data
   const [formData, setFormData] = useState({
@@ -250,11 +270,8 @@ export const SuperadminStudentsPage: React.FC = () => {
     }
   };
 
-  // Toggle Status
-  const handleToggleStatus = async (s: StudentItem) => {
-    const action = s.isActive ? 'deactivate' : 'reactivate';
-    if (!window.confirm(`Are you sure you want to ${action} student "${s.name}"?`)) return;
-
+  // Execute Toggle Status
+  const executeToggleStatus = async (s: StudentItem) => {
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/students/${s._id}/status`, {
         method: 'PATCH',
@@ -269,7 +286,100 @@ export const SuperadminStudentsPage: React.FC = () => {
       }
     } catch {
       setErrorMessage('Network error while toggling status.');
+    } finally {
+      setConfirmState((prev) => ({ ...prev, isOpen: false }));
     }
+  };
+
+  const handleToggleStatus = (s: StudentItem) => {
+    const isActivating = !s.isActive;
+    setConfirmState({
+      isOpen: true,
+      title: `${isActivating ? 'Reactivate' : 'Deactivate'} Student Account`,
+      message: (
+        <span>
+          Are you sure you want to <strong>{isActivating ? 'reactivate' : 'deactivate'}</strong> student account for <strong>{s.name}</strong> (@{s.username})? {isActivating ? 'Their student portal access will be restored.' : 'They will not be able to log in to the student portal while inactive.'}
+        </span>
+      ),
+      confirmText: isActivating ? 'Reactivate Student' : 'Deactivate Student',
+      variant: isActivating ? 'warning' : 'danger',
+      onConfirm: () => executeToggleStatus(s),
+    });
+  };
+
+  // Reset Student Password
+  const executeResetStudentPassword = async (s: StudentItem) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/superadmin/students/${s._id}/reset-password`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setCredentialsPopup({
+          username: data.oneTimeCredentials.username,
+          temporaryPassword: data.oneTimeCredentials.temporaryPassword,
+          note: data.oneTimeCredentials.note,
+        });
+      } else {
+        setErrorMessage(data.message || 'Password reset failed.');
+      }
+    } catch {
+      setErrorMessage('Network error while resetting password.');
+    } finally {
+      setConfirmState((prev) => ({ ...prev, isOpen: false }));
+    }
+  };
+
+  const handleResetPassword = (s: StudentItem) => {
+    setConfirmState({
+      isOpen: true,
+      title: 'Reset Student Password',
+      message: (
+        <span>
+          Generate a new temporary password for <strong>{s.name}</strong> (@{s.username})? The temporary password will be valid for <strong>1 hour only</strong>.
+        </span>
+      ),
+      confirmText: 'Generate Password',
+      variant: 'primary',
+      onConfirm: () => executeResetStudentPassword(s),
+    });
+  };
+
+  // Delete Student Directly from Database
+  const executeDeleteStudent = async (s: StudentItem) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/superadmin/students/${s._id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSuccessMessage(data.message || `Student '${s.name}' deleted successfully.`);
+        fetchStudents();
+      } else {
+        setErrorMessage(data.message || 'Failed to delete student.');
+      }
+    } catch {
+      setErrorMessage('Network error while deleting student.');
+    } finally {
+      setConfirmState((prev) => ({ ...prev, isOpen: false }));
+    }
+  };
+
+  const handleDeleteStudent = (s: StudentItem) => {
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Student from Database',
+      message: (
+        <span>
+          Are you sure you want to permanently delete <strong>{s.name}</strong> (@{s.username}) from the database? This action will remove their record directly and permanently.
+        </span>
+      ),
+      confirmText: 'Delete Permanently',
+      variant: 'danger',
+      onConfirm: () => executeDeleteStudent(s),
+    });
   };
 
   // Download Excel Template
@@ -446,9 +556,23 @@ export const SuperadminStudentsPage: React.FC = () => {
           />
         )}
 
+        {/* Custom Confirmation Modal */}
+        <ConfirmModal
+          isOpen={confirmState.isOpen}
+          onClose={() => setConfirmState((prev) => ({ ...prev, isOpen: false }))}
+          onConfirm={confirmState.onConfirm}
+          title={confirmState.title}
+          message={confirmState.message}
+          confirmText={confirmState.confirmText}
+          cancelText={confirmState.cancelText}
+          variant={confirmState.variant}
+          isLoading={confirmState.isLoading}
+        />
+
         {/* Students Table */}
         <div className="bg-white dark:bg-[#0E1524] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 dark:bg-[#151F33] border-b border-slate-200 dark:border-slate-800 uppercase tracking-wider font-extrabold text-slate-500 dark:text-slate-400">
                 <tr>
@@ -532,6 +656,13 @@ export const SuperadminStudentsPage: React.FC = () => {
                             <Edit className="w-3.5 h-3.5" />
                           </button>
                           <button
+                            onClick={() => handleResetPassword(s)}
+                            className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40"
+                            title="Reset Temporary Password (Valid 1 hour)"
+                          >
+                            <KeyRound className="w-3.5 h-3.5" />
+                          </button>
+                          <button
                             onClick={() => handleToggleStatus(s)}
                             className={`p-1.5 rounded-lg transition-colors ${
                               s.isActive
@@ -546,6 +677,13 @@ export const SuperadminStudentsPage: React.FC = () => {
                               <UserCheck className="w-3.5 h-3.5" />
                             )}
                           </button>
+                          <button
+                            onClick={() => handleDeleteStudent(s)}
+                            className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                            title="Delete Student Directly from Database"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -553,6 +691,111 @@ export const SuperadminStudentsPage: React.FC = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Dedicated Mobile Cards View */}
+          <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800/80">
+            {isLoading ? (
+              <div className="py-12 text-center text-slate-500">
+                <div className="w-7 h-7 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
+                <p className="mt-2 text-xs">Loading student records...</p>
+              </div>
+            ) : students.length === 0 ? (
+              <div className="py-12 text-center text-slate-500">
+                <Users className="w-8 h-8 mx-auto text-slate-400 mb-2" />
+                <p className="font-bold text-slate-800 dark:text-slate-200">No students found</p>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {searchQuery ? 'Try a different search term.' : 'No students found.'}
+                </p>
+              </div>
+            ) : (
+              students.map((s) => (
+                <div key={s._id} className="p-3.5 sm:p-4 space-y-2.5">
+                  <div className="space-y-1.5">
+                    {/* Row 1: Student Name + Status Badge */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="font-bold text-slate-900 dark:text-white text-sm break-words flex-1 min-w-0 pr-1">
+                        {s.name}
+                      </div>
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider shrink-0 ${
+                          s.isActive
+                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
+                        }`}
+                      >
+                        {s.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+
+                    {/* Row 2: Username + Batch Badge */}
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="font-mono text-xs text-amber-600 dark:text-amber-400">
+                        @{s.username}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-amber-500/10 text-[#C6922E] dark:text-[#F4C76B] border border-amber-500/20 shrink-0">
+                        {s.batchCode}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Phone</span>
+                      <a href={`tel:${s.phone}`} className="font-mono font-bold text-slate-800 dark:text-slate-200 hover:text-amber-600">
+                        {s.phone}
+                      </a>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">College</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-300 truncate block">
+                        {s.college || '—'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 flex-wrap gap-2">
+                    <span>DOB: {s.dateOfBirth || '—'}</span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <button
+                        onClick={() => openEdit(s)}
+                        className="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 flex items-center gap-1 cursor-pointer"
+                      >
+                        <Edit className="w-3 h-3" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleResetPassword(s)}
+                        className="px-2.5 py-1 rounded-lg text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 border border-amber-200 dark:border-amber-800 flex items-center gap-1 cursor-pointer"
+                        title="Reset Temporary Password"
+                      >
+                        <KeyRound className="w-3 h-3" />
+                        <span>Reset Key</span>
+                      </button>
+                      <button
+                        onClick={() => handleToggleStatus(s)}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer ${
+                          s.isActive
+                            ? 'text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40'
+                            : 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40'
+                        }`}
+                      >
+                        {s.isActive ? <UserX className="w-3 h-3" /> : <UserCheck className="w-3 h-3" />}
+                        <span>{s.isActive ? 'Deactivate' : 'Activate'}</span>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteStudent(s)}
+                        className="px-2.5 py-1 rounded-lg text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 border border-rose-200 dark:border-rose-800 flex items-center gap-1 cursor-pointer"
+                        title="Delete Student Directly from Database"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Pagination */}
