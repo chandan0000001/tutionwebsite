@@ -505,10 +505,10 @@ export async function createStudent(req, res, next) {
       batchCode,
     } = req.body;
 
-    if (!name || !phone || !dateOfBirth || !batchCode) {
+    if (!name || !phone || !batchCode) {
       return res.status(400).json({
         success: false,
-        message: 'Name, 10-digit phone number, date of birth, and batch selection are required.',
+        message: 'Name, 10-digit phone number, and batch selection are required.',
       });
     }
 
@@ -545,12 +545,12 @@ export async function createStudent(req, res, next) {
     const newStudent = await Student.create({
       name: name.trim(),
       phone: cleanPhone,
-      dateOfBirth: String(dateOfBirth).trim(),
+      dateOfBirth: dateOfBirth ? String(dateOfBirth).trim() : 'N/A',
       email: email ? email.trim().toLowerCase() : `${username}@student.antariksh.edu.in`,
-      address: typeof address === 'string' ? { street: address } : address || {},
-      college: college ? college.trim() : '',
-      fatherName: fatherName ? fatherName.trim() : '',
-      motherName: motherName ? motherName.trim() : '',
+      address: typeof address === 'string' ? { street: address } : address || { street: 'N/A' },
+      college: college ? college.trim() : 'N/A',
+      fatherName: fatherName ? fatherName.trim() : 'N/A',
+      motherName: motherName ? motherName.trim() : 'N/A',
       batch: academicYear,
       batchCode: cleanBatch,
       username,
@@ -746,8 +746,7 @@ export async function bulkImportStudents(req, res, next) {
       });
     }
 
-    const cleanBatch = batchCode.trim().toUpperCase();
-    const academicYear = cleanBatch.replace('BATCH-', '');
+    const cleanBatch = batchCode ? batchCode.trim().toUpperCase() : 'BATCH-CHSE';
 
     const parseResult = await parseStudentExcel(req.file.buffer);
 
@@ -758,8 +757,21 @@ export async function bulkImportStudents(req, res, next) {
     for (const validItem of parseResult.validRows) {
       const record = validItem.data;
 
+      // Determine target batch: row-level batch column takes precedence if present, else default to selected batch
+      let targetBatch = cleanBatch;
+      if (record.batchCode) {
+        const raw = record.batchCode.trim().toUpperCase();
+        if (raw.includes('CHSE')) targetBatch = 'BATCH-CHSE';
+        else if (raw.includes('JEE')) targetBatch = 'BATCH-JEE';
+        else if (raw.includes('NEET')) targetBatch = 'BATCH-NEET';
+        else if (raw.includes('INTG') || raw.includes('INTEGRATED')) targetBatch = 'BATCH-INTG';
+        else if (raw.includes('OUAT') || raw.includes('ICAR')) targetBatch = 'BATCH-OUAT-ICAR';
+        else if (raw.startsWith('BATCH-')) targetBatch = raw;
+      }
+      const academicYear = targetBatch.replace('BATCH-', '');
+
       const existing = await Student.findOne({
-        $or: [{ phone: record.phone }, ...(record.email ? [{ email: record.email }] : [])],
+        $or: [{ phone: record.phone }, ...(record.email && record.email !== 'N/A' ? [{ email: record.email }] : [])],
       });
 
       if (existing) {
@@ -786,14 +798,14 @@ export async function bulkImportStudents(req, res, next) {
       const newStudent = await Student.create({
         name: record.name,
         phone: record.phone,
-        dateOfBirth: record.dateOfBirth,
-        email: record.email || `${username}@student.antariksh.edu.in`,
-        address: record.address ? { street: record.address } : {},
-        college: record.college || '',
-        fatherName: record.fatherName || '',
-        motherName: record.motherName || '',
+        dateOfBirth: record.dateOfBirth || 'N/A',
+        email: record.email && record.email !== 'N/A' ? record.email : `${username}@student.antariksh.edu.in`,
+        address: typeof record.address === 'string' ? { street: record.address } : record.address || { street: 'N/A' },
+        college: record.college || 'N/A',
+        fatherName: record.fatherName || 'N/A',
+        motherName: record.motherName || 'N/A',
         batch: academicYear,
-        batchCode: cleanBatch,
+        batchCode: targetBatch,
         username,
         passwordHash,
         isActive: true,

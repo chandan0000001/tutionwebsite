@@ -160,10 +160,10 @@ export async function createStudent(req, res, next) {
       motherName,
     } = req.body;
 
-    if (!name || !phone || !dateOfBirth) {
+    if (!name || !phone) {
       return res.status(400).json({
         success: false,
-        message: 'Name, 10-digit mobile phone, and date of birth are required.',
+        message: 'Name and 10-digit mobile phone are required.',
       });
     }
 
@@ -199,12 +199,12 @@ export async function createStudent(req, res, next) {
     const newStudent = await Student.create({
       name: name.trim(),
       phone: cleanPhone,
-      dateOfBirth: String(dateOfBirth).trim(),
+      dateOfBirth: dateOfBirth ? String(dateOfBirth).trim() : 'N/A',
       email: email ? String(email).trim().toLowerCase() : `${username}@student.antariksh.edu.in`,
-      address: typeof address === 'string' ? { street: address } : address || {},
-      college: college ? String(college).trim() : '',
-      fatherName: fatherName ? String(fatherName).trim() : '',
-      motherName: motherName ? String(motherName).trim() : '',
+      address: typeof address === 'string' ? { street: address } : address || { street: 'N/A' },
+      college: college ? String(college).trim() : 'N/A',
+      fatherName: fatherName ? String(fatherName).trim() : 'N/A',
+      motherName: motherName ? String(motherName).trim() : 'N/A',
       batch: academicYear,
       batchCode,
       username,
@@ -459,7 +459,7 @@ export async function bulkImportStudents(req, res, next) {
       const existing = await Student.findOne({
         $or: [
           { phone: record.phone },
-          ...(record.email ? [{ email: record.email }] : []),
+          ...(record.email && record.email !== 'N/A' ? [{ email: record.email }] : []),
         ],
       });
 
@@ -473,12 +473,23 @@ export async function bulkImportStudents(req, res, next) {
         continue;
       }
 
+      // Check if row has its own valid assigned batch, else use active batch
+      let targetBatch = rawBatch;
+      if (record.batchCode) {
+        const candidate = record.batchCode.trim().toUpperCase();
+        const matched = req.user.assignedBatches?.find(
+          (b) => b === candidate || b === `BATCH-${candidate}`
+        );
+        if (matched) targetBatch = matched;
+      }
+      const targetAcademicYear = targetBatch.replace('BATCH-', '');
+
       // Generate unique username
       let seq = 0;
-      let username = generateStudentUsername(record.name, academicYear, seq);
+      let username = generateStudentUsername(record.name, targetAcademicYear, seq);
       while (await Student.findOne({ username })) {
         seq++;
-        username = generateStudentUsername(record.name, academicYear, seq);
+        username = generateStudentUsername(record.name, targetAcademicYear, seq);
       }
 
       // Initial password is the student's 10-digit phone number
@@ -488,14 +499,14 @@ export async function bulkImportStudents(req, res, next) {
       const newStudent = await Student.create({
         name: record.name,
         phone: record.phone,
-        dateOfBirth: record.dateOfBirth,
-        email: record.email || `${username}@student.antariksh.edu.in`,
-        address: record.address ? { street: record.address } : {},
-        college: record.college || '',
-        fatherName: record.fatherName || '',
-        motherName: record.motherName || '',
-        batch: academicYear,
-        batchCode: rawBatch,
+        dateOfBirth: record.dateOfBirth || 'N/A',
+        email: record.email && record.email !== 'N/A' ? record.email : `${username}@student.antariksh.edu.in`,
+        address: typeof record.address === 'string' ? { street: record.address } : record.address || { street: 'N/A' },
+        college: record.college || 'N/A',
+        fatherName: record.fatherName || 'N/A',
+        motherName: record.motherName || 'N/A',
+        batch: targetAcademicYear,
+        batchCode: targetBatch,
         username,
         passwordHash,
         isActive: true,

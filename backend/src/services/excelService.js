@@ -10,6 +10,7 @@ export const CANONICAL_HEADERS = [
   'college',
   'fatherName',
   'motherName',
+  'batchCode',
 ];
 
 /**
@@ -32,6 +33,7 @@ export async function generateStudentTemplate() {
     { header: 'college', key: 'college', width: 30 },
     { header: 'fatherName', key: 'fatherName', width: 22 },
     { header: 'motherName', key: 'motherName', width: 22 },
+    { header: 'batchCode', key: 'batchCode', width: 20 },
   ];
 
   // Header styling
@@ -55,6 +57,7 @@ export async function generateStudentTemplate() {
     college: 'Khallikote Junior College',
     fatherName: 'Rajesh Kumar Sahu',
     motherName: 'Sunita Sahu',
+    batchCode: 'BATCH-CHSE',
   });
 
   const sampleRow = worksheet.getRow(2);
@@ -73,6 +76,7 @@ export const HEADER_SYNONYMS = {
   college: ['college', 'school', 'institution', 'collegeuniversity', 'institute'],
   fatherName: ['fathername', 'fathersname', 'father'],
   motherName: ['mothername', 'mothersname', 'mother'],
+  batchCode: ['batch', 'batchcode', 'course', 'branch', 'stream', 'cohort'],
 };
 
 function matchHeaderKey(rawVal) {
@@ -176,20 +180,29 @@ export async function parseStudentExcel(buffer) {
       rowData.phone = cleanPhone;
     }
 
-    // Validation: Date of Birth
+    // Date of Birth: if missing, default to 'N/A' without throwing error
     if (!rowData.dateOfBirth) {
-      errors.push('Date of birth is required (format: YYYY-MM-DD)');
+      rowData.dateOfBirth = 'N/A';
     }
 
-    // Validation: Email format if provided
+    // Email: if missing or invalid format, default to 'N/A' without throwing error
     if (rowData.email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(rowData.email)) {
-        errors.push('Invalid email address format');
+        rowData.email = 'N/A';
       } else {
         rowData.email = rowData.email.toLowerCase();
       }
+    } else {
+      rowData.email = 'N/A';
     }
+
+    // Optional fields: default to 'N/A' if empty without throwing error
+    if (!rowData.address) rowData.address = 'N/A';
+    if (!rowData.college) rowData.college = 'N/A';
+    if (!rowData.fatherName) rowData.fatherName = 'N/A';
+    if (!rowData.motherName) rowData.motherName = 'N/A';
+    if (!rowData.batchCode) rowData.batchCode = '';
 
     // Duplicate check within sheet
     if (cleanPhone && seenPhones.has(cleanPhone)) {
