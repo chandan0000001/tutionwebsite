@@ -29,21 +29,34 @@ if (isProduction) {
   }
 }
 
+const stripQuotes = (val) => {
+  if (typeof val !== 'string') return val;
+  const trimmed = val.trim();
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1).trim();
+  }
+  return trimmed;
+};
+
 export const ENV = {
-  NODE_ENV,
+  NODE_ENV: stripQuotes(NODE_ENV),
   isProduction,
   PORT: parseInt(process.env.PORT || '5000', 10),
   MONGODB_URI:
-    process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/antariksh_academy',
+    stripQuotes(process.env.MONGODB_URI) || 'mongodb://127.0.0.1:27017/antariksh_academy',
   JWT_SECRET:
-    process.env.JWT_SECRET || 'dev_secret_antariksh_academy_super_secure_jwt_key_993818471928472918471',
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1d',
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
+    stripQuotes(process.env.JWT_SECRET) ||
+    'dev_secret_antariksh_academy_super_secure_jwt_key_993818471928472918471',
+  JWT_EXPIRES_IN: stripQuotes(process.env.JWT_EXPIRES_IN) || '1d',
+  FRONTEND_URL: stripQuotes(process.env.FRONTEND_URL) || 'http://localhost:5173',
   BCRYPT_SALT_ROUNDS: parseInt(process.env.BCRYPT_SALT_ROUNDS || '12', 10),
-  SUPERADMIN_USERNAME: process.env.SUPERADMIN_USERNAME || 'aa_superadmin',
-  SUPERADMIN_PASSWORD: process.env.SUPERADMIN_PASSWORD || '',
-  TEACHER_1_USERNAME: process.env.TEACHER_1_USERNAME || 'sudeepdash',
-  TEACHER_1_PASSWORD: process.env.TEACHER_1_PASSWORD || '',
-  TEACHER_2_USERNAME: process.env.TEACHER_2_USERNAME || 'prasantbehera',
-  TEACHER_2_PASSWORD: process.env.TEACHER_2_PASSWORD || '',
+  SUPERADMIN_USERNAME: stripQuotes(process.env.SUPERADMIN_USERNAME) || 'aa_superadmin',
+  SUPERADMIN_PASSWORD: stripQuotes(process.env.SUPERADMIN_PASSWORD) || '',
+  TEACHER_1_USERNAME: stripQuotes(process.env.TEACHER_1_USERNAME) || 'sudeepdash',
+  TEACHER_1_PASSWORD: stripQuotes(process.env.TEACHER_1_PASSWORD) || '',
+  TEACHER_2_USERNAME: stripQuotes(process.env.TEACHER_2_USERNAME) || 'prasantbehera',
+  TEACHER_2_PASSWORD: stripQuotes(process.env.TEACHER_2_PASSWORD) || '',
 };
