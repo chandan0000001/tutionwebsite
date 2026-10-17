@@ -54,7 +54,14 @@ export async function login(req, res, next) {
     }
 
     // Verify password hash
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    let isMatch = await bcrypt.compare(password, user.passwordHash);
+    if (!isMatch && user.role === 'student' && user.phone) {
+      if (password === `${user.username}.${user.phone}`) {
+        isMatch = await bcrypt.compare(user.phone, user.passwordHash);
+      } else if (password === user.phone) {
+        isMatch = await bcrypt.compare(`${user.username}.${user.phone}`, user.passwordHash);
+      }
+    }
     if (!isMatch) {
       const failResult = recordFailedLogin(req, cleanUsername);
       if (failResult.lockedNow) {
