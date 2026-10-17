@@ -37,14 +37,22 @@ const isTest = NODE_ENV === 'test';
 const isDevelopment = NODE_ENV === 'development';
 
 // 2. Production strict validation
-const KNOWN_PLACEHOLDERS = [
-  'dev_secret_antariksh_academy_super_secure_jwt_key_993818471928472918471',
+const KNOWN_PLACEHOLDER_SUBSTRINGS = [
+  'dev_secret_antariksh_academy_super_secure_jwt_key',
   'replace_with_a_long_random_secret',
-  'replace_with_a_long_random_secret_at_least_32_characters',
+  'replace_with',
+  'your_secret_here',
+  'insert_secret',
+];
+
+const EXACT_INSECURE_WORDS = new Set([
   'secret',
   'changeme',
   'password',
-];
+  'admin',
+  'jwt_secret',
+  'jwtsecret',
+]);
 
 const rawJwtSecret = stripQuotes(process.env.JWT_SECRET);
 const rawMongoUri = stripQuotes(process.env.MONGODB_URI);
@@ -63,8 +71,15 @@ if (isProduction) {
   }
 
   const lowerSecret = rawJwtSecret.toLowerCase();
-  for (const ph of KNOWN_PLACEHOLDERS) {
-    if (lowerSecret === ph.toLowerCase() || lowerSecret.includes(ph.toLowerCase())) {
+
+  if (EXACT_INSECURE_WORDS.has(lowerSecret)) {
+    throw new Error(
+      '[FATAL SECURITY CONFIGURATION] Insecure placeholder JWT_SECRET detected in production. You must configure a unique, cryptographically random secret in Render dashboard.'
+    );
+  }
+
+  for (const ph of KNOWN_PLACEHOLDER_SUBSTRINGS) {
+    if (lowerSecret.includes(ph)) {
       throw new Error(
         '[FATAL SECURITY CONFIGURATION] Insecure placeholder JWT_SECRET detected in production. You must configure a unique, cryptographically random secret in Render dashboard.'
       );
