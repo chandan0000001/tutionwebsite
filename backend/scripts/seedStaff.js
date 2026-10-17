@@ -29,24 +29,22 @@ export async function runStaffSeed() {
   for (const s of staffData) {
     const cleanUsername = s.username.trim().toLowerCase();
     
-    // Resolve initial password securely from environment or fallback
+    // Resolve initial password securely from environment variables only (no hardcoded passwords in code)
     let initialPassword = '';
-    if (s.role === 'superadmin') {
-      initialPassword =
-        ENV.SUPERADMIN_DEFAULT_PASSWORD ||
-        process.env.SUPERADMIN_DEFAULT_PASSWORD ||
-        s.initialPassword ||
-        'SuperAdmin@Antariksh2026';
+    if (s.role === 'superadmin' || cleanUsername === ENV.SUPERADMIN_USERNAME) {
+      initialPassword = ENV.SUPERADMIN_PASSWORD;
+    } else if (cleanUsername === ENV.TEACHER_1_USERNAME) {
+      initialPassword = ENV.TEACHER_1_PASSWORD;
+    } else if (cleanUsername === ENV.TEACHER_2_USERNAME) {
+      initialPassword = ENV.TEACHER_2_PASSWORD;
     } else {
-      initialPassword =
-        ENV.TEACHER_DEFAULT_PASSWORD ||
-        process.env.TEACHER_DEFAULT_PASSWORD ||
-        s.initialPassword ||
-        (cleanUsername === 'sudeepdash'
-          ? 'sudeep@Accademy01'
-          : cleanUsername === 'prasantbehera'
-          ? 'prasant@Accademy02'
-          : 'Teacher@Antariksh2026');
+      initialPassword = process.env.TEACHER_DEFAULT_PASSWORD || '';
+    }
+
+    if (!initialPassword) {
+      throw new Error(
+        `[SECURITY ERROR] Missing environment password for staff account '${cleanUsername}'. Please define SUPERADMIN_PASSWORD / TEACHER_1_PASSWORD / TEACHER_2_PASSWORD in .env.`
+      );
     }
 
     const passwordHash = await bcrypt.hash(initialPassword, ENV.BCRYPT_SALT_ROUNDS);
