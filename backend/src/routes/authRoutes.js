@@ -19,10 +19,10 @@ import { ENV } from '../config/env.js';
 
 const router = express.Router();
 
-// Rate limiter for login: 10 attempts per 15 minutes in production, 500 in dev
+// Rate limiter for login: 30 attempts per 15 minutes in production, 500 in dev
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: ENV.isProduction ? 10 : 500,
+  max: ENV.isProduction ? 30 : 500,
   message: {
     success: false,
     message: 'Too many login attempts from this IP. Please try again after 15 minutes.',
@@ -53,6 +53,15 @@ router.post(
   changePassword
 );
 router.get('/me', authenticateUser, requireActiveAccount, getMe);
-router.post('/logout', logout);
+router.post(
+  '/logout',
+  (req, res, next) => {
+    if (req.headers.authorization) {
+      return authenticateUser(req, res, next);
+    }
+    next();
+  },
+  logout
+);
 
 export default router;

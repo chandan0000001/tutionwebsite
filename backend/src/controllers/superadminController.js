@@ -10,6 +10,9 @@ import { parseStudentExcel, generateStudentTemplate } from '../services/excelSer
 import { ENV } from '../config/env.js';
 import { normalizeIndianPhone } from '../utils/phone.js';
 import { formatStudentUsername } from '../utils/usernameGenerator.js';
+import { createSafeSearchRegex } from '../utils/sanitizeSearch.js';
+import { validateYouTubeUrl } from '../utils/youtube.js';
+import { revokeAllUserSessions } from '../utils/sessionManager.js';
 
 // Helper: Generate teacher username
 function generateTeacherUsername(name, sequence = 0) {
@@ -283,8 +286,8 @@ export async function createTeacher(req, res, next) {
       role: 'teacher',
       assignedBatches: safeBatches,
       isActive: true,
-      mustChangePassword: false,
-      temporaryPasswordExpiresAt: null,
+      mustChangePassword: true,
+      temporaryPasswordExpiresAt,
     });
 
     await recordAuditLog({
@@ -381,6 +384,10 @@ export async function toggleTeacherStatus(req, res, next) {
     teacher.isActive = !teacher.isActive;
     await teacher.save();
 
+    if (!teacher.isActive) {
+      await revokeAllUserSessions(teacher._id, 'account_deactivated');
+    }
+
     await recordAuditLog({
       req,
       action: teacher.isActive ? 'TEACHER_REACTIVATE' : 'TEACHER_DEACTIVATE',
@@ -415,7 +422,11 @@ export async function resetTeacherPassword(req, res, next) {
     teacher.passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
     teacher.mustChangePassword = true;
     teacher.temporaryPasswordExpiresAt = temporaryPasswordExpiresAt;
+    teacher.passwordChangedAt = new Date();
+    teacher.tokenVersion = (teacher.tokenVersion || 1) + 1;
     await teacher.save();
+
+    await revokeAllUserSessions(teacher._id, 'password_reset_by_superadmin');
 
     await recordAuditLog({
       req,
@@ -458,12 +469,14 @@ export async function getAllStudents(req, res, next) {
     }
 
     if (search) {
-      const searchRegex = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-      filter.$and = [
-        {
-          $or: [{ name: searchRegex }, { phone: new RegExp(search, 'i') }, { username: searchRegex }],
-        },
-      ];
+      const searchRegex = createSafeSearchRegex(search);
+      if (searchRegex) {
+        filter.$and = [
+          {
+            $or: [{ name: searchRegex }, { phone: searchRegex }, { username: searchRegex }],
+          },
+        ];
+      }
     }
 
     const totalRecords = await Student.countDocuments(filter);
@@ -670,6 +683,10 @@ export async function toggleStudentStatus(req, res, next) {
     student.isActive = !student.isActive;
     await student.save();
 
+    if (!student.isActive) {
+      await revokeAllUserSessions(student._id, 'account_deactivated');
+    }
+
     await recordAuditLog({
       req,
       action: student.isActive ? 'STUDENT_REACTIVATE' : 'STUDENT_DEACTIVATE',
@@ -704,7 +721,11 @@ export async function resetStudentPassword(req, res, next) {
     student.passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
     student.mustChangePassword = true;
     student.temporaryPasswordExpiresAt = temporaryPasswordExpiresAt;
+    student.passwordChangedAt = new Date();
+    student.tokenVersion = (student.tokenVersion || 1) + 1;
     await student.save();
+
+    await revokeAllUserSessions(student._id, 'password_reset_by_superadmin');
 
     await recordAuditLog({
       req,
@@ -890,6 +911,14 @@ export async function createLecture(req, res, next) {
       });
     }
 
+    const ytValidation = validateYouTubeUrl(ytVideoLink);
+    if (!ytValidation.isValid) {
+      return res.status(400).json({
+        success: false,
+        message: ytValidation.error || 'Invalid YouTube video URL.',
+      });
+    }
+
     const cleanBatch = batchCode.trim().toUpperCase();
     const academicYear = cleanBatch.replace('BATCH-', '');
 
@@ -908,7 +937,7 @@ export async function createLecture(req, res, next) {
     const lecture = await Lecture.create({
       slNo: Number(slNo),
       topicName: topicName.trim(),
-      ytVideoLink: ytVideoLink.trim(),
+      ytVideoLink: ytValidation.canonicalUrl,
       subject: subject.trim(),
       description: description ? description.trim() : '',
       batch: academicYear,
@@ -973,7 +1002,16 @@ export async function updateLecture(req, res, next) {
     }
 
     if (topicName) lecture.topicName = topicName.trim();
-    if (ytVideoLink) lecture.ytVideoLink = ytVideoLink.trim();
+    if (ytVideoLink) {
+      const ytValidation = validateYouTubeUrl(ytVideoLink);
+      if (!ytValidation.isValid) {
+        return res.status(400).json({
+          success: false,
+          message: ytValidation.error || 'Invalid YouTube video URL.',
+        });
+      }
+      lecture.ytVideoLink = ytValidation.canonicalUrl;
+    }
     if (subject) lecture.subject = subject.trim();
     if (description !== undefined) lecture.description = String(description).trim();
     if (isPublished !== undefined) lecture.isPublished = Boolean(isPublished);
@@ -1044,7 +1082,10 @@ export async function getAuditLogs(req, res, next) {
 
     const filter = {};
     if (action) filter.action = action;
-    if (actor) filter.actorUsername = new RegExp(actor, 'i');
+    if (actor) {
+      const actorRegex = createSafeSearchRegex(actor);
+      if (actorRegex) filter.actorUsername = actorRegex;
+    }
 
     const totalRecords = await AuditLog.countDocuments(filter);
     const totalPages = Math.ceil(totalRecords / limit) || 1;

@@ -9,22 +9,34 @@ import {
   recordFailedLogin,
   recordSuccessfulLogin,
 } from '../utils/loginRateLimiter.js';
+import {
+  createSession,
+  revokeSession,
+  revokeAllUserSessions,
+} from '../utils/sessionManager.js';
+
+// Constant-time dummy hash to mitigate username enumeration via timing attacks
+const TIMING_SAFE_DUMMY_HASH =
+  '$2a$12$e8wEU3Zg4/R9J90eH95Ure4u9O3j6eF7W7xO7Xo19x58qHk7p5K2W';
 
 /**
  * POST /api/auth/login
- * Unified authentication for students, teachers, and superadmins
+ * Unified authentication for students, teachers, and superadmins.
+ * Enforces distributed rate limiting, generic error responses, timing-safe validation,
+ * temporary password expiration, and session binding.
  */
 export async function login(req, res, next) {
   try {
     const { username, password } = req.body;
     const cleanUsername = String(username || '').trim().toLowerCase();
+    const cleanPassword = String(password || '');
 
-    // 0. Check Rate Limit (Lockout for 60 seconds after 10 failed attempts)
-    const rateCheck = checkLoginRateLimit(req, cleanUsername);
+    // 0. Check Rate Limit
+    const rateCheck = await checkLoginRateLimit(req, cleanUsername);
     if (rateCheck.isLocked) {
       return res.status(429).json({
         success: false,
-        message: `Too many failed login attempts (10 failed attempts). Your access is restricted for ${rateCheck.remainingSeconds} second${rateCheck.remainingSeconds === 1 ? '' : 's'}. Please wait or contact your teachers or institute administrator for assistance.`,
+        message: `Too many failed login attempts. Your login access is temporarily restricted for ${rateCheck.remainingSeconds} second${rateCheck.remainingSeconds === 1 ? '' : 's'}. Please wait or contact institute administration.`,
         retryAfter: rateCheck.remainingSeconds,
       });
     }
@@ -37,49 +49,49 @@ export async function login(req, res, next) {
       user = await Student.findOne({ username: cleanUsername }).select('+passwordHash');
     }
 
+    // If account not found: execute dummy bcrypt comparison for timing-attack resistance
     if (!user) {
-      const failResult = recordFailedLogin(req, cleanUsername);
+      await bcrypt.compare(cleanPassword, TIMING_SAFE_DUMMY_HASH);
+      const failResult = await recordFailedLogin(req, cleanUsername);
       if (failResult.lockedNow) {
         return res.status(429).json({
           success: false,
-          message:
-            'Too many failed login attempts (10 failed attempts). Your login access has been restricted for 60 seconds. Please wait or contact your teachers or institute administrator for assistance.',
-          retryAfter: 60,
+          message: `Too many failed login attempts. Your login access has been restricted for ${failResult.remainingSeconds || 60} seconds. Please wait or contact institute administration.`,
+          retryAfter: failResult.remainingSeconds || 60,
         });
       }
       return res.status(401).json({
         success: false,
-        message: `Invalid username or password. (${failResult.attemptsRemaining} attempt${failResult.attemptsRemaining === 1 ? '' : 's'} remaining before a 60-second restriction. If you forgot your credentials, please contact your teachers or institute administrator.)`,
+        message: 'Invalid username or password.',
       });
     }
 
     // Verify password hash
-    let isMatch = await bcrypt.compare(password, user.passwordHash);
+    let isMatch = await bcrypt.compare(cleanPassword, user.passwordHash);
+
+    // Support legacy student initial login where password was set as phone number
     if (!isMatch && user.role === 'student' && user.phone) {
-      if (password === `${user.username}.${user.phone}`) {
+      if (cleanPassword === `${user.username}.${user.phone}`) {
         isMatch = await bcrypt.compare(user.phone, user.passwordHash);
-      } else if (password === user.phone) {
+      } else if (cleanPassword === user.phone) {
         isMatch = await bcrypt.compare(`${user.username}.${user.phone}`, user.passwordHash);
       }
     }
+
     if (!isMatch) {
-      const failResult = recordFailedLogin(req, cleanUsername);
+      const failResult = await recordFailedLogin(req, cleanUsername);
       if (failResult.lockedNow) {
         return res.status(429).json({
           success: false,
-          message:
-            'Too many failed login attempts (10 failed attempts). Your login access has been restricted for 60 seconds. Please wait or contact your teachers or institute administrator for assistance.',
-          retryAfter: 60,
+          message: `Too many failed login attempts. Your login access has been restricted for ${failResult.remainingSeconds || 60} seconds. Please wait or contact institute administration.`,
+          retryAfter: failResult.remainingSeconds || 60,
         });
       }
       return res.status(401).json({
         success: false,
-        message: `Invalid username or password. (${failResult.attemptsRemaining} attempt${failResult.attemptsRemaining === 1 ? '' : 's'} remaining before a 60-second restriction. If you forgot your credentials, please contact your teachers or institute administrator.)`,
+        message: 'Invalid username or password.',
       });
     }
-
-    // Login successful: reset rate limit attempts for this client/username
-    recordSuccessfulLogin(req, cleanUsername);
 
     // Check account active state
     if (user.isActive === false) {
@@ -89,7 +101,7 @@ export async function login(req, res, next) {
       });
     }
 
-    // Check if temporary password has expired (valid 1 hour)
+    // Check if temporary password has expired (valid for 1 hour only)
     if (
       user.mustChangePassword &&
       user.temporaryPasswordExpiresAt &&
@@ -102,8 +114,14 @@ export async function login(req, res, next) {
       });
     }
 
-    // Generate JWT token
-    const token = generateToken(user);
+    // Login successful: reset rate limit attempts for this client + username
+    await recordSuccessfulLogin(req, cleanUsername);
+
+    // Create a new session in MongoDB
+    const sessionId = await createSession({ user, req });
+
+    // Generate signed JWT token embedding sessionId
+    const token = generateToken(user, sessionId);
     const safeUser = user.toSafeObject();
 
     return res.status(200).json({
@@ -112,7 +130,6 @@ export async function login(req, res, next) {
       token,
       role: user.role || 'student',
       user: safeUser,
-      // Backward compatibility for existing student portal client
       student: user.role === 'student' ? safeUser : undefined,
     });
   } catch (error) {
@@ -122,7 +139,8 @@ export async function login(req, res, next) {
 
 /**
  * POST /api/auth/change-password
- * Change password for authenticated student, teacher, or superadmin
+ * Change password for authenticated student, teacher, or superadmin.
+ * Invalidates all existing sessions upon password change.
  */
 export async function changePassword(req, res, next) {
   try {
@@ -158,7 +176,12 @@ export async function changePassword(req, res, next) {
     user.passwordHash = newHash;
     user.mustChangePassword = false;
     user.temporaryPasswordExpiresAt = null;
+    user.passwordChangedAt = new Date();
+    user.tokenVersion = (user.tokenVersion || 1) + 1;
     await user.save();
+
+    // Invalidate all previous sessions for this user in MongoDB
+    await revokeAllUserSessions(user._id, 'password_change');
 
     // Record audit log for staff password changes
     if (role === 'teacher' || role === 'superadmin') {
@@ -172,8 +195,9 @@ export async function changePassword(req, res, next) {
       });
     }
 
-    // Issue refreshed token reflecting mustChangePassword: false
-    const token = generateToken(user);
+    // Create a new session for the current authenticated client
+    const sessionId = await createSession({ user, req });
+    const token = generateToken(user, sessionId);
     const safeUser = user.toSafeObject();
 
     return res.status(200).json({
@@ -209,9 +233,13 @@ export async function getMe(req, res, next) {
 
 /**
  * POST /api/auth/logout
- * Client-side session termination confirmation
+ * Revoke the current session in MongoDB and confirm termination
  */
 export async function logout(req, res) {
+  if (req.sessionId) {
+    await revokeSession(req.sessionId, 'user_logout');
+  }
+
   return res.status(200).json({
     success: true,
     message: 'Logged out successfully.',

@@ -27,8 +27,9 @@ pnpm-debug.log*
 # Coverage, test scripts, and test output
 coverage/
 .nyc_output/
-backend/tests/
-tests/
+backend/tests/*
+!backend/tests/*.test.js
+/tests/
 *test-report*
 *verification-report*
 *verification_report*

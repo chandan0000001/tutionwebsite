@@ -9,26 +9,6 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
-const NODE_ENV = process.env.NODE_ENV || 'development';
-const isProduction = NODE_ENV === 'production';
-
-// In production, validate critical variables
-if (isProduction) {
-  const requiredVars = ['JWT_SECRET', 'MONGODB_URI'];
-  const missing = requiredVars.filter((v) => !process.env[v]);
-  if (missing.length > 0) {
-    throw new Error(
-      `[FATAL] Missing required production environment variable(s): ${missing.join(', ')}`
-    );
-  }
-
-  if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
-    throw new Error(
-      '[FATAL] JWT_SECRET must be at least 32 characters long in production.'
-    );
-  }
-}
-
 const stripQuotes = (val) => {
   if (typeof val !== 'string') return val;
   const trimmed = val.trim();
@@ -41,17 +21,111 @@ const stripQuotes = (val) => {
   return trimmed;
 };
 
+// 1. Validate NODE_ENV strictly
+const VALID_ENVIRONMENTS = new Set(['development', 'test', 'production']);
+const rawNodeEnv = stripQuotes(process.env.NODE_ENV);
+
+if (rawNodeEnv && !VALID_ENVIRONMENTS.has(rawNodeEnv)) {
+  throw new Error(
+    `[FATAL SECURITY CONFIGURATION] Invalid NODE_ENV '${rawNodeEnv}'. Expected one of: development, test, production.`
+  );
+}
+
+const NODE_ENV = rawNodeEnv || 'development';
+const isProduction = NODE_ENV === 'production';
+const isTest = NODE_ENV === 'test';
+const isDevelopment = NODE_ENV === 'development';
+
+// 2. Production strict validation
+const KNOWN_PLACEHOLDERS = [
+  'dev_secret_antariksh_academy_super_secure_jwt_key_993818471928472918471',
+  'replace_with_a_long_random_secret',
+  'replace_with_a_long_random_secret_at_least_32_characters',
+  'secret',
+  'changeme',
+  'password',
+];
+
+const rawJwtSecret = stripQuotes(process.env.JWT_SECRET);
+const rawMongoUri = stripQuotes(process.env.MONGODB_URI);
+
+if (isProduction) {
+  if (!rawMongoUri) {
+    throw new Error('[FATAL] Missing required production environment variable: MONGODB_URI');
+  }
+
+  if (!rawJwtSecret) {
+    throw new Error('[FATAL] Missing required production environment variable: JWT_SECRET');
+  }
+
+  if (rawJwtSecret.length < 32) {
+    throw new Error('[FATAL] JWT_SECRET must be at least 32 characters long in production.');
+  }
+
+  const lowerSecret = rawJwtSecret.toLowerCase();
+  for (const ph of KNOWN_PLACEHOLDERS) {
+    if (lowerSecret === ph.toLowerCase() || lowerSecret.includes(ph.toLowerCase())) {
+      throw new Error(
+        '[FATAL SECURITY CONFIGURATION] Insecure placeholder JWT_SECRET detected in production. You must configure a unique, cryptographically random secret in Render dashboard.'
+      );
+    }
+  }
+}
+
+// Development fallback JWT secret: ONLY permitted in local development or unit testing
+const devJwtSecret =
+  rawJwtSecret ||
+  (isDevelopment || isTest
+    ? 'dev_only_local_jwt_secret_antariksh_academy_super_secure_32chars_minimum'
+    : '');
+
+if (!devJwtSecret && !isProduction) {
+  throw new Error('[FATAL] JWT_SECRET must be defined.');
+}
+
+// 3. Proxy trust configuration for Render / Reverse Proxies
+// On Render, there is 1 proxy layer (Render reverse proxy). Default to 1 in production.
+// Can be customized via TRUST_PROXY (e.g. "1", "true", "false", "loopback")
+let trustProxySetting = false;
+if (process.env.TRUST_PROXY !== undefined) {
+  const tp = stripQuotes(process.env.TRUST_PROXY).toLowerCase();
+  if (tp === 'true') trustProxySetting = true;
+  else if (tp === 'false') trustProxySetting = false;
+  else if (!isNaN(Number(tp))) trustProxySetting = Number(tp);
+  else trustProxySetting = tp;
+} else if (isProduction) {
+  // Render deployment runs behind 1 reverse proxy hop
+  trustProxySetting = 1;
+}
+
+// 4. Allowed Origins (CORS)
+const frontendUrl = stripQuotes(process.env.FRONTEND_URL) || 'http://localhost:5173';
+const envAllowedOrigins = stripQuotes(process.env.ALLOWED_ORIGINS);
+const parsedAllowedOrigins = envAllowedOrigins
+  ? envAllowedOrigins.split(',').map((o) => o.trim()).filter(Boolean)
+  : [];
+
+const defaultDevOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'];
+const allowedOriginsList = Array.from(
+  new Set([
+    frontendUrl,
+    ...(isProduction ? [] : defaultDevOrigins),
+    ...parsedAllowedOrigins,
+  ])
+).filter(Boolean);
+
 export const ENV = {
-  NODE_ENV: stripQuotes(NODE_ENV),
+  NODE_ENV,
   isProduction,
+  isDevelopment,
+  isTest,
   PORT: parseInt(process.env.PORT || '5000', 10),
-  MONGODB_URI:
-    stripQuotes(process.env.MONGODB_URI) || 'mongodb://127.0.0.1:27017/antariksh_academy',
-  JWT_SECRET:
-    stripQuotes(process.env.JWT_SECRET) ||
-    'dev_secret_antariksh_academy_super_secure_jwt_key_993818471928472918471',
+  MONGODB_URI: rawMongoUri || 'mongodb://127.0.0.1:27017/antariksh_academy',
+  JWT_SECRET: isProduction ? rawJwtSecret : devJwtSecret,
   JWT_EXPIRES_IN: stripQuotes(process.env.JWT_EXPIRES_IN) || '1d',
-  FRONTEND_URL: stripQuotes(process.env.FRONTEND_URL) || 'http://localhost:5173',
+  FRONTEND_URL: frontendUrl,
+  ALLOWED_ORIGINS: allowedOriginsList,
+  TRUST_PROXY: trustProxySetting,
   BCRYPT_SALT_ROUNDS: parseInt(process.env.BCRYPT_SALT_ROUNDS || '12', 10),
   SUPERADMIN_USERNAME: stripQuotes(process.env.SUPERADMIN_USERNAME) || 'aa_superadmin',
   SUPERADMIN_PASSWORD: stripQuotes(process.env.SUPERADMIN_PASSWORD) || '',

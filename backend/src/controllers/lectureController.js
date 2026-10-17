@@ -1,5 +1,6 @@
 import { Lecture } from '../models/Lecture.js';
 import { extractYouTubeId, getYouTubeEmbedUrl } from '../utils/youtube.js';
+import { createSafeSearchRegex } from '../utils/sanitizeSearch.js';
 
 const PAGE_SIZE = 10;
 
@@ -47,8 +48,10 @@ export async function getLectures(req, res, next) {
 
     // Optional topic search
     if (req.query.search && typeof req.query.search === 'string' && req.query.search.trim() !== '') {
-      const searchRegex = new RegExp(req.query.search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-      filter.topicName = searchRegex;
+      const searchRegex = createSafeSearchRegex(req.query.search);
+      if (searchRegex) {
+        filter.topicName = searchRegex;
+      }
     }
 
     // Count total matching records

@@ -1,10 +1,12 @@
 import { verifyToken } from '../utils/token.js';
+import { validateSession } from '../utils/sessionManager.js';
 import { Student } from '../models/Student.js';
 import { Staff } from '../models/Staff.js';
 
 /**
  * Universal Authentication Middleware
- * Authenticates students, teachers, and superadmins
+ * Authenticates students, teachers, and superadmins.
+ * Verifies JWT signature, active session state in MongoDB, account activity, and token version.
  */
 export async function authenticateUser(req, res, next) {
   try {
@@ -30,6 +32,17 @@ export async function authenticateUser(req, res, next) {
       });
     }
 
+    // 1. If token includes a session ID (sid), verify session status in MongoDB
+    if (decoded.sid) {
+      const sessionCheck = await validateSession(decoded.sid);
+      if (!sessionCheck.valid) {
+        return res.status(401).json({
+          success: false,
+          message: sessionCheck.reason || 'Session has been revoked or expired. Please log in again.',
+        });
+      }
+    }
+
     let user = null;
 
     // Check staff first if token role indicates teacher/superadmin
@@ -49,8 +62,29 @@ export async function authenticateUser(req, res, next) {
       });
     }
 
-    // Attach user to request
+    // Check if account is deactivated
+    if (user.isActive === false) {
+      return res.status(401).json({
+        success: false,
+        message: 'Your account is currently inactive. Please contact institute administration.',
+      });
+    }
+
+    // Check token version against user's current tokenVersion (revocation on password reset)
+    if (
+      decoded.tokenVersion !== undefined &&
+      user.tokenVersion !== undefined &&
+      decoded.tokenVersion < user.tokenVersion
+    ) {
+      return res.status(401).json({
+        success: false,
+        message: 'Session has been invalidated due to a security update. Please log in again.',
+      });
+    }
+
+    // Attach user and session to request
     req.user = user;
+    req.sessionId = decoded.sid || null;
 
     // Backward compatibility for existing student routes
     if (user.role === 'student') {

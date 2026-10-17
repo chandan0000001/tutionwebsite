@@ -128,7 +128,7 @@ export async function parseStudentExcel(buffer) {
 
   if (headerRowNum === -1) {
     throw new Error(
-      'Could not detect student table headers in spreadsheet. Ensure columns include Student Name, Phone Number, and Date of Birth.'
+      'Missing required column headers: Could not detect student table headers in spreadsheet. Ensure columns include Student Name, Phone Number, and Date of Birth.'
     );
   }
 

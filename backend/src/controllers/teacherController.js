@@ -8,6 +8,9 @@ import { parseStudentExcel, generateStudentTemplate } from '../services/excelSer
 import { ENV } from '../config/env.js';
 import { normalizeIndianPhone } from '../utils/phone.js';
 import { formatStudentUsername } from '../utils/usernameGenerator.js';
+import { createSafeSearchRegex } from '../utils/sanitizeSearch.js';
+import { validateYouTubeUrl } from '../utils/youtube.js';
+import { revokeAllUserSessions } from '../utils/sessionManager.js';
 
 // Helper: Generate student username (e.g. "Swati Biswal" -> "swati.biswal")
 function generateStudentUsername(name, batch, sequence = 0) {
@@ -98,15 +101,18 @@ export async function getBatchStudents(req, res, next) {
     };
 
     if (search) {
-      filter.$and = [
-        {
-          $or: [
-            { name: new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') },
-            { phone: new RegExp(search, 'i') },
-            { username: new RegExp(search, 'i') },
-          ],
-        },
-      ];
+      const searchRegex = createSafeSearchRegex(search);
+      if (searchRegex) {
+        filter.$and = [
+          {
+            $or: [
+              { name: searchRegex },
+              { phone: searchRegex },
+              { username: searchRegex },
+            ],
+          },
+        ];
+      }
     }
 
     const totalRecords = await Student.countDocuments(filter);
@@ -350,6 +356,10 @@ export async function toggleStudentStatus(req, res, next) {
     student.isActive = !student.isActive;
     await student.save();
 
+    if (!student.isActive) {
+      await revokeAllUserSessions(student._id, 'account_deactivated');
+    }
+
     await recordAuditLog({
       req,
       action: student.isActive ? 'STUDENT_REACTIVATE' : 'STUDENT_DEACTIVATE',
@@ -391,6 +401,7 @@ export async function deleteStudent(req, res, next) {
     }
 
     await Student.findByIdAndDelete(id);
+    await revokeAllUserSessions(id, 'account_deleted');
 
     await recordAuditLog({
       req,
@@ -599,6 +610,14 @@ export async function createLecture(req, res, next) {
       });
     }
 
+    const ytValidation = validateYouTubeUrl(ytVideoLink);
+    if (!ytValidation.isValid) {
+      return res.status(400).json({
+        success: false,
+        message: ytValidation.error || 'Invalid YouTube video URL.',
+      });
+    }
+
     // Check duplicate serial number in this batch
     const existing = await Lecture.findOne({
       $or: [{ batchCode: rawBatch }, { batch: academicYear }],
@@ -615,7 +634,7 @@ export async function createLecture(req, res, next) {
     const lecture = await Lecture.create({
       slNo: Number(slNo),
       topicName: topicName.trim(),
-      ytVideoLink: ytVideoLink.trim(),
+      ytVideoLink: ytValidation.canonicalUrl,
       subject: subject.trim(),
       description: description ? description.trim() : '',
       batch: academicYear,
@@ -686,7 +705,16 @@ export async function updateLecture(req, res, next) {
     }
 
     if (topicName) lecture.topicName = topicName.trim();
-    if (ytVideoLink) lecture.ytVideoLink = ytVideoLink.trim();
+    if (ytVideoLink) {
+      const ytValidation = validateYouTubeUrl(ytVideoLink);
+      if (!ytValidation.isValid) {
+        return res.status(400).json({
+          success: false,
+          message: ytValidation.error || 'Invalid YouTube video URL.',
+        });
+      }
+      lecture.ytVideoLink = ytValidation.canonicalUrl;
+    }
     if (subject) lecture.subject = subject.trim();
     if (description !== undefined) lecture.description = String(description).trim();
     if (isPublished !== undefined) lecture.isPublished = Boolean(isPublished);
