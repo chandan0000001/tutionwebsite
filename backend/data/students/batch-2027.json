@@ -1,0 +1,104 @@
+[
+  {
+    "name": "Subham Panigrahi",
+    "phone": "9437000201",
+    "dateOfBirth": "2009-03-15",
+    "email": "subham.panigrahi.demo@example.com",
+    "address": {
+      "street": "Lochapada Main Road",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Khallikote Higher Secondary School",
+    "fatherName": "Ashok Panigrahi",
+    "motherName": "Kalpana Panigrahi",
+    "batch": "2027"
+  },
+  {
+    "name": "Pooja Rani Padhy",
+    "phone": "9437000202",
+    "dateOfBirth": "2009-08-25",
+    "email": "pooja.padhy.demo@example.com",
+    "address": {
+      "street": "Bhavanagar 1st Gate",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760002",
+      "country": "India"
+    },
+    "college": "Women's Junior College Brahmapur",
+    "fatherName": "Narayan Padhy",
+    "motherName": "Binodini Padhy",
+    "batch": "2027"
+  },
+  {
+    "name": "Ayush Biswal",
+    "phone": "9437000203",
+    "dateOfBirth": "2009-10-18",
+    "email": "ayush.biswal.demo@example.com",
+    "address": {
+      "street": "Ankoli Bypass Road",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760008",
+      "country": "India"
+    },
+    "college": "City Higher Secondary School",
+    "fatherName": "Ramesh Biswal",
+    "motherName": "Mamata Biswal",
+    "batch": "2027"
+  },
+  {
+    "name": "Swagatika Mishra",
+    "phone": "9437000204",
+    "dateOfBirth": "2009-01-29",
+    "email": "swagatika.mishra.demo@example.com",
+    "address": {
+      "street": "Medical Bank Colony",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760004",
+      "country": "India"
+    },
+    "college": "S.B.R. Women's Junior College",
+    "fatherName": "Gopal Mishra",
+    "motherName": "Arundhati Mishra",
+    "batch": "2027"
+  },
+  {
+    "name": "Biswajit Behera",
+    "phone": "9437000205",
+    "dateOfBirth": "2009-05-11",
+    "email": "biswajit.behera.demo@example.com",
+    "address": {
+      "street": "Gosaninuagaon",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760003",
+      "country": "India"
+    },
+    "college": "Government Junior College",
+    "fatherName": "Jitendra Behera",
+    "motherName": "Puspanjali Behera",
+    "batch": "2027"
+  },
+  {
+    "name": "Lipsa Priyadarshini",
+    "phone": "9437000206",
+    "dateOfBirth": "2009-12-04",
+    "email": "lipsa.priya.demo@example.com",
+    "address": {
+      "street": "Bapuji Nagar Main Road",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Khallikote Junior College",
+    "fatherName": "Santosh Kumar",
+    "motherName": "Sabita Kumari",
+    "batch": "2027"
+  }
+]

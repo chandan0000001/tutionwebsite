@@ -1,0 +1,104 @@
+[
+  {
+    "name": "Aarav Kumar Sahu",
+    "phone": "9437000101",
+    "dateOfBirth": "2008-04-12",
+    "email": "aarav.sahu.demo@example.com",
+    "address": {
+      "street": "Giri Road, Near City High School",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "Khallikote Junior College",
+    "fatherName": "Rajesh Kumar Sahu",
+    "motherName": "Sunita Sahu",
+    "batch": "2026"
+  },
+  {
+    "name": "Priyadarshini Jena",
+    "phone": "9437000102",
+    "dateOfBirth": "2008-07-21",
+    "email": "priya.jena.demo@example.com",
+    "address": {
+      "street": "Kamapalli Main Road",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760004",
+      "country": "India"
+    },
+    "college": "Women's Junior College Brahmapur",
+    "fatherName": "Bikram Jena",
+    "motherName": "Minati Jena",
+    "batch": "2026"
+  },
+  {
+    "name": "Rohan Mohanty",
+    "phone": "9437000103",
+    "dateOfBirth": "2008-11-05",
+    "email": "rohan.mohanty.demo@example.com",
+    "address": {
+      "street": "Gandhi Nagar 3rd Line",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760001",
+      "country": "India"
+    },
+    "college": "City Higher Secondary School",
+    "fatherName": "Prasanta Mohanty",
+    "motherName": "Geetanjali Mohanty",
+    "batch": "2026"
+  },
+  {
+    "name": "Sneha Patra",
+    "phone": "9437000104",
+    "dateOfBirth": "2008-02-19",
+    "email": "sneha.patra.demo@example.com",
+    "address": {
+      "street": "Courtpeta, Near Medical College Road",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760004",
+      "country": "India"
+    },
+    "college": "Khallikote Higher Secondary School",
+    "fatherName": "Dillip Patra",
+    "motherName": "Rashmita Patra",
+    "batch": "2026"
+  },
+  {
+    "name": "Debashis Panda",
+    "phone": "9437000105",
+    "dateOfBirth": "2008-09-14",
+    "email": "debashis.panda.demo@example.com",
+    "address": {
+      "street": "Engineering School Road",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760010",
+      "country": "India"
+    },
+    "college": "Government Junior College",
+    "fatherName": "Sarat Panda",
+    "motherName": "Manorama Panda",
+    "batch": "2026"
+  },
+  {
+    "name": "Ananya Tripathy",
+    "phone": "9437000106",
+    "dateOfBirth": "2008-06-30",
+    "email": "ananya.tripathy.demo@example.com",
+    "address": {
+      "street": "Hillpatna Extension",
+      "city": "Brahmapur",
+      "state": "Odisha",
+      "postalCode": "760005",
+      "country": "India"
+    },
+    "college": "S.B.R. Women's Junior College",
+    "fatherName": "Manoj Tripathy",
+    "motherName": "Sujata Tripathy",
+    "batch": "2026"
+  }
+]

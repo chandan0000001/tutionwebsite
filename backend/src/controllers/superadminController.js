@@ -1,0 +1,1007 @@
+import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
+import { Staff } from '../models/Staff.js';
+import { Student } from '../models/Student.js';
+import { Batch } from '../models/Batch.js';
+import { Lecture } from '../models/Lecture.js';
+import { AuditLog } from '../models/AuditLog.js';
+import { recordAuditLog } from '../utils/auditLogger.js';
+import { parseStudentExcel, generateStudentTemplate } from '../services/excelService.js';
+import { ENV } from '../config/env.js';
+
+// Helper: Generate teacher username
+function generateTeacherUsername(name, sequence = 0) {
+  const cleanName = name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 10);
+  const suffix = sequence > 0 ? `${sequence}` : '';
+  return `aa_teacher_${cleanName}${suffix}`;
+}
+
+// Helper: Generate student username
+function generateStudentUsername(name, batch, sequence = 0) {
+  const firstName = name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8);
+  const cleanBatch = String(batch || '').replace(/[^0-9]/g, '').slice(-2) || '26';
+  const suffix = sequence > 0 ? `${sequence}` : '';
+  return `aa${cleanBatch}_${firstName}${suffix}`;
+}
+
+// Helper: Generate 8-digit numeric temporary password
+function generateNumericTempPassword() {
+  const num = crypto.randomInt(10000000, 99999999);
+  return `${num}`;
+}
+
+/**
+ * GET /api/superadmin/dashboard
+ * Aggregated institute overview statistics and recent administrative activity
+ */
+export async function getDashboardStats(req, res, next) {
+  try {
+    const [
+      totalStudents,
+      activeStudents,
+      inactiveStudents,
+      totalTeachers,
+      activeTeachers,
+      totalBatches,
+      activeBatches,
+      totalLectures,
+      publishedLectures,
+      recentAuditLogs,
+      recentStudents,
+    ] = await Promise.all([
+      Student.countDocuments(),
+      Student.countDocuments({ isActive: true }),
+      Student.countDocuments({ isActive: false }),
+      Staff.countDocuments({ role: 'teacher' }),
+      Staff.countDocuments({ role: 'teacher', isActive: true }),
+      Batch.countDocuments(),
+      Batch.countDocuments({ isActive: true }),
+      Lecture.countDocuments(),
+      Lecture.countDocuments({ isPublished: true }),
+      AuditLog.find().sort({ createdAt: -1 }).limit(10).lean(),
+      Student.find().sort({ createdAt: -1 }).limit(5).select('-passwordHash').lean(),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        counts: {
+          students: { total: totalStudents, active: activeStudents, inactive: inactiveStudents },
+          teachers: { total: totalTeachers, active: activeTeachers },
+          batches: { total: totalBatches, active: activeBatches },
+          lectures: { total: totalLectures, published: publishedLectures },
+        },
+        recentActivity: recentAuditLogs,
+        recentStudents,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/* ========================================================================== */
+/* BATCH MANAGEMENT                                                           */
+/* ========================================================================== */
+
+export async function getBatches(req, res, next) {
+  try {
+    const batches = await Batch.find().sort({ academicYear: -1, code: 1 }).lean();
+
+    const batchesWithCounts = await Promise.all(
+      batches.map(async (batch) => {
+        const studentCount = await Student.countDocuments({
+          $or: [{ batchCode: batch.code }, { batch: batch.academicYear }],
+        });
+        const lectureCount = await Lecture.countDocuments({
+          $or: [{ batchCode: batch.code }, { batch: batch.academicYear }],
+        });
+        const assignedTeachers = await Staff.find({
+          role: 'teacher',
+          assignedBatches: batch.code,
+        })
+          .select('name username')
+          .lean();
+
+        return {
+          ...batch,
+          studentCount,
+          lectureCount,
+          assignedTeachers,
+        };
+      })
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: batchesWithCounts,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function createBatch(req, res, next) {
+  try {
+    const { name, code, academicYear, description } = req.body;
+
+    if (!name || !code || !academicYear) {
+      return res.status(400).json({
+        success: false,
+        message: 'Batch name, unique batch code (e.g. BATCH-2026), and academic year are required.',
+      });
+    }
+
+    const cleanCode = code.trim().toUpperCase();
+    const existing = await Batch.findOne({ code: cleanCode });
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: `A batch with code '${cleanCode}' already exists.`,
+      });
+    }
+
+    const batch = await Batch.create({
+      name: name.trim(),
+      code: cleanCode,
+      academicYear: academicYear.trim(),
+      description: description ? description.trim() : '',
+      isActive: true,
+    });
+
+    await recordAuditLog({
+      req,
+      action: 'BATCH_CREATE',
+      targetType: 'Batch',
+      targetId: batch._id,
+      details: { name: batch.name, code: batch.code, academicYear: batch.academicYear },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Batch created successfully.',
+      data: batch,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateBatch(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { name, academicYear, description, isActive } = req.body;
+
+    const batch = await Batch.findById(id);
+    if (!batch) {
+      return res.status(404).json({
+        success: false,
+        message: 'Batch not found.',
+      });
+    }
+
+    if (name) batch.name = name.trim();
+    if (academicYear) batch.academicYear = academicYear.trim();
+    if (description !== undefined) batch.description = String(description).trim();
+    if (isActive !== undefined) batch.isActive = Boolean(isActive);
+
+    await batch.save();
+
+    await recordAuditLog({
+      req,
+      action: 'BATCH_UPDATE',
+      targetType: 'Batch',
+      targetId: batch._id,
+      details: { name: batch.name, code: batch.code, isActive: batch.isActive },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Batch updated successfully.',
+      data: batch,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/* ========================================================================== */
+/* TEACHER MANAGEMENT                                                         */
+/* ========================================================================== */
+
+export async function getTeachers(req, res, next) {
+  try {
+    const teachers = await Staff.find({ role: 'teacher' })
+      .sort({ createdAt: -1 })
+      .select('-passwordHash')
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      data: teachers,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function createTeacher(req, res, next) {
+  try {
+    const { name, qualification, dateOfBirth, phone, email, assignedBatches } = req.body;
+
+    if (!name || !phone) {
+      return res.status(400).json({
+        success: false,
+        message: 'Teacher name and phone number are required.',
+      });
+    }
+
+    const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+    if (cleanPhone.length !== 10) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid 10-digit mobile phone number.',
+      });
+    }
+
+    // Check duplicate phone or email
+    const existing = await Staff.findOne({
+      $or: [{ phone: cleanPhone }, ...(email ? [{ email: email.trim().toLowerCase() }] : [])],
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: `A staff member with phone '${cleanPhone}' or email is already registered.`,
+      });
+    }
+
+    // Generate unique username
+    let seq = 0;
+    let username = generateTeacherUsername(name, seq);
+    while (await Staff.findOne({ username })) {
+      seq++;
+      username = generateTeacherUsername(name, seq);
+    }
+
+    // Generate 8-digit temporary password
+    const temporaryPassword = generateNumericTempPassword();
+    const passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
+
+    const safeBatches = Array.isArray(assignedBatches)
+      ? assignedBatches.map((b) => String(b).trim().toUpperCase())
+      : [];
+
+    const teacher = await Staff.create({
+      name: name.trim(),
+      qualification: qualification ? qualification.trim() : '',
+      dateOfBirth: dateOfBirth ? String(dateOfBirth).trim() : '',
+      phone: cleanPhone,
+      email: email ? email.trim().toLowerCase() : '',
+      username,
+      passwordHash,
+      role: 'teacher',
+      assignedBatches: safeBatches,
+      isActive: true,
+      mustChangePassword: true,
+    });
+
+    await recordAuditLog({
+      req,
+      action: 'TEACHER_CREATE',
+      targetType: 'Teacher',
+      targetId: teacher._id,
+      details: { name: teacher.name, username: teacher.username, assignedBatches: safeBatches },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Teacher profile created successfully.',
+      teacher: teacher.toSafeObject(),
+      oneTimeCredentials: {
+        username: teacher.username,
+        temporaryPassword,
+        note: 'Provide these initial temporary credentials to the teacher. They must set their own password upon first sign-in.',
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateTeacher(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { name, qualification, dateOfBirth, phone, email, assignedBatches } = req.body;
+
+    const teacher = await Staff.findOne({ _id: id, role: 'teacher' });
+    if (!teacher) {
+      return res.status(404).json({
+        success: false,
+        message: 'Teacher profile not found.',
+      });
+    }
+
+    if (name) teacher.name = name.trim();
+    if (qualification !== undefined) teacher.qualification = String(qualification).trim();
+    if (dateOfBirth !== undefined) teacher.dateOfBirth = String(dateOfBirth).trim();
+    if (email !== undefined) teacher.email = email ? email.trim().toLowerCase() : '';
+
+    if (phone) {
+      const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+      if (cleanPhone.length === 10 && cleanPhone !== teacher.phone) {
+        const dup = await Staff.findOne({ phone: cleanPhone, _id: { $ne: teacher._id } });
+        if (dup) {
+          return res.status(400).json({
+            success: false,
+            message: `Phone number '${cleanPhone}' is registered to another staff member.`,
+          });
+        }
+        teacher.phone = cleanPhone;
+      }
+    }
+
+    if (Array.isArray(assignedBatches)) {
+      teacher.assignedBatches = assignedBatches.map((b) => String(b).trim().toUpperCase());
+    }
+
+    await teacher.save();
+
+    await recordAuditLog({
+      req,
+      action: 'TEACHER_UPDATE',
+      targetType: 'Teacher',
+      targetId: teacher._id,
+      details: { name: teacher.name, username: teacher.username, assignedBatches: teacher.assignedBatches },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Teacher profile updated successfully.',
+      teacher: teacher.toSafeObject(),
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function toggleTeacherStatus(req, res, next) {
+  try {
+    const { id } = req.params;
+    const teacher = await Staff.findOne({ _id: id, role: 'teacher' });
+    if (!teacher) {
+      return res.status(404).json({
+        success: false,
+        message: 'Teacher profile not found.',
+      });
+    }
+
+    teacher.isActive = !teacher.isActive;
+    await teacher.save();
+
+    await recordAuditLog({
+      req,
+      action: teacher.isActive ? 'TEACHER_REACTIVATE' : 'TEACHER_DEACTIVATE',
+      targetType: 'Teacher',
+      targetId: teacher._id,
+      details: { name: teacher.name, username: teacher.username, isActive: teacher.isActive },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `Teacher account ${teacher.isActive ? 'activated' : 'deactivated'} successfully.`,
+      isActive: teacher.isActive,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function resetTeacherPassword(req, res, next) {
+  try {
+    const { id } = req.params;
+    const teacher = await Staff.findOne({ _id: id, role: 'teacher' });
+    if (!teacher) {
+      return res.status(404).json({
+        success: false,
+        message: 'Teacher profile not found.',
+      });
+    }
+
+    const temporaryPassword = generateNumericTempPassword();
+    teacher.passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
+    teacher.mustChangePassword = true;
+    await teacher.save();
+
+    await recordAuditLog({
+      req,
+      action: 'PASSWORD_RESET',
+      targetType: 'Teacher',
+      targetId: teacher._id,
+      details: { username: teacher.username },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Teacher password reset successfully.',
+      oneTimeCredentials: {
+        username: teacher.username,
+        temporaryPassword,
+        note: 'Provide this temporary password to the teacher. They will be required to change it on their next login.',
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/* ========================================================================== */
+/* STUDENT MANAGEMENT ACROSS ALL BATCHES                                      */
+/* ========================================================================== */
+
+export async function getAllStudents(req, res, next) {
+  try {
+    const page = Math.max(1, parseInt(req.query.page || '1', 10));
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit || '20', 10)));
+    const search = (req.query.search || '').trim();
+    const batchCode = (req.query.batchCode || '').trim().toUpperCase();
+
+    const filter = {};
+
+    if (batchCode) {
+      filter.$or = [{ batchCode }, { batch: batchCode.replace('BATCH-', '') }];
+    }
+
+    if (search) {
+      const searchRegex = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+      filter.$and = [
+        {
+          $or: [{ name: searchRegex }, { phone: new RegExp(search, 'i') }, { username: searchRegex }],
+        },
+      ];
+    }
+
+    const totalRecords = await Student.countDocuments(filter);
+    const totalPages = Math.ceil(totalRecords / limit) || 1;
+
+    const students = await Student.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .select('-passwordHash')
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      pagination: {
+        totalRecords,
+        totalPages,
+        currentPage: page,
+        pageSize: limit,
+      },
+      data: students,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function createStudent(req, res, next) {
+  try {
+    const {
+      name,
+      phone,
+      dateOfBirth,
+      email,
+      address,
+      college,
+      fatherName,
+      motherName,
+      batchCode,
+    } = req.body;
+
+    if (!name || !phone || !dateOfBirth || !batchCode) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, 10-digit phone number, date of birth, and batch selection are required.',
+      });
+    }
+
+    const cleanBatch = batchCode.trim().toUpperCase();
+    const academicYear = cleanBatch.replace('BATCH-', '');
+    const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+
+    if (cleanPhone.length !== 10) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone number must be a valid 10-digit mobile number.',
+      });
+    }
+
+    const existing = await Student.findOne({ phone: cleanPhone });
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: `A student with phone '${cleanPhone}' is already enrolled.`,
+      });
+    }
+
+    let seq = 0;
+    let username = generateStudentUsername(name, academicYear, seq);
+    while (await Student.findOne({ username })) {
+      seq++;
+      username = generateStudentUsername(name, academicYear, seq);
+    }
+
+    const temporaryPassword = generateNumericTempPassword();
+    const passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
+
+    const newStudent = await Student.create({
+      name: name.trim(),
+      phone: cleanPhone,
+      dateOfBirth: String(dateOfBirth).trim(),
+      email: email ? email.trim().toLowerCase() : '',
+      address: typeof address === 'string' ? { street: address } : address || {},
+      college: college ? college.trim() : '',
+      fatherName: fatherName ? fatherName.trim() : '',
+      motherName: motherName ? motherName.trim() : '',
+      batch: academicYear,
+      batchCode: cleanBatch,
+      username,
+      passwordHash,
+      isActive: true,
+      mustChangePassword: true,
+    });
+
+    await recordAuditLog({
+      req,
+      action: 'STUDENT_CREATE',
+      targetType: 'Student',
+      targetId: newStudent._id,
+      details: { name: newStudent.name, username: newStudent.username, batchCode: cleanBatch },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Student created successfully.',
+      student: newStudent.toSafeObject(),
+      oneTimeCredentials: {
+        username: newStudent.username,
+        temporaryPassword,
+        note: 'Provide these credentials to the student. They will set their own password on first sign-in.',
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateStudent(req, res, next) {
+  try {
+    const { id } = req.params;
+    const student = await Student.findById(id);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student record not found.',
+      });
+    }
+
+    const {
+      name,
+      phone,
+      dateOfBirth,
+      email,
+      address,
+      college,
+      fatherName,
+      motherName,
+      batchCode,
+    } = req.body;
+
+    if (name) student.name = name.trim();
+    if (dateOfBirth) student.dateOfBirth = String(dateOfBirth).trim();
+    if (email !== undefined) student.email = email ? email.trim().toLowerCase() : '';
+    if (address !== undefined) {
+      student.address = typeof address === 'string' ? { street: address } : address;
+    }
+    if (college !== undefined) student.college = String(college || '').trim();
+    if (fatherName !== undefined) student.fatherName = String(fatherName || '').trim();
+    if (motherName !== undefined) student.motherName = String(motherName || '').trim();
+
+    if (batchCode) {
+      student.batchCode = batchCode.trim().toUpperCase();
+      student.batch = student.batchCode.replace('BATCH-', '');
+    }
+
+    if (phone) {
+      const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+      if (cleanPhone.length === 10 && cleanPhone !== student.phone) {
+        const dup = await Student.findOne({ phone: cleanPhone, _id: { $ne: student._id } });
+        if (dup) {
+          return res.status(400).json({
+            success: false,
+            message: `Phone number '${cleanPhone}' is registered to another student.`,
+          });
+        }
+        student.phone = cleanPhone;
+      }
+    }
+
+    await student.save();
+
+    await recordAuditLog({
+      req,
+      action: 'STUDENT_UPDATE',
+      targetType: 'Student',
+      targetId: student._id,
+      details: { name: student.name, username: student.username, batchCode: student.batchCode },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Student updated successfully.',
+      student: student.toSafeObject(),
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function toggleStudentStatus(req, res, next) {
+  try {
+    const { id } = req.params;
+    const student = await Student.findById(id);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: 'Student record not found.',
+      });
+    }
+
+    student.isActive = !student.isActive;
+    await student.save();
+
+    await recordAuditLog({
+      req,
+      action: student.isActive ? 'STUDENT_REACTIVATE' : 'STUDENT_DEACTIVATE',
+      targetType: 'Student',
+      targetId: student._id,
+      details: { name: student.name, username: student.username, isActive: student.isActive },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `Student account has been ${student.isActive ? 'reactivated' : 'deactivated'}.`,
+      isActive: student.isActive,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function bulkImportStudents(req, res, next) {
+  try {
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please upload an Excel (.xlsx) file.',
+      });
+    }
+
+    const { batchCode } = req.body;
+    if (!batchCode) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please select a target batch for this bulk import.',
+      });
+    }
+
+    const cleanBatch = batchCode.trim().toUpperCase();
+    const academicYear = cleanBatch.replace('BATCH-', '');
+
+    const parseResult = await parseStudentExcel(req.file.buffer);
+
+    let importedCount = 0;
+    let skippedCount = 0;
+    const createdAccounts = [];
+
+    for (const validItem of parseResult.validRows) {
+      const record = validItem.data;
+
+      const existing = await Student.findOne({
+        $or: [{ phone: record.phone }, ...(record.email ? [{ email: record.email }] : [])],
+      });
+
+      if (existing) {
+        skippedCount++;
+        parseResult.duplicateRows.push({
+          rowNumber: validItem.rowNumber,
+          data: record,
+          reason: `Already exists in academy database with phone '${record.phone}'`,
+        });
+        continue;
+      }
+
+      let seq = 0;
+      let username = generateStudentUsername(record.name, academicYear, seq);
+      while (await Student.findOne({ username })) {
+        seq++;
+        username = generateStudentUsername(record.name, academicYear, seq);
+      }
+
+      const temporaryPassword = generateNumericTempPassword();
+      const passwordHash = await bcrypt.hash(temporaryPassword, ENV.BCRYPT_SALT_ROUNDS);
+
+      const newStudent = await Student.create({
+        name: record.name,
+        phone: record.phone,
+        dateOfBirth: record.dateOfBirth,
+        email: record.email || '',
+        address: record.address ? { street: record.address } : {},
+        college: record.college || '',
+        fatherName: record.fatherName || '',
+        motherName: record.motherName || '',
+        batch: academicYear,
+        batchCode: cleanBatch,
+        username,
+        passwordHash,
+        isActive: true,
+        mustChangePassword: true,
+      });
+
+      importedCount++;
+      createdAccounts.push({
+        name: record.name,
+        username: newStudent.username,
+        phone: record.phone,
+        temporaryPassword,
+      });
+    }
+
+    await recordAuditLog({
+      req,
+      action: 'EXCEL_IMPORT',
+      targetType: 'BulkImport',
+      targetId: cleanBatch,
+      details: {
+        batchCode: cleanBatch,
+        totalRows: parseResult.totalRows,
+        importedCount,
+        skippedCount,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `Bulk import completed: ${importedCount} created, ${skippedCount} skipped, ${parseResult.invalidRows.length} invalid.`,
+      summary: {
+        totalRows: parseResult.totalRows,
+        importedCount,
+        skippedCount,
+        invalidCount: parseResult.invalidRows.length,
+        duplicateCount: parseResult.duplicateRows.length,
+      },
+      invalidRows: parseResult.invalidRows,
+      duplicateRows: parseResult.duplicateRows,
+      createdAccounts,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/* ========================================================================== */
+/* LECTURE MANAGEMENT ACROSS ALL BATCHES                                      */
+/* ========================================================================== */
+
+export async function getAllLectures(req, res, next) {
+  try {
+    const batchCode = (req.query.batchCode || '').trim().toUpperCase();
+    const filter = {};
+
+    if (batchCode) {
+      filter.$or = [{ batchCode }, { batch: batchCode.replace('BATCH-', '') }];
+    }
+
+    const lectures = await Lecture.find(filter).sort({ batch: -1, slNo: 1 }).lean();
+
+    return res.status(200).json({
+      success: true,
+      data: lectures,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function createLecture(req, res, next) {
+  try {
+    const { slNo, topicName, ytVideoLink, subject, description, isPublished, batchCode } = req.body;
+
+    if (!slNo || !topicName || !ytVideoLink || !subject || !batchCode) {
+      return res.status(400).json({
+        success: false,
+        message: 'Serial number, topic name, subject, YouTube link, and batch selection are required.',
+      });
+    }
+
+    const cleanBatch = batchCode.trim().toUpperCase();
+    const academicYear = cleanBatch.replace('BATCH-', '');
+
+    const conflict = await Lecture.findOne({
+      $or: [{ batchCode: cleanBatch }, { batch: academicYear }],
+      slNo: Number(slNo),
+    });
+
+    if (conflict) {
+      return res.status(400).json({
+        success: false,
+        message: `A lecture with serial number #${slNo} already exists in batch ${cleanBatch}.`,
+      });
+    }
+
+    const lecture = await Lecture.create({
+      slNo: Number(slNo),
+      topicName: topicName.trim(),
+      ytVideoLink: ytVideoLink.trim(),
+      subject: subject.trim(),
+      description: description ? description.trim() : '',
+      batch: academicYear,
+      batchCode: cleanBatch,
+      isPublished: isPublished !== undefined ? Boolean(isPublished) : true,
+      createdBy: req.user.username,
+      lastUpdatedBy: req.user.username,
+    });
+
+    await recordAuditLog({
+      req,
+      action: 'LECTURE_CREATE',
+      targetType: 'Lecture',
+      targetId: lecture._id,
+      details: { topicName: lecture.topicName, slNo: lecture.slNo, batchCode: cleanBatch },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Lecture created successfully.',
+      data: lecture,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateLecture(req, res, next) {
+  try {
+    const { id } = req.params;
+    const lecture = await Lecture.findById(id);
+    if (!lecture) {
+      return res.status(404).json({
+        success: false,
+        message: 'Lecture not found.',
+      });
+    }
+
+    const { slNo, topicName, ytVideoLink, subject, description, isPublished, batchCode } = req.body;
+
+    if (batchCode) {
+      lecture.batchCode = batchCode.trim().toUpperCase();
+      lecture.batch = lecture.batchCode.replace('BATCH-', '');
+    }
+
+    if (slNo !== undefined) {
+      const numSlNo = Number(slNo);
+      if (numSlNo !== lecture.slNo) {
+        const conflict = await Lecture.findOne({
+          _id: { $ne: lecture._id },
+          $or: [{ batchCode: lecture.batchCode }, { batch: lecture.batch }],
+          slNo: numSlNo,
+        });
+        if (conflict) {
+          return res.status(400).json({
+            success: false,
+            message: `Serial number #${numSlNo} already in use for this batch.`,
+          });
+        }
+        lecture.slNo = numSlNo;
+      }
+    }
+
+    if (topicName) lecture.topicName = topicName.trim();
+    if (ytVideoLink) lecture.ytVideoLink = ytVideoLink.trim();
+    if (subject) lecture.subject = subject.trim();
+    if (description !== undefined) lecture.description = String(description).trim();
+    if (isPublished !== undefined) lecture.isPublished = Boolean(isPublished);
+    lecture.lastUpdatedBy = req.user.username;
+
+    await lecture.save();
+
+    await recordAuditLog({
+      req,
+      action: 'LECTURE_UPDATE',
+      targetType: 'Lecture',
+      targetId: lecture._id,
+      details: {
+        topicName: lecture.topicName,
+        slNo: lecture.slNo,
+        isPublished: lecture.isPublished,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Lecture updated successfully.',
+      data: lecture,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteLecture(req, res, next) {
+  try {
+    const { id } = req.params;
+    const lecture = await Lecture.findByIdAndDelete(id);
+    if (!lecture) {
+      return res.status(404).json({
+        success: false,
+        message: 'Lecture not found.',
+      });
+    }
+
+    await recordAuditLog({
+      req,
+      action: 'LECTURE_DELETE',
+      targetType: 'Lecture',
+      targetId: id,
+      details: { topicName: lecture.topicName, slNo: lecture.slNo },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Lecture removed successfully.',
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/* ========================================================================== */
+/* AUDIT LOGS                                                                 */
+/* ========================================================================== */
+
+export async function getAuditLogs(req, res, next) {
+  try {
+    const page = Math.max(1, parseInt(req.query.page || '1', 10));
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit || '25', 10)));
+    const action = (req.query.action || '').trim();
+    const actor = (req.query.actor || '').trim();
+
+    const filter = {};
+    if (action) filter.action = action;
+    if (actor) filter.actorUsername = new RegExp(actor, 'i');
+
+    const totalRecords = await AuditLog.countDocuments(filter);
+    const totalPages = Math.ceil(totalRecords / limit) || 1;
+
+    const logs = await AuditLog.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      pagination: {
+        totalRecords,
+        totalPages,
+        currentPage: page,
+        pageSize: limit,
+      },
+      data: logs,
+    });
+  } catch (error) {
+    next(error);
+  }
+}

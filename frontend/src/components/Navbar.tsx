@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, Phone, Calendar, MapPin, ChevronRight, MessageSquare, Sun, Moon } from 'lucide-react';
+import { Menu, X, Phone, Calendar, MapPin, ChevronRight, MessageSquare, Sun, Moon, GraduationCap, ShieldCheck, BookOpen } from 'lucide-react';
 import { ACADEMY_CONFIG } from '../config/academyConfig';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { isAuthenticated, user, role } = useAuth();
 
   // Close mobile drawer on route change
   useEffect(() => {
@@ -131,6 +133,45 @@ export const Navbar: React.FC = () => {
               )}
             </button>
 
+            {/* Dynamic Portal CTA based on role */}
+            {isAuthenticated && user ? (
+              <Link
+                to={
+                  role === 'superadmin'
+                    ? '/superadmin/dashboard'
+                    : role === 'teacher'
+                    ? '/teacher/dashboard'
+                    : '/student/dashboard'
+                }
+                className="px-2.5 py-1.5 2xl:px-3 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 dark:text-[#0B1120] dark:bg-[#F4C76B] dark:hover:bg-[#E5B555] rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
+                title={`${role === 'superadmin' ? 'Superadmin Console' : role === 'teacher' ? 'Teacher Desk' : 'Student Portal'}: ${user.name}`}
+              >
+                {role === 'superadmin' ? (
+                  <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                ) : role === 'teacher' ? (
+                  <BookOpen className="w-3.5 h-3.5 shrink-0" />
+                ) : (
+                  <GraduationCap className="w-3.5 h-3.5 shrink-0" />
+                )}
+                <span>
+                  {role === 'superadmin'
+                    ? 'Superadmin'
+                    : role === 'teacher'
+                    ? `Teacher (${user.name.split(' ')[0]})`
+                    : `Portal (${user.name.split(' ')[0]})`}
+                </span>
+              </Link>
+            ) : (
+              <Link
+                to="/student/login"
+                className="px-2.5 py-1.5 2xl:px-3 text-xs font-bold text-slate-700 hover:text-[#17365D] bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-[#1E293B] dark:hover:bg-[#2A374D] border border-slate-300 dark:border-slate-700 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                title="Student, Teacher & Admin Login"
+              >
+                <GraduationCap className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B] shrink-0" />
+                <span>Portal Login</span>
+              </Link>
+            )}
+
             {/* Option B: Manual callback - shown on large desktop (2xl:), while top bar already provides callback for 1280-1440px laptops */}
             <Link
               to="/contact"
@@ -220,24 +261,58 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile Action Buttons */}
-          <div className="pt-3 border-t border-slate-200 dark:border-[#243042] flex flex-col sm:flex-row gap-2">
+          <div className="pt-3 border-t border-slate-200 dark:border-[#243042] flex flex-col gap-2">
+            {/* Dynamic Portal Mobile Button */}
             <Link
-              to="/consultation"
+              to={
+                isAuthenticated && user
+                  ? role === 'superadmin'
+                    ? '/superadmin/dashboard'
+                    : role === 'teacher'
+                    ? '/teacher/dashboard'
+                    : '/student/dashboard'
+                  : '/student/login'
+              }
               onClick={() => setIsOpen(false)}
-              className="flex-1 py-2.5 px-3 text-xs font-extrabold text-white bg-gradient-to-r from-[#17365D] via-[#1E4273] to-[#17365D] dark:text-[#0F172A] dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] hover:brightness-105 rounded-xl shadow-sm flex items-center justify-center gap-1.5 text-center min-h-[44px]"
+              className="py-2.5 px-3 text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] hover:brightness-105 rounded-xl shadow-xs flex items-center justify-center gap-2 text-center min-h-[44px]"
             >
-              <Calendar className="w-3.5 h-3.5 text-[#FDE68A] dark:text-[#0F172A]" />
-              <span>Book Free Consultation (Google Meet)</span>
+              {role === 'superadmin' ? (
+                <ShieldCheck className="w-4 h-4 text-[#0B1120] shrink-0" />
+              ) : role === 'teacher' ? (
+                <BookOpen className="w-4 h-4 text-[#0B1120] shrink-0" />
+              ) : (
+                <GraduationCap className="w-4 h-4 text-[#0B1120] shrink-0" />
+              )}
+              <span>
+                {isAuthenticated && user
+                  ? role === 'superadmin'
+                    ? 'Superadmin Console'
+                    : role === 'teacher'
+                    ? `Teacher Desk (${user.name.split(' ')[0]})`
+                    : `Student Portal (${user.name.split(' ')[0]})`
+                  : 'Portal Sign In (Student / Teacher / Admin)'}
+              </span>
             </Link>
 
-            <Link
-              to="/contact"
-              onClick={() => setIsOpen(false)}
-              className="flex-1 py-2.5 px-3 text-xs font-bold text-slate-700 hover:text-[#17365D] bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-[#202B3D] dark:hover:bg-[#26334A] border border-slate-300 dark:border-[#344054] rounded-xl flex items-center justify-center gap-1.5 text-center min-h-[44px]"
-            >
-              <Phone className="w-3.5 h-3.5 text-[#0284C7] dark:text-[#38BDF8]" />
-              <span>Request Callback / Meeting</span>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Link
+                to="/consultation"
+                onClick={() => setIsOpen(false)}
+                className="flex-1 py-2.5 px-3 text-xs font-extrabold text-white bg-gradient-to-r from-[#17365D] via-[#1E4273] to-[#17365D] dark:text-[#0F172A] dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] hover:brightness-105 rounded-xl shadow-sm flex items-center justify-center gap-1.5 text-center min-h-[44px]"
+              >
+                <Calendar className="w-3.5 h-3.5 text-[#FDE68A] dark:text-[#0F172A]" />
+                <span>Book Free Consultation</span>
+              </Link>
+
+              <Link
+                to="/contact"
+                onClick={() => setIsOpen(false)}
+                className="flex-1 py-2.5 px-3 text-xs font-bold text-slate-700 hover:text-[#17365D] bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-[#202B3D] dark:hover:bg-[#26334A] border border-slate-300 dark:border-[#344054] rounded-xl flex items-center justify-center gap-1.5 text-center min-h-[44px]"
+              >
+                <Phone className="w-3.5 h-3.5 text-[#0284C7] dark:text-[#38BDF8]" />
+                <span>Request Callback</span>
+              </Link>
+            </div>
           </div>
 
           <div className="mt-3 text-center flex items-center justify-center gap-4">

@@ -1,0 +1,198 @@
+import { test, describe } from 'node:test';
+import assert from 'node:assert/strict';
+import { extractYouTubeId, getYouTubeEmbedUrl } from '../src/utils/youtube.js';
+import { generateToken, verifyToken } from '../src/utils/token.js';
+
+describe('YouTube Utilities', () => {
+  test('extracts ID from standard watch URL', () => {
+    const id = extractYouTubeId('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+    assert.equal(id, 'dQw4w9WgXcQ');
+  });
+
+  test('extracts ID from shortened youtu.be URL', () => {
+    const id = extractYouTubeId('https://youtu.be/dQw4w9WgXcQ');
+    assert.equal(id, 'dQw4w9WgXcQ');
+  });
+
+  test('extracts ID from embed URL', () => {
+    const id = extractYouTubeId('https://www.youtube.com/embed/dQw4w9WgXcQ');
+    assert.equal(id, 'dQw4w9WgXcQ');
+  });
+
+  test('handles direct 11-char ID', () => {
+    const id = extractYouTubeId('dQw4w9WgXcQ');
+    assert.equal(id, 'dQw4w9WgXcQ');
+  });
+
+  test('returns null for invalid or empty URL', () => {
+    assert.equal(extractYouTubeId(''), null);
+    assert.equal(extractYouTubeId(null), null);
+    assert.equal(extractYouTubeId('not-a-valid-video-link'), null);
+  });
+
+  test('generates secure embed URL', () => {
+    const embedUrl = getYouTubeEmbedUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+    assert.equal(embedUrl, 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?rel=0&modestbranding=1');
+  });
+});
+
+describe('Token Utilities', () => {
+  const mockStudent = {
+    _id: '654321654321654321654321',
+    username: 'aa26_aarav',
+    batch: '2026',
+    batchCode: 'BATCH-2026',
+    role: 'student',
+    mustChangePassword: true,
+  };
+
+  const mockTeacher = {
+    _id: '654321654321654321654322',
+    username: 'aa_teacher_subrat',
+    role: 'teacher',
+    assignedBatches: ['BATCH-2026', 'BATCH-2027'],
+    mustChangePassword: false,
+  };
+
+  const mockSuperadmin = {
+    _id: '654321654321654321654323',
+    username: 'aa_superadmin',
+    role: 'superadmin',
+    assignedBatches: ['*'],
+    mustChangePassword: false,
+  };
+
+  test('generates and verifies valid student JWT', () => {
+    const token = generateToken(mockStudent);
+    assert.ok(typeof token === 'string' && token.length > 20);
+
+    const decoded = verifyToken(token);
+    assert.ok(decoded);
+    assert.equal(decoded.sub, mockStudent._id);
+    assert.equal(decoded.username, mockStudent.username);
+    assert.equal(decoded.role, 'student');
+    assert.equal(decoded.batch, mockStudent.batch);
+    assert.equal(decoded.mustChangePassword, true);
+  });
+
+  test('generates and verifies teacher JWT with assignedBatches', () => {
+    const token = generateToken(mockTeacher);
+    const decoded = verifyToken(token);
+    assert.ok(decoded);
+    assert.equal(decoded.sub, mockTeacher._id);
+    assert.equal(decoded.username, mockTeacher.username);
+    assert.equal(decoded.role, 'teacher');
+    assert.deepEqual(decoded.assignedBatches, ['BATCH-2026', 'BATCH-2027']);
+    assert.equal(decoded.mustChangePassword, false);
+  });
+
+  test('generates and verifies superadmin JWT', () => {
+    const token = generateToken(mockSuperadmin);
+    const decoded = verifyToken(token);
+    assert.ok(decoded);
+    assert.equal(decoded.sub, mockSuperadmin._id);
+    assert.equal(decoded.role, 'superadmin');
+  });
+
+  test('rejects tampered token', () => {
+    const token = generateToken(mockStudent);
+    const tampered = token.slice(0, -5) + 'xxxxx';
+    const decoded = verifyToken(tampered);
+    assert.equal(decoded, null);
+  });
+
+  test('rejects null or empty token', () => {
+    assert.equal(verifyToken(null), null);
+    assert.equal(verifyToken(''), null);
+  });
+});
+
+import { generateStudentTemplate, parseStudentExcel, CANONICAL_HEADERS } from '../src/services/excelService.js';
+import ExcelJS from 'exceljs';
+
+describe('Excel Student Import & Template Service', () => {
+  test('generates a valid binary Excel (.xlsx) buffer with canonical headers', async () => {
+    const buffer = await generateStudentTemplate();
+    assert.ok(Buffer.isBuffer(buffer) || buffer instanceof Uint8Array);
+    assert.ok(buffer.length > 1000);
+
+    // Verify it loads with ExcelJS and contains the canonical columns
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(buffer);
+    const ws = wb.worksheets[0];
+    assert.ok(ws);
+
+    const headerRow = ws.getRow(1);
+    const headers = [];
+    headerRow.eachCell((cell) => headers.push(String(cell.value || '').trim()));
+
+    for (const h of CANONICAL_HEADERS) {
+      assert.ok(headers.includes(h), `Missing canonical header: ${h}`);
+    }
+  });
+
+  test('parses and validates valid student rows from generated template', async () => {
+    const buffer = await generateStudentTemplate();
+    const result = await parseStudentExcel(buffer);
+
+    assert.ok(result.totalRows >= 1);
+    assert.equal(result.validRows.length, 1);
+    assert.equal(result.invalidRows.length, 0);
+    assert.equal(result.duplicateRows.length, 0);
+
+    const sample = result.validRows[0].data;
+    assert.equal(sample.name, 'Aarav Kumar Sahu');
+    assert.equal(sample.phone, '9437000101');
+    assert.equal(sample.dateOfBirth, '2008-04-12');
+  });
+
+  test('identifies invalid rows (e.g. invalid phone number, missing name)', async () => {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('Students');
+    ws.addRow(CANONICAL_HEADERS);
+
+    // Invalid row 1: missing name
+    ws.addRow(['', '9437000102', '2008-01-01', 'test@example.com']);
+    // Invalid row 2: invalid phone (only 5 digits)
+    ws.addRow(['Pooja Mishra', '12345', '2008-01-01', 'pooja@example.com']);
+    // Valid row
+    ws.addRow(['Pooja Mishra', '9437000103', '2008-01-01', 'pooja@example.com']);
+
+    const buffer = await wb.xlsx.writeBuffer();
+    const result = await parseStudentExcel(buffer);
+
+    assert.equal(result.validRows.length, 1);
+    assert.equal(result.invalidRows.length, 2);
+    assert.equal(result.validRows[0].data.name, 'Pooja Mishra');
+  });
+
+  test('detects duplicate phone numbers within spreadsheet', async () => {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('Students');
+    ws.addRow(CANONICAL_HEADERS);
+
+    ws.addRow(['Rohan Panda', '9876543210', '2007-06-15']);
+    ws.addRow(['Rohan Duplicate', '9876543210', '2007-08-20']); // same phone
+
+    const buffer = await wb.xlsx.writeBuffer();
+    const result = await parseStudentExcel(buffer);
+
+    assert.equal(result.validRows.length, 1);
+    assert.equal(result.duplicateRows.length, 1);
+    assert.ok(result.duplicateRows[0].reason.includes('Duplicate phone'));
+  });
+
+  test('throws descriptive error if critical headers are missing', async () => {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('Broken');
+    ws.addRow(['randomHeader1', 'randomHeader2']);
+    ws.addRow(['John', '123']);
+
+    const buffer = await wb.xlsx.writeBuffer();
+    await assert.rejects(
+      async () => await parseStudentExcel(buffer),
+      /Missing required column header/
+    );
+  });
+});
+

@@ -1,155 +1,232 @@
-# Antariksh Academy Website
+# Antariksh Academy — Institute Management & Lecture Portal System
 
-A modern, responsive, production-quality static frontend website for **Antariksh Academy**, an educational coaching institute located in Bijipur, Brahmapur, Odisha, India.
+Official web platform for **Antariksh Academy Coaching Institute** (Bijipur, Brahmapur, Odisha), featuring a responsive public institute website, Cal.com consultation booking, parent callback inquiry system, and a **Role-Based Management & Lecture Portal** supporting three distinct user tiers:
 
----
-
-## 1. Institute & Project Overview
-
-- **Official Name:** Antariksh Academy
-- **Location:** Bijipur, Big Street, Brahmapur, Odisha 760001, India
-- **Provisional Contact Email:** `kumardalaichandan803@gmail.com`
-- **Motto:** *"Education for world stage"*
-- **Headline:** *"Your Future. Our Guidance. Your Success."*
-- **Target Students:** Class 11 (+2 First Year) and Class 12 (+2 Second Year) preparing for Odisha CHSE Board examinations alongside competitive examinations.
-- **Streams Offered:**
-  - JEE Main and JEE Advanced
-  - NEET-UG (Medical Entrance)
-  - UPSC NDA (National Defence Academy)
-  - Odisha CHSE +2 Science Board
-  - Integrated Board + Entrance Preparation
+1. **`student`**: Enrolled students access batch-isolated recorded lectures and profile records.
+2. **`teacher`**: Faculty administrators manage student rosters and lecture metadata for assigned batches.
+3. **`superadmin`**: Institute leadership exercises master oversight across all batches, teachers, students, lectures, and audit logs.
 
 ---
 
-## 2. Technology Stack
+## 1. Repository Architecture
 
-- **Framework:** React 19 with Vite & TypeScript
-- **Styling:** Tailwind CSS v4 with custom academic color palette (Deep Navy Blue `#0B1938`, Slate, and Warm Gold/Amber accents)
-- **Icons:** Lucide React
-- **Design System:** Accessible forms, interactive modals, responsive table/card timetable views, and image lightbox.
-- **Architecture:** Zero backend required for initial static hosting, modular data files for instant faculty/results editing.
-
----
-
-## 3. Project Directory Structure
+The project is organized into separate, decoupled frontend and backend applications:
 
 ```text
-tutionWebsite/
-├── public/
-│   ├── favicon.svg             # Antariksh Academy cosmic orbit icon
-│   ├── logo.svg                # Brand emblem
-│   └── images/
-│       └── academy_faculty_fb.jpg # Public verified photo from academy social media
-├── src/
-│   ├── config/
-│   │   └── academyConfig.ts    # Centralized configuration (name, address, email, phone, links)
-│   ├── data/
-│   │   ├── coursesData.ts      # 5 Course streams, syllabi, and learning benefits
-│   │   ├── facultyData.ts      # 7 Faculty profiles with placeholder designations
-│   │   ├── facilitiesData.ts   # Infrastructure gallery and attribution notes
-│   │   ├── resultsData.ts      # 6-Year result templates (2021–2026) with transparency labels
-│   │   ├── timetableData.ts    # Morning, evening, and weekend batch slots
-│   │   └── testimonialsData.ts # Student and parent review templates
-│   ├── utils/
-│   │   ├── googleCalendar.ts   # Isolated Google Calendar URL generator & Meet architecture
-│   │   └── validation.ts       # Indian phone number validation, email checks, date logic
-│   ├── components/
-│   │   ├── Navbar.tsx          # Responsive sticky navigation with mobile drawer
-│   │   ├── Hero.tsx            # Academic hero with trust badges & highlight dashboard
-│   │   ├── About.tsx           # Mission, 6 learning pillars, and board+entrance philosophy
-│   │   ├── Courses.tsx         # Filterable course cards with syllabus highlights
-│   │   ├── Teachers.tsx        # 7 Faculty profile cards with area of expertise tags
-│   │   ├── Facilities.tsx      # Photo gallery with category filters
-│   │   ├── Lightbox.tsx        # Accessible full-screen lightbox with keyboard controls
-│   │   ├── Results.tsx         # 6-Year filtered success stories with ethical disclosure
-│   │   ├── Timetable.tsx       # Responsive schedule table with mobile cards
-│   │   ├── Testimonials.tsx    # Student and parent community feedback
-│   │   ├── CallbackSection.tsx # "Need Guidance? Let Us Call You" with Indian mobile validation
-│   │   ├── ConsultationSection.tsx # "Book a Free Academic Consultation" (Google Meet / In-Person)
-│   │   ├── ContactSection.tsx  # Bijipur address, official Facebook/Instagram, map directions
-│   │   ├── Footer.tsx          # Dynamic copyright, navigation, courses, and privacy notice
-│   │   ├── CourseModal.tsx     # Detailed course curriculum popup
-│   │   └── GoogleMeetGuideModal.tsx # Architectural guide for automated Google Meet production
-│   ├── App.tsx                 # Root layout and interactive modal coordination
-│   ├── main.tsx                # React entrypoint
-│   └── index.css               # Tailwind CSS base and theme rules
-├── index.html                  # SEO metadata, Open Graph tags, and typography
-├── package.json
-└── tsconfig.json
+antariksh-academy/
+├── .gitignore                    # Universal root gitignore
+├── README.md                     # Master documentation & deployment guide
+│
+├── frontend/                     # React 19 + Vite + Tailwind CSS Frontend
+│   ├── src/
+│   │   ├── components/           # Public UI & Role-Specific Components
+│   │   │   ├── auth/             # ProtectedRoute with role enforcement & 403 fallback
+│   │   │   ├── common/           # CredentialsModal for one-time temporary passwords
+│   │   │   ├── superadmin/       # SuperadminHeader & master navigation tabs
+│   │   │   └── teacher/          # TeacherHeader & faculty navigation tabs
+│   │   ├── config/               # Public API & Academy Configurations
+│   │   ├── context/              # AuthContext (role-aware) & ThemeContext
+│   │   ├── data/                 # Course, faculty, timetable & testimonials
+│   │   ├── pages/                # Public Institute & Portal Pages
+│   │   │   ├── student/          # Login, Change Password, Dashboard, Lectures, Profile
+│   │   │   ├── teacher/          # Dashboard, Students, Lectures, Profile, Change Password
+│   │   │   └── superadmin/       # Overview, Batches, Teachers, Students, Lectures, Audit Logs
+│   │   ├── services/             # FormSubmit admissions submission
+│   │   ├── utils/                # Calendar & validation helpers
+│   │   ├── App.tsx               # Route declarations & synchronized transitions
+│   │   └── main.tsx              # Application entry point
+│   ├── public/                   # Logos, faculty assets, favicon
+│   ├── package.json              # Frontend scripts & dependencies
+│   ├── vite.config.ts            # Vite 8 build & bundler configuration
+│   ├── tsconfig.json             # TypeScript configuration
+│   ├── vercel.json               # SPA client routing rewrite rules
+│   ├── .env                      # Local frontend variables (git-ignored)
+│   └── .env.example              # Public frontend environment template
+│
+└── backend/                      # Node.js + Express + MongoDB REST API
+    ├── src/
+    │   ├── config/               # Database connection & environment validation
+    │   ├── controllers/          # Auth, Teacher, Superadmin & Lecture controllers
+    │   ├── middleware/           # Role-based auth (requireRole, requireAssignedBatch, etc.)
+    │   ├── models/               # Batch, Staff, Student, Lecture, AuditLog schemas
+    │   ├── routes/               # Routes (/api/auth, /api/teacher, /api/superadmin, /api/lectures)
+    │   ├── services/             # Excel template generation & streaming parser (ExcelJS)
+    │   ├── utils/                # JWT Token, YouTube Embed & Audit Logger utilities
+    │   ├── app.js                # Express app with Helmet, CORS & Rate Limits
+    │   └── server.js             # Server startup & graceful shutdown handlers
+    ├── data/
+    │   ├── students/             # Batch-wise student JSON files (batch-2026.json, batch-2027.json)
+    │   └── lectures/             # Sample lecture seed data
+    ├── scripts/
+    │   ├── seedStudents.js       # Student & lecture seeding script
+    │   └── seedStaff.js          # Staff bootstrap script (Superadmin & initial Teachers)
+    ├── tests/                    # Built-in Node.js unit test suite
+    │   └── unit.test.js
+    ├── package.json              # Backend scripts & dependencies (exceljs, multer, bcryptjs)
+    ├── .env                      # Local backend variables (git-ignored)
+    └── .env.example              # Backend environment template
 ```
 
 ---
 
-## 4. Quickstart: Running Locally
+## 2. Quick Start & Local Development
 
 ### Prerequisites
-- Node.js (v18 or higher recommended; verified on Node v24)
-- npm (v9 or higher)
+- **Node.js**: v18+ (tested on Node.js v24.18.0)
+- **MongoDB**: Local MongoDB community instance or [MongoDB Atlas](https://www.mongodb.com/atlas) cluster URI
 
-### Installation & Commands
+### Step 1: Install Dependencies
+Open two terminal windows or run sequentially:
 
 ```bash
-# 1. Install dependencies
+# 1. Install frontend dependencies
+cd frontend
 npm install
 
-# 2. Start the local Vite development server
-npm run dev
-
-# 3. Build for production (TypeScript check + Vite bundler)
-npm run build
-
-# 4. Preview the production build locally
-npm run preview
+# 2. Install backend dependencies (includes exceljs, multer, bcryptjs)
+cd ../backend
+npm install
 ```
 
-When you run `npm run dev`, open the URL printed in the terminal (usually `http://localhost:5173`) in any modern browser.
+### Step 2: Configure Local Environment Variables
+Create `.env` in both folders using the provided `.env.example` templates:
+
+```bash
+# Frontend
+cp frontend/.env.example frontend/.env
+
+# Backend
+cp backend/.env.example backend/.env
+```
+
+### Step 3: Seed Database & Bootstrap Administrative Staff
+
+Make sure your MongoDB server is running (locally at `mongodb://127.0.0.1:27017/antariksh_academy` or configured via `MONGODB_URI` in `backend/.env`).
+
+```bash
+cd backend
+
+# A. Bootstrap Batches, Superadmin & Teachers (idempotent, displays one-time passwords once in console)
+npm run bootstrap:staff
+
+# B. Seed Students & Sample Lectures
+npm run seed:students
+```
+
+#### Bootstrapped Staff Accounts (for initial setup & testing):
+- **Superadmin**: Username: `aa_superadmin` (temporary 8-digit password printed upon bootstrap)
+- **Faculty Teacher 1**: Username: `aa_teacher_subrat` (assigned: `BATCH-2026`, `BATCH-2027`)
+- **Faculty Teacher 2**: Username: `aa_teacher_kalyani` (assigned: `BATCH-2026`)
+
+*Note: All bootstrapped staff have `mustChangePassword: true` and are prompted to choose a private personal password upon first sign-in.*
+
+### Step 4: Run the Applications
+
+**Terminal 1 (Backend API):**
+```bash
+cd backend
+npm run dev
+# Server starts on http://localhost:5000
+# Health check: http://localhost:5000/api/health
+```
+
+**Terminal 2 (Frontend Client):**
+```bash
+cd frontend
+npm run dev
+# Vite dev server starts on http://localhost:5173
+```
 
 ---
 
-## 5. How to Update Content & Data
+## 3. Role-Based Access Control (RBAC) System
 
-All institute content is organized in local data files so changes can be made without modifying React UI markup:
+The application strictly enforces role permissions on the backend through middleware, preventing unauthorized access even if a client modifies client-side state.
 
-1. **Academy Details & Contact:**
-   - File: [`src/config/academyConfig.ts`](file:///home/chandan/Desktop/tutionWebsite/src/config/academyConfig.ts)
-   - Update phone number, WhatsApp number, email, address, or social links.
+| Role | Accessible Frontend Routes | Key Backend Permissions |
+| :--- | :--- | :--- |
+| **`student`** | `/student/*` | Stream recorded lectures for assigned batch, view profile, change password |
+| **`teacher`** | `/teacher/*` | Manage students & lectures in **assigned batches only**, bulk Excel student import, change own password |
+| **`superadmin`** | `/superadmin/*`, `/teacher/*` | Master control: batch CRUD, teacher provisioning, password reset, cross-batch student & lecture management, full audit trail |
 
-2. **Faculty Profiles (7 Mentors):**
-   - File: [`src/data/facultyData.ts`](file:///home/chandan/Desktop/tutionWebsite/src/data/facultyData.ts)
-   - Replace placeholder names (`Faculty Member 01`, etc.) and placeholder portraits with verified teacher photographs and bios.
-
-3. **Student Results & Success Stories:**
-   - File: [`src/data/resultsData.ts`](file:///home/chandan/Desktop/tutionWebsite/src/data/resultsData.ts)
-   - Contains a 6-year history (2021 to 2026). Replace `studentNamePlaceholder` and `storyPlaceholder` with verified student records, marks, and rank allotments.
-
-4. **Class Schedules & Batches:**
-   - File: [`src/data/timetableData.ts`](file:///home/chandan/Desktop/tutionWebsite/src/data/timetableData.ts)
-   - Adjust morning, evening, and weekend timings to match active batches.
-
-5. **Student & Parent Testimonials:**
-   - File: [`src/data/testimonialsData.ts`](file:///home/chandan/Desktop/tutionWebsite/src/data/testimonialsData.ts)
-   - Add verified reviews and student quotes.
+### Batch Scoping for Teachers
+Teacher operations enforce the `requireAssignedBatch` middleware. If a teacher attempts to view, add, or edit students/lectures in a batch not in their `assignedBatches` array, the server returns a `403 Forbidden` error.
 
 ---
 
-## 6. Integrations & Engineering Accuracy
+## 4. Bulk Excel Student Import
 
-### A. Callback Request Form (`CallbackSection.tsx`)
-- Validates 10-digit Indian mobile numbers starting with 6, 7, 8, or 9 (cleans out `+91`, spaces, and hyphens).
-- Prevents accidental immediate duplicate submissions.
-- **Honest Demo State:** Clearly informs the user that this static frontend validated the request locally. It provides direct 1-click WhatsApp and email shortcuts to contact the Berhampur desk immediately.
+Both Teachers (scoped to an assigned batch) and Superadmins (for any batch) can import students in bulk using Microsoft Excel (`.xlsx` files):
 
-### B. Google Meet & Consultation Booking (`ConsultationSection.tsx` & `googleCalendar.ts`)
-- Prevents selection of past dates.
-- Validates standard email addresses.
-- **Demo Mode (Default):** Static frontends cannot securely create private Google Calendar events or generate authorized Google Meet links without exposing API secrets. In demo mode, the website generates an official Google Calendar URL that opens the visitor's Google Calendar with the title, description, and slot pre-filled, inviting the academy's official email (`kumardalaichandan803@gmail.com`).
-- **Production Architecture Guide:** A dedicated modal is embedded in the UI detailing the 5 steps required for the academy to connect a Google Cloud Service Account or serverless webhook for automated Meet generation.
+1. **Download Template**: Click **"Bulk Excel Import"** -> **"Download .xlsx"** on the Students management page.
+2. **Canonical Columns**:
+   - `name`: Student full name (required, min 2 characters)
+   - `phone`: 10-digit Indian mobile number (required, uniqueness enforced)
+   - `dateOfBirth`: Date of birth (required, format: `YYYY-MM-DD` or text)
+   - `email`: Student email (optional, validated)
+   - `address`: Residential address (optional)
+   - `college`: School / Junior College name (optional)
+   - `fatherName`: Father's name (optional)
+   - `motherName`: Mother's name (optional)
+3. **Validation & Account Generation**:
+   - Skips empty rows.
+   - Detects in-sheet duplicates by phone and email.
+   - Generates deterministic unique usernames (e.g. `aa26_aarav`).
+   - Generates cryptographically secure 8-digit temporary passwords.
+   - Displays a comprehensive import summary with newly created credentials ready to copy or export.
 
 ---
 
-## 7. Official Social Links & Location
+## 5. Security & Audit Logging
 
-- **Physical Center:** Bijipur, Big Street, Brahmapur, Odisha 760001, India
-- **Provisional Email:** `kumardalaichandan803@gmail.com`
-- **Facebook:** [Antariksh Academy Berhampur Profile](https://www.facebook.com/people/Antariksh-Academy-Berhampur/100066790522018/)
-- **Instagram:** [@antarikshacademy1](https://www.instagram.com/antarikshacademy1/)
+- **Cryptographic Passwords**: Passwords stored exclusively as `bcrypt` hashes with 12 salt rounds (`ENV.BCRYPT_SALT_ROUNDS`). Plaintext passwords or hashes are never returned by any endpoint or log.
+- **Audit Trails**: Sensitive actions (`STUDENT_CREATE`, `STUDENT_UPDATE`, `STUDENT_DEACTIVATE`, `TEACHER_CREATE`, `TEACHER_UPDATE`, `PASSWORD_RESET`, `PASSWORD_CHANGE`, `EXCEL_IMPORT`, `BATCH_CREATE`, `BATCH_UPDATE`, `LECTURE_CREATE`, `LECTURE_DELETE`) are saved to the `AuditLog` collection with actor username, role, action, target, timestamp, and sanitized metadata.
+- **Generic Auth Errors**: Login endpoint returns generic `"Invalid username or password."` to eliminate username enumeration attacks.
+- **Brute Force Protection**: Express rate limiters protect `/api/auth/login` (10 attempts per 15 min per IP) and `/api/auth/change-password`.
+- **Security Headers & CORS**: `helmet` configured with strict cross-origin policies; CORS restricted to `FRONTEND_URL`.
+
+---
+
+## 6. Environment Variables Reference
+
+### Frontend (`frontend/.env`)
+> **Security Rule:** All `VITE_*` variables are embedded into public client JavaScript. Never place MongoDB credentials or secrets here.
+
+| Variable Name | Default Value | Description |
+| :--- | :--- | :--- |
+| `VITE_API_BASE_URL` | `http://localhost:5000/api` | Base URL of the backend API |
+| `VITE_CALCOM_BOOKING_URL` | `https://cal.com/antarikshacademy/30min?overlayCalendar=true` | Official Cal.com consultation booking URL |
+| `VITE_FORMSUBMIT_EMAIL` | `kumardalaichandan803@gmail.com` | Destination inbox for parent callback forms |
+
+### Backend (`backend/.env`)
+> **Security Rule:** Keep `backend/.env` strictly out of Git version control.
+
+| Variable Name | Required | Default Value | Description |
+| :--- | :---: | :--- | :--- |
+| `NODE_ENV` | Yes | `development` | Set to `production` in production deployment |
+| `PORT` | No | `5000` | Port on which Express server listens |
+| `MONGODB_URI` | Yes | `mongodb://127.0.0.1:27017/antariksh_academy` | Local MongoDB or MongoDB Atlas URI |
+| `JWT_SECRET` | Yes | *Random 64-char string* | Secret key for signing JWT access tokens (>= 32 chars) |
+| `JWT_EXPIRES_IN` | No | `1d` | Expiry duration for session tokens |
+| `FRONTEND_URL` | Yes | `http://localhost:5173` | Allowed CORS origin for frontend client |
+| `BCRYPT_SALT_ROUNDS` | No | `12` | Cost factor for password hashing |
+
+---
+
+## 7. Automated Tests & Quality Checks
+
+Run the verification commands:
+
+```bash
+# Frontend Build Verification (TypeScript & Vite 8 bundle)
+cd frontend
+npm run build
+
+# Frontend Linter
+npm run lint
+
+# Backend Unit Tests (YouTube parser, token roles, Excel generator & parser)
+cd ../backend
+npm test
+```
+
