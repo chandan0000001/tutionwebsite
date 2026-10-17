@@ -283,8 +283,8 @@ export async function createTeacher(req, res, next) {
       role: 'teacher',
       assignedBatches: safeBatches,
       isActive: true,
-      mustChangePassword: true,
-      temporaryPasswordExpiresAt,
+      mustChangePassword: false,
+      temporaryPasswordExpiresAt: null,
     });
 
     await recordAuditLog({

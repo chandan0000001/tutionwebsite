@@ -3,6 +3,10 @@
 .env.*
 !.env.example
 !.env.*.example
+*credentials*
+*CREDENTIALS*
+ALL_CREDENTIALS.md
+CREDENTIALS.md
 
 # Dependencies
 node_modules/
