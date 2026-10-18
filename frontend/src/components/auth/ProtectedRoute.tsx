@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate, useLocation, Link } from 'react-router-dom';
 import { ShieldAlert, ArrowRight, LogOut } from 'lucide-react';
 import { useAuth, type UserRole } from '../../context/AuthContext';
+import { LoadingSpinner } from '../common/LoadingSpinner';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -16,6 +17,16 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { isAuthenticated, isLoading, user, role, logout } = useAuth();
   const location = useLocation();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await logout();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -79,11 +90,21 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             </Link>
 
             <button
-              onClick={logout}
-              className="w-full py-2 px-4 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1E293B] transition-colors flex items-center justify-center gap-2"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="w-full py-2 px-4 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#1E293B] transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <LogOut className="w-4 h-4" />
-              <span>Log Out & Sign In with Different Account</span>
+              {isLoggingOut ? (
+                <>
+                  <LoadingSpinner size="xs" color="current" />
+                  <span>Logging out...</span>
+                </>
+              ) : (
+                <>
+                  <LogOut className="w-4 h-4" />
+                  <span>Log Out & Sign In with Different Account</span>
+                </>
+              )}
             </button>
           </div>
         </div>

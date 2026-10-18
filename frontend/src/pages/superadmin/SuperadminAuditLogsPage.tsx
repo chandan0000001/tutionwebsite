@@ -7,11 +7,12 @@ import {
   ChevronRight,
   Eye,
   X,
-  AlertCircle,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../config/apiConfig';
 import { SuperadminHeader } from '../../components/superadmin/SuperadminHeader';
+import { TableSkeleton } from '../../components/common/SkeletonLoader';
+import { NotificationBanner } from '../../components/common/NotificationBanner';
 
 interface AuditLogItem {
   _id: string;
@@ -170,12 +171,12 @@ export const SuperadminAuditLogsPage: React.FC = () => {
 
         {/* Error */}
         {errorMessage && (
-          <div className="mb-4 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-3 text-rose-700 dark:text-rose-300 text-xs">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-bold">Error</p>
-              <p>{errorMessage}</p>
-            </div>
+          <div className="mb-4">
+            <NotificationBanner
+              type="error"
+              message={errorMessage}
+              onClose={() => setErrorMessage(null)}
+            />
           </div>
         )}
 
@@ -196,12 +197,7 @@ export const SuperadminAuditLogsPage: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                 {isLoading ? (
-                  <tr>
-                    <td colSpan={7} className="py-12 text-center text-slate-500">
-                      <div className="w-7 h-7 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
-                      <p className="mt-2 text-xs">Loading audit entries...</p>
-                    </td>
-                  </tr>
+                  <TableSkeleton rows={5} cols={7} />
                 ) : logs.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-slate-500">

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { KeyRound, Eye, EyeOff, AlertCircle, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { KeyRound, Eye, EyeOff, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { SuperadminHeader } from '../../components/superadmin/SuperadminHeader';
+import { LoadingButton } from '../../components/common/LoadingButton';
+import { NotificationBanner } from '../../components/common/NotificationBanner';
 
 export const SuperadminChangePasswordPage: React.FC = () => {
   const { user, changePassword } = useAuth();
@@ -33,17 +35,21 @@ export const SuperadminChangePasswordPage: React.FC = () => {
       return;
     }
 
-    setIsSubmitting(true);
-    const result = await changePassword(currentPassword, newPassword, confirmPassword);
-    setIsSubmitting(false);
-
-    if (result.success) {
-      setSuccessMessage(result.message || 'Password updated successfully!');
-      setTimeout(() => {
-        navigate('/superadmin/dashboard', { replace: true });
-      }, 1500);
-    } else {
-      setErrorMessage(result.message || 'Failed to update password.');
+    try {
+      setIsSubmitting(true);
+      const result = await changePassword(currentPassword, newPassword, confirmPassword);
+      if (result.success) {
+        setSuccessMessage(result.message || 'Password updated successfully!');
+        setTimeout(() => {
+          navigate('/superadmin/dashboard', { replace: true });
+        }, 1500);
+      } else {
+        setErrorMessage(result.message || 'Failed to update password.');
+      }
+    } catch {
+      setErrorMessage('A network error occurred while updating your password. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -78,22 +84,22 @@ export const SuperadminChangePasswordPage: React.FC = () => {
           )}
 
           {errorMessage && (
-            <div className="mb-5 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-xs text-rose-700 dark:text-rose-300">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-bold">Error</p>
-                <p className="mt-0.5">{errorMessage}</p>
-              </div>
+            <div className="mb-5">
+              <NotificationBanner
+                type="error"
+                message={errorMessage}
+                onClose={() => setErrorMessage(null)}
+              />
             </div>
           )}
 
           {successMessage && (
-            <div className="mb-5 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex items-start gap-2.5 text-xs text-emerald-700 dark:text-emerald-300">
-              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-bold">Success</p>
-                <p className="mt-0.5">{successMessage}</p>
-              </div>
+            <div className="mb-5">
+              <NotificationBanner
+                type="success"
+                message={successMessage}
+                onClose={() => setSuccessMessage(null)}
+              />
             </div>
           )}
 
@@ -106,14 +112,16 @@ export const SuperadminChangePasswordPage: React.FC = () => {
                 <input
                   type={showCurrent ? 'text' : 'password'}
                   required
+                  disabled={isSubmitting}
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="w-full pl-3 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#151F33] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                  className="w-full pl-3 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#151F33] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                 />
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={() => setShowCurrent(!showCurrent)}
-                  className="absolute right-3 top-2.5 text-slate-400"
+                  className="absolute right-3 top-2.5 text-slate-400 disabled:opacity-50"
                 >
                   {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -128,14 +136,16 @@ export const SuperadminChangePasswordPage: React.FC = () => {
                 <input
                   type={showNew ? 'text' : 'password'}
                   required
+                  disabled={isSubmitting}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full pl-3 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#151F33] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                  className="w-full pl-3 pr-10 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#151F33] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                 />
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={() => setShowNew(!showNew)}
-                  className="absolute right-3 top-2.5 text-slate-400"
+                  className="absolute right-3 top-2.5 text-slate-400 disabled:opacity-50"
                 >
                   {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -149,26 +159,21 @@ export const SuperadminChangePasswordPage: React.FC = () => {
               <input
                 type="password"
                 required
+                disabled={isSubmitting}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#151F33] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                className="w-full py-2.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#151F33] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
               />
             </div>
 
-            <button
+            <LoadingButton
               type="submit"
-              disabled={isSubmitting}
-              className="w-full mt-4 py-3 px-4 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] hover:brightness-105 active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+              isLoading={isSubmitting}
+              loadingText="Updating Password..."
+              className="w-full mt-4 py-3 px-4 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] hover:brightness-105 active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
-              {isSubmitting ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-[#0B1120] border-t-transparent rounded-full animate-spin"></div>
-                  <span>Updating Password...</span>
-                </>
-              ) : (
-                <span>Update Password</span>
-              )}
-            </button>
+              Update Password
+            </LoadingButton>
           </form>
         </div>
       </div>

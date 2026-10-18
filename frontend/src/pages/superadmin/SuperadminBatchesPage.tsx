@@ -4,13 +4,15 @@ import {
   PlusCircle,
   Edit,
   GraduationCap,
-  CheckCircle2,
   AlertCircle,
   X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../config/apiConfig';
 import { SuperadminHeader } from '../../components/superadmin/SuperadminHeader';
+import { LoadingButton } from '../../components/common/LoadingButton';
+import { CardSkeleton } from '../../components/common/SkeletonLoader';
+import { NotificationBanner } from '../../components/common/NotificationBanner';
 
 interface BatchItem {
   _id: string;
@@ -32,9 +34,12 @@ export const SuperadminBatchesPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Modals
+  // Modals & Action States
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isCreatingBatch, setIsCreatingBatch] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isUpdatingBatch, setIsUpdatingBatch] = useState(false);
+  const [modalError, setModalError] = useState<string | null>(null);
   const [editingBatch, setEditingBatch] = useState<BatchItem | null>(null);
 
   // Form
@@ -75,8 +80,23 @@ export const SuperadminBatchesPage: React.FC = () => {
   // Create Batch
   const handleCreateBatch = async (e: React.FormEvent) => {
     e.preventDefault();
+    setModalError(null);
     setErrorMessage(null);
 
+    if (!formData.name.trim()) {
+      setModalError('Batch name is required.');
+      return;
+    }
+    if (!formData.code.trim()) {
+      setModalError('Batch code is required.');
+      return;
+    }
+    if (!formData.academicYear.trim()) {
+      setModalError('Academic year is required.');
+      return;
+    }
+
+    setIsCreatingBatch(true);
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/batches`, {
         method: 'POST',
@@ -100,15 +120,18 @@ export const SuperadminBatchesPage: React.FC = () => {
         setSuccessMessage('Batch created successfully.');
         loadBatches();
       } else {
-        setErrorMessage(data.message || 'Failed to create batch.');
+        setModalError(data.message || 'Failed to create batch.');
       }
     } catch {
-      setErrorMessage('Network error while saving batch.');
+      setModalError('Network error while saving batch. Please try again.');
+    } finally {
+      setIsCreatingBatch(false);
     }
   };
 
   // Open Edit
   const openEdit = (b: BatchItem) => {
+    setModalError(null);
     setEditingBatch(b);
     setFormData({
       name: b.name,
@@ -124,8 +147,19 @@ export const SuperadminBatchesPage: React.FC = () => {
   const handleUpdateBatch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingBatch) return;
+    setModalError(null);
     setErrorMessage(null);
 
+    if (!formData.name.trim()) {
+      setModalError('Batch name is required.');
+      return;
+    }
+    if (!formData.academicYear.trim()) {
+      setModalError('Academic year is required.');
+      return;
+    }
+
+    setIsUpdatingBatch(true);
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/batches/${editingBatch._id}`, {
         method: 'PUT',
@@ -143,10 +177,12 @@ export const SuperadminBatchesPage: React.FC = () => {
         setSuccessMessage('Batch updated successfully.');
         loadBatches();
       } else {
-        setErrorMessage(data.message || 'Failed to update batch.');
+        setModalError(data.message || 'Failed to update batch.');
       }
     } catch {
-      setErrorMessage('Network error while updating batch.');
+      setModalError('Network error while updating batch. Please try again.');
+    } finally {
+      setIsUpdatingBatch(false);
     }
   };
 
@@ -186,37 +222,29 @@ export const SuperadminBatchesPage: React.FC = () => {
 
         {/* Alerts */}
         {errorMessage && (
-          <div className="mb-4 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-3 text-rose-700 dark:text-rose-300 text-xs">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-bold">Error</p>
-              <p>{errorMessage}</p>
-            </div>
-            <button onClick={() => setErrorMessage(null)} className="text-slate-400">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <NotificationBanner
+            type="error"
+            title="Error"
+            message={errorMessage}
+            onDismiss={() => setErrorMessage(null)}
+            className="mb-4"
+          />
         )}
 
         {successMessage && (
-          <div className="mb-4 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex items-start gap-3 text-emerald-700 dark:text-emerald-300 text-xs">
-            <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-bold">Success</p>
-              <p>{successMessage}</p>
-            </div>
-            <button onClick={() => setSuccessMessage(null)} className="text-slate-400">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <NotificationBanner
+            type="success"
+            title="Success"
+            message={successMessage}
+            onDismiss={() => setSuccessMessage(null)}
+            autoDismissMs={5000}
+            className="mb-4"
+          />
         )}
 
         {/* Batches Grid */}
         {isLoading ? (
-          <div className="p-12 text-center bg-white dark:bg-[#0E1524] rounded-2xl border border-slate-200 dark:border-slate-800">
-            <div className="w-8 h-8 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
-            <p className="mt-3 text-xs text-slate-500">Loading batches...</p>
-          </div>
+          <CardSkeleton count={3} />
         ) : batches.length === 0 ? (
           <div className="p-10 text-center bg-white dark:bg-[#0E1524] rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
             <Layers className="w-10 h-10 mx-auto text-slate-400 mb-3" />
@@ -326,11 +354,20 @@ export const SuperadminBatchesPage: React.FC = () => {
                 </h3>
                 <button
                   onClick={() => setShowCreateModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  disabled={isCreatingBatch}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg disabled:opacity-40"
+                  aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {modalError && (
+                <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+                  <span>{modalError}</span>
+                </div>
+              )}
 
               <form onSubmit={handleCreateBatch} className="space-y-4">
                 <div>
@@ -340,10 +377,11 @@ export const SuperadminBatchesPage: React.FC = () => {
                   <input
                     type="text"
                     required
+                    disabled={isCreatingBatch}
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g. Class 12 Science (2026 Batch)"
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                   />
                 </div>
 
@@ -355,12 +393,13 @@ export const SuperadminBatchesPage: React.FC = () => {
                     <input
                       type="text"
                       required
+                      disabled={isCreatingBatch}
                       value={formData.code}
                       onChange={(e) =>
                         setFormData({ ...formData, code: e.target.value.toUpperCase() })
                       }
                       placeholder="e.g. BATCH-2026"
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs font-mono uppercase focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs font-mono uppercase focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
 
@@ -371,10 +410,11 @@ export const SuperadminBatchesPage: React.FC = () => {
                     <input
                       type="text"
                       required
+                      disabled={isCreatingBatch}
                       value={formData.academicYear}
                       onChange={(e) => setFormData({ ...formData, academicYear: e.target.value })}
                       placeholder="e.g. 2026"
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -385,10 +425,11 @@ export const SuperadminBatchesPage: React.FC = () => {
                   </label>
                   <textarea
                     rows={2}
+                    disabled={isCreatingBatch}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="+2 CHSE Science, JEE Main & NEET-UG foundation batch"
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                   />
                 </div>
 
@@ -396,16 +437,19 @@ export const SuperadminBatchesPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400"
+                    disabled={isCreatingBatch}
+                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 disabled:opacity-40"
                   >
                     Cancel
                   </button>
-                  <button
+                  <LoadingButton
                     type="submit"
+                    isLoading={isCreatingBatch}
+                    loadingText="Creating Batch..."
                     className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm hover:brightness-105"
                   >
                     Create Batch
-                  </button>
+                  </LoadingButton>
                 </div>
               </form>
             </div>
@@ -425,11 +469,20 @@ export const SuperadminBatchesPage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setShowEditModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  disabled={isUpdatingBatch}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg disabled:opacity-40"
+                  aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {modalError && (
+                <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+                  <span>{modalError}</span>
+                </div>
+              )}
 
               <form onSubmit={handleUpdateBatch} className="space-y-4">
                 <div>
@@ -439,9 +492,10 @@ export const SuperadminBatchesPage: React.FC = () => {
                   <input
                     type="text"
                     required
+                    disabled={isUpdatingBatch}
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                   />
                 </div>
 
@@ -452,9 +506,10 @@ export const SuperadminBatchesPage: React.FC = () => {
                   <input
                     type="text"
                     required
+                    disabled={isUpdatingBatch}
                     value={formData.academicYear}
                     onChange={(e) => setFormData({ ...formData, academicYear: e.target.value })}
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                   />
                 </div>
 
@@ -464,9 +519,10 @@ export const SuperadminBatchesPage: React.FC = () => {
                   </label>
                   <textarea
                     rows={2}
+                    disabled={isUpdatingBatch}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                   />
                 </div>
 
@@ -474,9 +530,10 @@ export const SuperadminBatchesPage: React.FC = () => {
                   <input
                     type="checkbox"
                     id="isActive"
+                    disabled={isUpdatingBatch}
                     checked={formData.isActive}
                     onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="w-4 h-4 rounded text-[#C6922E]"
+                    className="w-4 h-4 rounded text-[#C6922E] disabled:opacity-50"
                   />
                   <label htmlFor="isActive" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                     Cohort Active & Operational
@@ -487,16 +544,19 @@ export const SuperadminBatchesPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowEditModal(false)}
-                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400"
+                    disabled={isUpdatingBatch}
+                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 disabled:opacity-40"
                   >
                     Cancel
                   </button>
-                  <button
+                  <LoadingButton
                     type="submit"
+                    isLoading={isUpdatingBatch}
+                    loadingText="Saving Changes..."
                     className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm hover:brightness-105"
                   >
                     Save Changes
-                  </button>
+                  </LoadingButton>
                 </div>
               </form>
             </div>

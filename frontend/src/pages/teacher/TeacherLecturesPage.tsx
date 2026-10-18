@@ -8,14 +8,16 @@ import {
   Eye,
   EyeOff,
   X,
-  AlertCircle,
-  CheckCircle2,
   ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../config/apiConfig';
 import { TeacherHeader } from '../../components/teacher/TeacherHeader';
 import { ConfirmModal, type ConfirmVariant } from '../../components/common/ConfirmModal';
+import { LoadingButton } from '../../components/common/LoadingButton';
+import { TableSkeleton, CardSkeleton } from '../../components/common/SkeletonLoader';
+import { NotificationBanner } from '../../components/common/NotificationBanner';
+import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 
 interface LectureItem {
   _id: string;
@@ -52,8 +54,12 @@ export const TeacherLecturesPage: React.FC = () => {
   const [selectedBatch, setSelectedBatch] = useState<string>('');
   const [lectures, setLectures] = useState<LectureItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddingLecture, setIsAddingLecture] = useState(false);
+  const [isUpdatingLecture, setIsUpdatingLecture] = useState(false);
+  const [togglingLectureId, setTogglingLectureId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
 
   // Custom confirmation modal state
   const [confirmState, setConfirmState] = useState<{
@@ -150,6 +156,22 @@ export const TeacherLecturesPage: React.FC = () => {
     e.preventDefault();
     setErrorMessage(null);
 
+    if (!formData.topicName.trim()) {
+      setModalError('Please enter a lecture title/topic.');
+      return;
+    }
+    if (!formData.slNo || Number(formData.slNo) < 1) {
+      setModalError('Please enter a valid serial number (1 or greater).');
+      return;
+    }
+    if (!formData.ytVideoLink.trim() || !getYouTubeId(formData.ytVideoLink)) {
+      setModalError('Please provide a valid YouTube video URL.');
+      return;
+    }
+
+    setIsAddingLecture(true);
+    setModalError(null);
+
     try {
       const res = await fetch(
         `${API_BASE_URL}/teacher/batches/${selectedBatch}/lectures`,
@@ -180,15 +202,18 @@ export const TeacherLecturesPage: React.FC = () => {
         setSuccessMessage('Lecture added and published successfully.');
         fetchLectures();
       } else {
-        setErrorMessage(data.message || 'Failed to create lecture.');
+        setModalError(data.message || 'Failed to create lecture.');
       }
     } catch {
-      setErrorMessage('Network error while saving lecture.');
+      setModalError('Network error while saving lecture.');
+    } finally {
+      setIsAddingLecture(false);
     }
   };
 
   // Open Edit
   const openEdit = (lec: LectureItem) => {
+    setModalError(null);
     setEditingLecture(lec);
     setFormData({
       slNo: String(lec.slNo),
@@ -206,6 +231,22 @@ export const TeacherLecturesPage: React.FC = () => {
     e.preventDefault();
     if (!editingLecture) return;
     setErrorMessage(null);
+
+    if (!formData.topicName.trim()) {
+      setModalError('Please enter a lecture title/topic.');
+      return;
+    }
+    if (!formData.slNo || Number(formData.slNo) < 1) {
+      setModalError('Please enter a valid serial number (1 or greater).');
+      return;
+    }
+    if (!formData.ytVideoLink.trim() || !getYouTubeId(formData.ytVideoLink)) {
+      setModalError('Please provide a valid YouTube video URL.');
+      return;
+    }
+
+    setIsUpdatingLecture(true);
+    setModalError(null);
 
     try {
       const res = await fetch(
@@ -230,15 +271,18 @@ export const TeacherLecturesPage: React.FC = () => {
         setSuccessMessage('Lecture details updated successfully.');
         fetchLectures();
       } else {
-        setErrorMessage(data.message || 'Failed to update lecture.');
+        setModalError(data.message || 'Failed to update lecture.');
       }
     } catch {
-      setErrorMessage('Network error while updating lecture.');
+      setModalError('Network error while updating lecture.');
+    } finally {
+      setIsUpdatingLecture(false);
     }
   };
 
   // Toggle Publish
   const handleTogglePublish = async (lec: LectureItem) => {
+    setTogglingLectureId(lec._id);
     try {
       const res = await fetch(
         `${API_BASE_URL}/teacher/batches/${selectedBatch}/lectures/${lec._id}`,
@@ -265,11 +309,14 @@ export const TeacherLecturesPage: React.FC = () => {
       }
     } catch {
       setErrorMessage('Network error while toggling publish state.');
+    } finally {
+      setTogglingLectureId(null);
     }
   };
 
   // Delete Lecture
   const executeDeleteLecture = async (lec: LectureItem) => {
+    setConfirmState((prev) => ({ ...prev, isLoading: true }));
     try {
       const res = await fetch(
         `${API_BASE_URL}/teacher/batches/${selectedBatch}/lectures/${lec._id}`,
@@ -289,7 +336,7 @@ export const TeacherLecturesPage: React.FC = () => {
     } catch {
       setErrorMessage('Network error while removing lecture.');
     } finally {
-      setConfirmState((prev) => ({ ...prev, isOpen: false }));
+      setConfirmState((prev) => ({ ...prev, isLoading: false, isOpen: false }));
     }
   };
 
@@ -372,28 +419,22 @@ export const TeacherLecturesPage: React.FC = () => {
 
         {/* Alerts */}
         {errorMessage && (
-          <div className="mb-4 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-3 text-rose-700 dark:text-rose-300 text-xs">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-bold">Error</p>
-              <p>{errorMessage}</p>
-            </div>
-            <button onClick={() => setErrorMessage(null)} className="text-slate-400 hover:text-slate-600">
-              <X className="w-4 h-4" />
-            </button>
+          <div className="mb-4">
+            <NotificationBanner
+              type="error"
+              message={errorMessage}
+              onClose={() => setErrorMessage(null)}
+            />
           </div>
         )}
 
         {successMessage && (
-          <div className="mb-4 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex items-start gap-3 text-emerald-700 dark:text-emerald-300 text-xs">
-            <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-bold">Success</p>
-              <p>{successMessage}</p>
-            </div>
-            <button onClick={() => setSuccessMessage(null)} className="text-slate-400 hover:text-slate-600">
-              <X className="w-4 h-4" />
-            </button>
+          <div className="mb-4">
+            <NotificationBanner
+              type="success"
+              message={successMessage}
+              onClose={() => setSuccessMessage(null)}
+            />
           </div>
         )}
 
@@ -427,12 +468,7 @@ export const TeacherLecturesPage: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                 {isLoading ? (
-                  <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-500">
-                      <div className="w-7 h-7 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
-                      <p className="mt-2 text-xs">Loading lectures...</p>
-                    </td>
-                  </tr>
+                  <TableSkeleton rows={5} cols={6} />
                 ) : lectures.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center text-slate-500">
@@ -481,14 +517,22 @@ export const TeacherLecturesPage: React.FC = () => {
                       <td className="py-3 px-4">
                         <button
                           onClick={() => handleTogglePublish(lec)}
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors cursor-pointer ${
+                          disabled={togglingLectureId === lec._id}
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors ${
+                            togglingLectureId === lec._id ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'
+                          } ${
                             lec.isPublished
                               ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-rose-50 hover:text-rose-600'
                               : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-emerald-50 hover:text-emerald-600'
                           }`}
                           title="Click to toggle published status"
                         >
-                          {lec.isPublished ? (
+                          {togglingLectureId === lec._id ? (
+                            <>
+                              <LoadingSpinner size="xs" color="current" />
+                              <span>Updating...</span>
+                            </>
+                          ) : lec.isPublished ? (
                             <>
                               <Eye className="w-3 h-3" />
                               <span>Published</span>
@@ -529,9 +573,8 @@ export const TeacherLecturesPage: React.FC = () => {
           {/* Dedicated Mobile Cards View */}
           <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800/80">
             {isLoading ? (
-              <div className="py-12 text-center text-slate-500">
-                <div className="w-7 h-7 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
-                <p className="mt-2 text-xs">Loading lectures...</p>
+              <div className="p-4">
+                <CardSkeleton count={3} />
               </div>
             ) : lectures.length === 0 ? (
               <div className="py-12 text-center text-slate-500">
@@ -553,12 +596,18 @@ export const TeacherLecturesPage: React.FC = () => {
                     </div>
                     <button
                       onClick={() => handleTogglePublish(lec)}
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shrink-0 ${
+                      disabled={togglingLectureId === lec._id}
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shrink-0 transition-opacity ${
+                        togglingLectureId === lec._id ? 'opacity-70 cursor-not-allowed' : ''
+                      } ${
                         lec.isPublished
                           ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
                           : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                       }`}
                     >
+                      {togglingLectureId === lec._id && (
+                        <LoadingSpinner size="xs" color="current" />
+                      )}
                       {lec.isPublished ? 'Published' : 'Unpublished'}
                     </button>
                   </div>
@@ -620,12 +669,23 @@ export const TeacherLecturesPage: React.FC = () => {
                   <p className="text-xs text-slate-500">Provide topic details and YouTube link.</p>
                 </div>
                 <button
-                  onClick={() => setShowAddModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  onClick={() => !isAddingLecture && setShowAddModal(false)}
+                  disabled={isAddingLecture}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg disabled:opacity-50"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {modalError && (
+                <div className="mb-4">
+                  <NotificationBanner
+                    type="error"
+                    message={modalError}
+                    onClose={() => setModalError(null)}
+                  />
+                </div>
+              )}
 
               <form onSubmit={handleCreateLecture} className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
@@ -636,10 +696,11 @@ export const TeacherLecturesPage: React.FC = () => {
                     <input
                       type="number"
                       required
+                      disabled={isAddingLecture}
                       min={1}
                       value={formData.slNo}
                       onChange={(e) => setFormData({ ...formData, slNo: e.target.value })}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                     />
                   </div>
 
@@ -648,9 +709,10 @@ export const TeacherLecturesPage: React.FC = () => {
                       Subject *
                     </label>
                     <select
+                      disabled={isAddingLecture}
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs font-bold focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs font-bold focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                     >
                       <option value="Physics">Physics</option>
                       <option value="Chemistry">Chemistry</option>
@@ -669,10 +731,11 @@ export const TeacherLecturesPage: React.FC = () => {
                   <input
                     type="text"
                     required
+                    disabled={isAddingLecture}
                     value={formData.topicName}
                     onChange={(e) => setFormData({ ...formData, topicName: e.target.value })}
                     placeholder="e.g. Electromagnetic Induction - Lenz's Law & Self Inductance"
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                   />
                 </div>
 
@@ -683,10 +746,11 @@ export const TeacherLecturesPage: React.FC = () => {
                   <input
                     type="url"
                     required
+                    disabled={isAddingLecture}
                     value={formData.ytVideoLink}
                     onChange={(e) => setFormData({ ...formData, ytVideoLink: e.target.value })}
                     placeholder="https://www.youtube.com/watch?v=VIDEO_ID"
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                   />
                   {previewYtId && (
                     <div className="mt-2 p-2 rounded-xl bg-slate-100 dark:bg-[#1E293B] flex items-center gap-3">
@@ -708,10 +772,11 @@ export const TeacherLecturesPage: React.FC = () => {
                   </label>
                   <textarea
                     rows={2}
+                    disabled={isAddingLecture}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Brief description of chapters or problems covered..."
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                   />
                 </div>
 
@@ -719,9 +784,10 @@ export const TeacherLecturesPage: React.FC = () => {
                   <input
                     type="checkbox"
                     id="isPublished"
+                    disabled={isAddingLecture}
                     checked={formData.isPublished}
                     onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
-                    className="w-4 h-4 rounded text-[#C6922E] focus:ring-[#C6922E]"
+                    className="w-4 h-4 rounded text-[#C6922E] focus:ring-[#C6922E] disabled:opacity-60"
                   />
                   <label
                     htmlFor="isPublished"
@@ -735,16 +801,19 @@ export const TeacherLecturesPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300"
+                    disabled={isAddingLecture}
+                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
                   >
                     Cancel
                   </button>
-                  <button
+                  <LoadingButton
                     type="submit"
+                    isLoading={isAddingLecture}
+                    loadingText="Saving Lecture..."
                     className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm hover:brightness-105"
                   >
                     Add Lecture
-                  </button>
+                  </LoadingButton>
                 </div>
               </form>
             </div>
@@ -763,12 +832,23 @@ export const TeacherLecturesPage: React.FC = () => {
                   <p className="text-xs text-slate-500">{editingLecture.topicName}</p>
                 </div>
                 <button
-                  onClick={() => setShowEditModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  onClick={() => !isUpdatingLecture && setShowEditModal(false)}
+                  disabled={isUpdatingLecture}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg disabled:opacity-50"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {modalError && (
+                <div className="mb-4">
+                  <NotificationBanner
+                    type="error"
+                    message={modalError}
+                    onClose={() => setModalError(null)}
+                  />
+                </div>
+              )}
 
               <form onSubmit={handleUpdateLecture} className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
@@ -779,10 +859,11 @@ export const TeacherLecturesPage: React.FC = () => {
                     <input
                       type="number"
                       required
+                      disabled={isUpdatingLecture}
                       min={1}
                       value={formData.slNo}
                       onChange={(e) => setFormData({ ...formData, slNo: e.target.value })}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                     />
                   </div>
 
@@ -791,9 +872,10 @@ export const TeacherLecturesPage: React.FC = () => {
                       Subject *
                     </label>
                     <select
+                      disabled={isUpdatingLecture}
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs font-bold focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs font-bold focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                     >
                       <option value="Physics">Physics</option>
                       <option value="Chemistry">Chemistry</option>
@@ -812,9 +894,10 @@ export const TeacherLecturesPage: React.FC = () => {
                   <input
                     type="text"
                     required
+                    disabled={isUpdatingLecture}
                     value={formData.topicName}
                     onChange={(e) => setFormData({ ...formData, topicName: e.target.value })}
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                   />
                 </div>
 
@@ -825,9 +908,10 @@ export const TeacherLecturesPage: React.FC = () => {
                   <input
                     type="url"
                     required
+                    disabled={isUpdatingLecture}
                     value={formData.ytVideoLink}
                     onChange={(e) => setFormData({ ...formData, ytVideoLink: e.target.value })}
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                   />
                 </div>
 
@@ -837,9 +921,10 @@ export const TeacherLecturesPage: React.FC = () => {
                   </label>
                   <textarea
                     rows={2}
+                    disabled={isUpdatingLecture}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                   />
                 </div>
 
@@ -847,9 +932,10 @@ export const TeacherLecturesPage: React.FC = () => {
                   <input
                     type="checkbox"
                     id="editIsPublished"
+                    disabled={isUpdatingLecture}
                     checked={formData.isPublished}
                     onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
-                    className="w-4 h-4 rounded text-[#C6922E] focus:ring-[#C6922E]"
+                    className="w-4 h-4 rounded text-[#C6922E] focus:ring-[#C6922E] disabled:opacity-60"
                   />
                   <label
                     htmlFor="editIsPublished"
@@ -863,16 +949,19 @@ export const TeacherLecturesPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowEditModal(false)}
-                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300"
+                    disabled={isUpdatingLecture}
+                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50"
                   >
                     Cancel
                   </button>
-                  <button
+                  <LoadingButton
                     type="submit"
+                    isLoading={isUpdatingLecture}
+                    loadingText="Saving Changes..."
                     className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm hover:brightness-105"
                   >
                     Save Changes
-                  </button>
+                  </LoadingButton>
                 </div>
               </form>
             </div>

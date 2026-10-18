@@ -12,7 +12,6 @@ import {
   UserX,
   Trash2,
   AlertCircle,
-  CheckCircle2,
   X,
   ChevronLeft,
   ChevronRight,
@@ -22,6 +21,9 @@ import { API_BASE_URL } from '../../config/apiConfig';
 import { TeacherHeader } from '../../components/teacher/TeacherHeader';
 import { CredentialsModal } from '../../components/common/CredentialsModal';
 import { ConfirmModal, type ConfirmVariant } from '../../components/common/ConfirmModal';
+import { LoadingButton } from '../../components/common/LoadingButton';
+import { LoadingSpinner } from '../../components/common/LoadingSpinner';
+import { NotificationBanner } from '../../components/common/NotificationBanner';
 
 interface StudentItem {
   _id: string;
@@ -65,6 +67,13 @@ export const TeacherStudentsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
+
+  // Operation specific loading states
+  const [isEnrolling, setIsEnrolling] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [importStage, setImportStage] = useState<'idle' | 'uploading' | 'validating' | 'importing'>('idle');
+  const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
 
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -208,7 +217,29 @@ export const TeacherStudentsPage: React.FC = () => {
   // Create Student
   const handleCreateStudent = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isEnrolling) return;
+    setModalError(null);
     setErrorMessage(null);
+
+    // 1. Client-side Form Validation
+    const trimmedName = formData.name.trim();
+    const cleanPhone = formData.phone.trim();
+    const dob = formData.dateOfBirth.trim();
+
+    if (!trimmedName || trimmedName.length < 2) {
+      setModalError('Please enter a valid student full name (at least 2 characters).');
+      return;
+    }
+    if (!cleanPhone || cleanPhone.length !== 10 || !/^\d{10}$/.test(cleanPhone)) {
+      setModalError('Please enter a valid 10-digit mobile phone number.');
+      return;
+    }
+    if (!dob) {
+      setModalError('Please enter date of birth (e.g. DD/MM/YYYY).');
+      return;
+    }
+
+    setIsEnrolling(true);
 
     try {
       const res = await fetch(`${API_BASE_URL}/teacher/batches/${selectedBatch}/students`, {
@@ -217,7 +248,12 @@ export const TeacherStudentsPage: React.FC = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          name: trimmedName,
+          phone: cleanPhone,
+          dateOfBirth: dob,
+        }),
       });
 
       const data = await res.json();
@@ -237,10 +273,12 @@ export const TeacherStudentsPage: React.FC = () => {
         setSuccessMessage('Student enrolled successfully!');
         fetchStudents();
       } else {
-        setErrorMessage(data.message || 'Failed to enroll student.');
+        setModalError(data.message || 'Failed to enroll student. Please check the entered details.');
       }
     } catch {
-      setErrorMessage('Network error during student registration.');
+      setModalError('Network error during student registration. Please try again.');
+    } finally {
+      setIsEnrolling(false);
     }
   };
 
@@ -326,8 +364,22 @@ export const TeacherStudentsPage: React.FC = () => {
   // Update Student
   const handleUpdateStudent = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingStudent) return;
+    if (!editingStudent || isUpdating) return;
+    setModalError(null);
     setErrorMessage(null);
+
+    const trimmedName = formData.name.trim();
+    const cleanPhone = formData.phone.trim();
+    if (!trimmedName) {
+      setModalError('Student full name cannot be blank.');
+      return;
+    }
+    if (!cleanPhone || cleanPhone.length !== 10) {
+      setModalError('Valid 10-digit phone number is required.');
+      return;
+    }
+
+    setIsUpdating(true);
 
     try {
       const res = await fetch(
@@ -338,7 +390,11 @@ export const TeacherStudentsPage: React.FC = () => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            ...formData,
+            name: trimmedName,
+            phone: cleanPhone,
+          }),
         }
       );
 
@@ -349,15 +405,18 @@ export const TeacherStudentsPage: React.FC = () => {
         setSuccessMessage('Student record updated successfully.');
         fetchStudents();
       } else {
-        setErrorMessage(data.message || 'Failed to update student.');
+        setModalError(data.message || 'Failed to update student.');
       }
     } catch {
-      setErrorMessage('Network error while saving changes.');
+      setModalError('Network error while saving changes.');
+    } finally {
+      setIsUpdating(false);
     }
   };
 
   // Execute Toggle Status
   const executeToggleStatus = async (s: StudentItem) => {
+    setConfirmState((prev) => ({ ...prev, isLoading: true }));
     try {
       const res = await fetch(
         `${API_BASE_URL}/teacher/batches/${selectedBatch}/students/${s._id}/status`,
@@ -376,7 +435,7 @@ export const TeacherStudentsPage: React.FC = () => {
     } catch {
       setErrorMessage('Network error while toggling status.');
     } finally {
-      setConfirmState((prev) => ({ ...prev, isOpen: false }));
+      setConfirmState((prev) => ({ ...prev, isOpen: false, isLoading: false }));
     }
   };
 
@@ -398,6 +457,7 @@ export const TeacherStudentsPage: React.FC = () => {
 
   // Delete Student Directly from Database
   const executeDeleteStudent = async (s: StudentItem) => {
+    setConfirmState((prev) => ({ ...prev, isLoading: true }));
     try {
       const res = await fetch(
         `${API_BASE_URL}/teacher/batches/${selectedBatch}/students/${s._id}`,
@@ -416,7 +476,7 @@ export const TeacherStudentsPage: React.FC = () => {
     } catch {
       setErrorMessage('Network error while deleting student.');
     } finally {
-      setConfirmState((prev) => ({ ...prev, isOpen: false }));
+      setConfirmState((prev) => ({ ...prev, isOpen: false, isLoading: false }));
     }
   };
 
@@ -437,6 +497,8 @@ export const TeacherStudentsPage: React.FC = () => {
 
   // Download Excel Template
   const handleDownloadTemplate = async () => {
+    if (isDownloadingTemplate) return;
+    setIsDownloadingTemplate(true);
     try {
       const res = await fetch(
         `${API_BASE_URL}/teacher/batches/${selectedBatch}/students/template`,
@@ -455,15 +517,18 @@ export const TeacherStudentsPage: React.FC = () => {
       a.remove();
     } catch {
       setErrorMessage('Failed to download Excel template.');
+    } finally {
+      setIsDownloadingTemplate(false);
     }
   };
 
   // Bulk Excel Import
   const handleBulkImport = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!importFile) return;
+    if (!importFile || isImporting) return;
 
     setIsImporting(true);
+    setImportStage('uploading');
     setErrorMessage(null);
     setImportResult(null);
 
@@ -471,6 +536,7 @@ export const TeacherStudentsPage: React.FC = () => {
     bodyData.append('file', importFile);
 
     try {
+      setImportStage('validating');
       const res = await fetch(
         `${API_BASE_URL}/teacher/batches/${selectedBatch}/students/import`,
         {
@@ -480,9 +546,13 @@ export const TeacherStudentsPage: React.FC = () => {
         }
       );
 
+      setImportStage('importing');
       const data = await res.json();
       if (res.ok && data.success) {
         setImportResult(data);
+        const imported = data.summary?.importedCount || 0;
+        const invalid = data.summary?.invalidCount || 0;
+        setSuccessMessage(`Excel import completed: ${imported} enrolled successfully${invalid > 0 ? `, ${invalid} invalid rows` : ''}.`);
         fetchStudents();
       } else {
         setErrorMessage(data.message || 'Excel import failed.');
@@ -491,6 +561,7 @@ export const TeacherStudentsPage: React.FC = () => {
       setErrorMessage('Network error while uploading Excel file.');
     } finally {
       setIsImporting(false);
+      setImportStage('idle');
     }
   };
 
@@ -575,32 +646,26 @@ export const TeacherStudentsPage: React.FC = () => {
 
         {/* Alerts */}
         {errorMessage && (
-          <div className="mb-4 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-3 text-rose-700 dark:text-rose-300 text-xs">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-bold">Error</p>
-              <p>{errorMessage}</p>
-            </div>
-            <button onClick={() => setErrorMessage(null)} className="text-slate-400 hover:text-slate-600">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <NotificationBanner
+            type="error"
+            title="Action Error"
+            message={errorMessage}
+            onDismiss={() => setErrorMessage(null)}
+            className="mb-4"
+          />
         )}
 
         {successMessage && (
-          <div className="mb-4 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex items-start gap-3 text-emerald-700 dark:text-emerald-300 text-xs">
-            <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-bold">Success</p>
-              <p>{successMessage}</p>
-            </div>
-            <button onClick={() => setSuccessMessage(null)} className="text-slate-400 hover:text-slate-600">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <NotificationBanner
+            type="success"
+            title="Success"
+            message={successMessage}
+            onDismiss={() => setSuccessMessage(null)}
+            autoDismissMs={5000}
+            className="mb-4"
+          />
         )}
 
-        {/* Students Table */}
         {/* Students Table & Mobile Cards */}
         <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
           {/* Desktop Table View */}
@@ -619,12 +684,20 @@ export const TeacherStudentsPage: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                 {isLoading ? (
-                  <tr>
-                    <td colSpan={7} className="py-12 text-center text-slate-500">
-                      <div className="w-7 h-7 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
-                      <p className="mt-2 text-xs">Loading students...</p>
-                    </td>
-                  </tr>
+                  Array.from({ length: 6 }).map((_, rIdx) => (
+                    <tr key={rIdx} className="animate-pulse">
+                      <td className="py-3.5 px-4">
+                        <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-32 mb-1" />
+                        <div className="h-3 bg-slate-100 dark:bg-slate-800/60 rounded w-20" />
+                      </td>
+                      <td className="py-3.5 px-4"><div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-24" /></td>
+                      <td className="py-3.5 px-4"><div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-28" /></td>
+                      <td className="py-3.5 px-4"><div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-20" /></td>
+                      <td className="py-3.5 px-4"><div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-28" /></td>
+                      <td className="py-3.5 px-4"><div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-full w-16" /></td>
+                      <td className="py-3.5 px-4 text-right"><div className="h-6 bg-slate-200 dark:bg-slate-800 rounded-lg w-20 ml-auto" /></td>
+                    </tr>
+                  ))
                 ) : students.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-slate-500">
@@ -719,9 +792,17 @@ export const TeacherStudentsPage: React.FC = () => {
           {/* Dedicated Mobile Cards View */}
           <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800/80">
             {isLoading ? (
-              <div className="py-12 text-center text-slate-500">
-                <div className="w-7 h-7 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
-                <p className="mt-2 text-xs">Loading students...</p>
+              <div className="p-4 space-y-3">
+                {Array.from({ length: 3 }).map((_, idx) => (
+                  <div key={idx} className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 animate-pulse space-y-3">
+                    <div className="flex justify-between items-center">
+                      <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-28" />
+                      <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded-full w-14" />
+                    </div>
+                    <div className="h-3 bg-slate-100 dark:bg-slate-800/60 rounded w-20" />
+                    <div className="h-10 bg-slate-100 dark:bg-slate-800/40 rounded-xl" />
+                  </div>
+                ))}
               </div>
             ) : students.length === 0 ? (
               <div className="py-12 text-center text-slate-500">
@@ -868,11 +949,27 @@ export const TeacherStudentsPage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setShowAddModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  disabled={isEnrolling}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg disabled:opacity-40"
+                  aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {modalError && (
+                <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+                  <span>{modalError}</span>
+                </div>
+              )}
+
+              {isEnrolling && (
+                <div className="mb-4 p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 text-xs text-amber-800 dark:text-amber-300 font-medium flex items-center gap-2 animate-pulse">
+                  <LoadingSpinner size="xs" color="gold" />
+                  <span>Enrolling student into {selectedBatch} & generating portal credentials...</span>
+                </div>
+              )}
 
               <form onSubmit={handleCreateStudent} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -998,16 +1095,20 @@ export const TeacherStudentsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-300"
+                    disabled={isEnrolling}
+                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-300 disabled:opacity-50 cursor-pointer"
                   >
                     Cancel
                   </button>
-                  <button
+                  <LoadingButton
                     type="submit"
-                    className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm hover:brightness-105"
+                    isLoading={isEnrolling}
+                    loadingText="Enrolling..."
+                    variant="gold"
+                    className="w-full sm:w-auto"
                   >
                     Save & Generate Credentials
-                  </button>
+                  </LoadingButton>
                 </div>
               </form>
             </div>
@@ -1027,18 +1128,34 @@ export const TeacherStudentsPage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setShowEditModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  disabled={isUpdating || batchActionLoading}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg disabled:opacity-40"
+                  aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
+              {modalError && (
+                <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+                  <span>{modalError}</span>
+                </div>
+              )}
+
               <form onSubmit={handleUpdateStudent} className="space-y-4">
                 {/* Multi-Batch Management Section */}
                 <div className="bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2.5">
-                  <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300">
-                    Enrolled Batches ({editingStudentBatches.length})
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300">
+                      Enrolled Batches ({editingStudentBatches.length})
+                    </label>
+                    {batchActionLoading && (
+                      <span className="text-[11px] text-amber-600 dark:text-amber-400 flex items-center gap-1 font-medium animate-pulse">
+                        <LoadingSpinner size="xs" color="gold" /> Updating assignments...
+                      </span>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {editingStudentBatches.map((bc) => {
                       const isTeacherAuthorized = batches.some((b) => b.code === bc);
@@ -1051,9 +1168,9 @@ export const TeacherStudentsPage: React.FC = () => {
                           {editingStudentBatches.length > 1 && isTeacherAuthorized && (
                             <button
                               type="button"
-                              disabled={batchActionLoading}
+                              disabled={batchActionLoading || isUpdating}
                               onClick={() => handleRemoveBatch(bc)}
-                              className="text-rose-500 hover:text-rose-700 ml-1 font-black cursor-pointer leading-none text-sm"
+                              className="text-rose-500 hover:text-rose-700 ml-1 font-black cursor-pointer leading-none text-sm disabled:opacity-40"
                               title={`Remove student from ${bc}`}
                             >
                               &times;
@@ -1068,9 +1185,9 @@ export const TeacherStudentsPage: React.FC = () => {
                   <div className="flex items-center gap-2 pt-1">
                     <select
                       value={newBatchToAssign}
-                      disabled={batchActionLoading}
+                      disabled={batchActionLoading || isUpdating}
                       onChange={(e) => setNewBatchToAssign(e.target.value)}
-                      className="flex-1 py-1.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1E293B] text-xs font-semibold focus:ring-2 focus:ring-[#C6922E]"
+                      className="flex-1 py-1.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1E293B] text-xs font-semibold focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     >
                       <option value="">Enroll in another of your authorized batches...</option>
                       {batches
@@ -1081,14 +1198,18 @@ export const TeacherStudentsPage: React.FC = () => {
                           </option>
                         ))}
                     </select>
-                    <button
+                    <LoadingButton
                       type="button"
-                      disabled={!newBatchToAssign || batchActionLoading}
+                      size="sm"
+                      isLoading={batchActionLoading}
+                      loadingText="Adding..."
+                      variant="primary"
+                      disabled={!newBatchToAssign || batchActionLoading || isUpdating}
                       onClick={() => handleAssignBatch(newBatchToAssign)}
-                      className="px-3 py-1.5 rounded-xl bg-[#17365D] hover:bg-[#102A43] text-white text-xs font-bold shrink-0 disabled:opacity-50 transition-colors cursor-pointer"
+                      className="shrink-0"
                     >
                       + Add Batch
-                    </button>
+                    </LoadingButton>
                   </div>
                 </div>
 
@@ -1209,16 +1330,19 @@ export const TeacherStudentsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowEditModal(false)}
-                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-300"
+                    disabled={isUpdating}
+                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-300 disabled:opacity-50"
                   >
                     Cancel
                   </button>
-                  <button
+                  <LoadingButton
                     type="submit"
+                    isLoading={isUpdating}
+                    loadingText="Saving Changes..."
                     className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm hover:brightness-105"
                   >
                     Save Changes
-                  </button>
+                  </LoadingButton>
                 </div>
               </form>
             </div>
@@ -1240,7 +1364,9 @@ export const TeacherStudentsPage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setShowImportModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  disabled={isImporting}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg disabled:opacity-40"
+                  aria-label="Close import modal"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1260,10 +1386,20 @@ export const TeacherStudentsPage: React.FC = () => {
                     </div>
                     <button
                       onClick={handleDownloadTemplate}
-                      className="py-2 px-3.5 rounded-xl bg-[#C6922E] hover:bg-[#A3741E] text-white text-xs font-bold shrink-0 flex items-center gap-1.5 shadow-xs"
+                      disabled={isDownloadingTemplate}
+                      className="py-2 px-3.5 rounded-xl bg-[#C6922E] hover:bg-[#A3741E] text-white text-xs font-bold shrink-0 flex items-center gap-1.5 shadow-xs disabled:opacity-50"
                     >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>Download .xlsx</span>
+                      {isDownloadingTemplate ? (
+                        <>
+                          <LoadingSpinner size="xs" color="white" />
+                          <span>Downloading...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Download className="w-3.5 h-3.5" />
+                          <span>Download .xlsx</span>
+                        </>
+                      )}
                     </button>
                   </div>
 
@@ -1277,36 +1413,64 @@ export const TeacherStudentsPage: React.FC = () => {
                         type="file"
                         accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                         required
+                        disabled={isImporting}
                         onChange={(e) => setImportFile(e.target.files?.[0] || null)}
-                        className="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#17365D] file:text-white hover:file:bg-[#1E4273] cursor-pointer"
+                        className="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#17365D] file:text-white hover:file:bg-[#1E4273] cursor-pointer disabled:opacity-50"
                       />
                     </div>
+
+                    {/* Stage feedback if importing */}
+                    {isImporting && (
+                      <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 text-xs animate-in fade-in">
+                        <div className="flex items-center gap-2 font-bold text-amber-900 dark:text-amber-200 mb-2">
+                          <LoadingSpinner size="xs" color="gold" />
+                          <span>
+                            {importStage === 'uploading' && 'Step 1/3: Uploading Excel spreadsheet...'}
+                            {importStage === 'validating' && 'Step 2/3: Validating format, phone & email records...'}
+                            {importStage === 'importing' && 'Step 3/3: Enrolling students and generating credentials...'}
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                          <div
+                            className="bg-[#C6922E] h-full transition-all duration-500 rounded-full"
+                            style={{
+                              width:
+                                importStage === 'uploading'
+                                  ? '35%'
+                                  : importStage === 'validating'
+                                  ? '70%'
+                                  : '95%',
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
                       <button
                         type="button"
                         onClick={() => setShowImportModal(false)}
-                        className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400"
+                        disabled={isImporting}
+                        className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 disabled:opacity-40"
                       >
                         Cancel
                       </button>
-                      <button
+                      <LoadingButton
                         type="submit"
+                        isLoading={isImporting}
+                        loadingText={
+                          importStage === 'uploading'
+                            ? 'Uploading...'
+                            : importStage === 'validating'
+                            ? 'Validating...'
+                            : 'Enrolling...'
+                        }
+                        icon={<Upload className="w-4 h-4" />}
                         disabled={!importFile || isImporting}
-                        className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                        className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm"
                       >
-                        {isImporting ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-[#0B1120] border-t-transparent rounded-full animate-spin"></div>
-                            <span>Parsing & Enrolling...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Upload className="w-4 h-4" />
-                            <span>Upload & Import</span>
-                          </>
-                        )}
-                      </button>
+                        Upload & Import
+                      </LoadingButton>
                     </div>
                   </form>
                 </div>

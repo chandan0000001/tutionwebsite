@@ -16,6 +16,17 @@ import { useAuth } from '../../context/AuthContext';
 
 export const SuperadminHeader: React.FC = () => {
   const { user, logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   const navItems = [
     { label: 'Overview', path: '/superadmin/dashboard', icon: LayoutDashboard },
@@ -61,11 +72,21 @@ export const SuperadminHeader: React.FC = () => {
               Public Website
             </Link>
             <button
-              onClick={logout}
-              className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/30 border border-rose-200 dark:border-rose-500/30 transition-colors flex items-center gap-1.5 cursor-pointer"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/30 border border-rose-200 dark:border-rose-500/30 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Log Out</span>
+              {isLoggingOut ? (
+                <>
+                  <div className="w-3.5 h-3.5 border-2 border-rose-600 border-t-transparent rounded-full animate-spin" />
+                  <span>Logging out...</span>
+                </>
+              ) : (
+                <>
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Log Out</span>
+                </>
+              )}
             </button>
           </div>
         </div>

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { KeyRound, ShieldAlert, CheckCircle2, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { KeyRound, ShieldAlert, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { LoadingButton } from '../../components/common/LoadingButton';
+import { NotificationBanner } from '../../components/common/NotificationBanner';
 
 export const ChangePasswordPage: React.FC = () => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -41,17 +43,21 @@ export const ChangePasswordPage: React.FC = () => {
       return;
     }
 
-    setIsSubmitting(true);
-    const result = await changePassword(currentPassword, newPassword, confirmPassword);
-    setIsSubmitting(false);
-
-    if (result.success) {
-      setSuccessMessage('Password changed successfully! Redirecting to your dashboard...');
-      setTimeout(() => {
-        navigate('/student/dashboard', { replace: true });
-      }, 1500);
-    } else {
-      setErrorMessage(result.message || 'Failed to update password. Please check your current password.');
+    try {
+      setIsSubmitting(true);
+      const result = await changePassword(currentPassword, newPassword, confirmPassword);
+      if (result.success) {
+        setSuccessMessage('Password changed successfully! Redirecting to your dashboard...');
+        setTimeout(() => {
+          navigate('/student/dashboard', { replace: true });
+        }, 1500);
+      } else {
+        setErrorMessage(result.message || 'Failed to update password. Please check your current password.');
+      }
+    } catch {
+      setErrorMessage('A network error occurred while updating your password. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -88,16 +94,22 @@ export const ChangePasswordPage: React.FC = () => {
           </div>
 
           {errorMessage && (
-            <div className="mb-4 p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs sm:text-sm">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
-              <span>{errorMessage}</span>
+            <div className="mb-4">
+              <NotificationBanner
+                type="error"
+                message={errorMessage}
+                onClose={() => setErrorMessage(null)}
+              />
             </div>
           )}
 
           {successMessage && (
-            <div className="mb-4 p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex items-start gap-2.5 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm">
-              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600 dark:text-emerald-400" />
-              <span>{successMessage}</span>
+            <div className="mb-4">
+              <NotificationBanner
+                type="success"
+                message={successMessage}
+                onClose={() => setSuccessMessage(null)}
+              />
             </div>
           )}
 
@@ -114,10 +126,11 @@ export const ChangePasswordPage: React.FC = () => {
                 id="currentPassword"
                 type={showPassword ? 'text' : 'password'}
                 required
+                disabled={isSubmitting}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="Enter the initial temporary password"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] disabled:opacity-60"
               />
             </div>
 
@@ -134,15 +147,17 @@ export const ChangePasswordPage: React.FC = () => {
                   id="newPassword"
                   type={showPassword ? 'text' : 'password'}
                   required
+                  disabled={isSubmitting}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Create new password"
-                  className="w-full px-3.5 pr-11 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B]"
+                  className="w-full px-3.5 pr-11 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] disabled:opacity-60"
                 />
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 disabled:opacity-50"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -161,10 +176,11 @@ export const ChangePasswordPage: React.FC = () => {
                 id="confirmPassword"
                 type={showPassword ? 'text' : 'password'}
                 required
+                disabled={isSubmitting}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter new password"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] disabled:opacity-60"
               />
             </div>
 
@@ -188,13 +204,14 @@ export const ChangePasswordPage: React.FC = () => {
             </div>
 
             {/* Submit */}
-            <button
+            <LoadingButton
               type="submit"
-              disabled={isSubmitting}
-              className="w-full mt-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] hover:brightness-105 active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+              isLoading={isSubmitting}
+              loadingText="Saving New Password..."
+              className="w-full mt-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] hover:brightness-105 active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
-              {isSubmitting ? 'Saving New Password...' : 'Save Password & Enter Portal'}
-            </button>
+              Save Password & Enter Portal
+            </LoadingButton>
           </form>
         </div>
       </div>

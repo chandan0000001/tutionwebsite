@@ -7,7 +7,6 @@ import {
   UserCheck,
   UserX,
   AlertCircle,
-  CheckCircle2,
   X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -15,6 +14,9 @@ import { API_BASE_URL } from '../../config/apiConfig';
 import { SuperadminHeader } from '../../components/superadmin/SuperadminHeader';
 import { CredentialsModal } from '../../components/common/CredentialsModal';
 import { ConfirmModal, type ConfirmVariant } from '../../components/common/ConfirmModal';
+import { LoadingButton } from '../../components/common/LoadingButton';
+import { TableSkeleton, CardSkeleton } from '../../components/common/SkeletonLoader';
+import { NotificationBanner } from '../../components/common/NotificationBanner';
 
 interface TeacherItem {
   _id: string;
@@ -59,9 +61,12 @@ export const SuperadminTeachersPage: React.FC = () => {
     onConfirm: () => {},
   });
 
-  // Modals
+  // Modals & Action States
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isCreatingTeacher, setIsCreatingTeacher] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isUpdatingTeacher, setIsUpdatingTeacher] = useState(false);
+  const [modalError, setModalError] = useState<string | null>(null);
   const [editingTeacher, setEditingTeacher] = useState<TeacherItem | null>(null);
 
   // One-time credentials popup
@@ -119,8 +124,19 @@ export const SuperadminTeachersPage: React.FC = () => {
   // Create Teacher
   const handleCreateTeacher = async (e: React.FormEvent) => {
     e.preventDefault();
+    setModalError(null);
     setErrorMessage(null);
 
+    if (!formData.name.trim()) {
+      setModalError('Teacher name is required.');
+      return;
+    }
+    if (!formData.phone.trim() || formData.phone.length !== 10) {
+      setModalError('Mobile phone must be exactly 10 digits.');
+      return;
+    }
+
+    setIsCreatingTeacher(true);
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/teachers`, {
         method: 'POST',
@@ -150,15 +166,18 @@ export const SuperadminTeachersPage: React.FC = () => {
         });
         loadData();
       } else {
-        setErrorMessage(data.message || 'Failed to create teacher profile.');
+        setModalError(data.message || 'Failed to create teacher profile.');
       }
     } catch {
-      setErrorMessage('Network error while registering teacher.');
+      setModalError('Network error while registering teacher. Please try again.');
+    } finally {
+      setIsCreatingTeacher(false);
     }
   };
 
   // Open Edit
   const openEdit = (t: TeacherItem) => {
+    setModalError(null);
     setEditingTeacher(t);
     setFormData({
       name: t.name,
@@ -175,8 +194,19 @@ export const SuperadminTeachersPage: React.FC = () => {
   const handleUpdateTeacher = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingTeacher) return;
+    setModalError(null);
     setErrorMessage(null);
 
+    if (!formData.name.trim()) {
+      setModalError('Teacher name is required.');
+      return;
+    }
+    if (!formData.phone.trim() || formData.phone.length !== 10) {
+      setModalError('Mobile phone must be exactly 10 digits.');
+      return;
+    }
+
+    setIsUpdatingTeacher(true);
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/teachers/${editingTeacher._id}`, {
         method: 'PUT',
@@ -194,15 +224,18 @@ export const SuperadminTeachersPage: React.FC = () => {
         setSuccessMessage('Teacher profile updated successfully.');
         loadData();
       } else {
-        setErrorMessage(data.message || 'Failed to update teacher.');
+        setModalError(data.message || 'Failed to update teacher.');
       }
     } catch {
-      setErrorMessage('Network error while updating teacher.');
+      setModalError('Network error while updating teacher. Please try again.');
+    } finally {
+      setIsUpdatingTeacher(false);
     }
   };
 
   // Execute Toggle Active Status
   const executeToggleStatus = async (t: TeacherItem) => {
+    setConfirmState((prev) => ({ ...prev, isLoading: true }));
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/teachers/${t._id}/status`, {
         method: 'PATCH',
@@ -218,7 +251,7 @@ export const SuperadminTeachersPage: React.FC = () => {
     } catch {
       setErrorMessage('Network error while updating status.');
     } finally {
-      setConfirmState((prev) => ({ ...prev, isOpen: false }));
+      setConfirmState((prev) => ({ ...prev, isOpen: false, isLoading: false }));
     }
   };
 
@@ -240,6 +273,7 @@ export const SuperadminTeachersPage: React.FC = () => {
 
   // Execute Reset Password
   const executeResetPassword = async (t: TeacherItem) => {
+    setConfirmState((prev) => ({ ...prev, isLoading: true }));
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/teachers/${t._id}/reset-password`, {
         method: 'POST',
@@ -259,7 +293,7 @@ export const SuperadminTeachersPage: React.FC = () => {
     } catch {
       setErrorMessage('Network error while resetting password.');
     } finally {
-      setConfirmState((prev) => ({ ...prev, isOpen: false }));
+      setConfirmState((prev) => ({ ...prev, isOpen: false, isLoading: false }));
     }
   };
 
@@ -327,29 +361,24 @@ export const SuperadminTeachersPage: React.FC = () => {
 
         {/* Alerts */}
         {errorMessage && (
-          <div className="mb-4 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-3 text-rose-700 dark:text-rose-300 text-xs">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-bold">Error</p>
-              <p>{errorMessage}</p>
-            </div>
-            <button onClick={() => setErrorMessage(null)} className="text-slate-400">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <NotificationBanner
+            type="error"
+            title="Error"
+            message={errorMessage}
+            onDismiss={() => setErrorMessage(null)}
+            className="mb-4"
+          />
         )}
 
         {successMessage && (
-          <div className="mb-4 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex items-start gap-3 text-emerald-700 dark:text-emerald-300 text-xs">
-            <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-bold">Success</p>
-              <p>{successMessage}</p>
-            </div>
-            <button onClick={() => setSuccessMessage(null)} className="text-slate-400">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <NotificationBanner
+            type="success"
+            title="Success"
+            message={successMessage}
+            onDismiss={() => setSuccessMessage(null)}
+            autoDismissMs={5000}
+            className="mb-4"
+          />
         )}
 
         {/* Credentials Modal */}
@@ -396,12 +425,7 @@ export const SuperadminTeachersPage: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                 {isLoading ? (
-                  <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-500">
-                      <div className="w-7 h-7 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
-                      <p className="mt-2 text-xs">Loading faculty profiles...</p>
-                    </td>
-                  </tr>
+                  <TableSkeleton rows={5} cols={6} />
                 ) : teachers.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-12 text-center text-slate-500">
@@ -509,9 +533,8 @@ export const SuperadminTeachersPage: React.FC = () => {
           {/* Dedicated Mobile Cards View */}
           <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800/80">
             {isLoading ? (
-              <div className="py-12 text-center text-slate-500">
-                <div className="w-7 h-7 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
-                <p className="mt-2 text-xs">Loading faculty profiles...</p>
+              <div className="p-4">
+                <CardSkeleton count={3} />
               </div>
             ) : teachers.length === 0 ? (
               <div className="py-12 text-center text-slate-500">
@@ -619,11 +642,20 @@ export const SuperadminTeachersPage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setShowCreateModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  disabled={isCreatingTeacher}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg disabled:opacity-40"
+                  aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {modalError && (
+                <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+                  <span>{modalError}</span>
+                </div>
+              )}
 
               <form onSubmit={handleCreateTeacher} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -634,10 +666,11 @@ export const SuperadminTeachersPage: React.FC = () => {
                     <input
                       type="text"
                       required
+                      disabled={isCreatingTeacher}
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="e.g. Subrat Tripathy"
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
 
@@ -649,6 +682,7 @@ export const SuperadminTeachersPage: React.FC = () => {
                       type="tel"
                       required
                       maxLength={14}
+                      disabled={isCreatingTeacher}
                       value={formData.phone}
                       onChange={(e) => {
                         let val = e.target.value.replace(/[^0-9]/g, '');
@@ -658,7 +692,7 @@ export const SuperadminTeachersPage: React.FC = () => {
                         setFormData({ ...formData, phone: val });
                       }}
                       placeholder="e.g. 8763654489 (or +91...)"
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -670,12 +704,13 @@ export const SuperadminTeachersPage: React.FC = () => {
                     </label>
                     <input
                       type="text"
+                      disabled={isCreatingTeacher}
                       value={formData.qualification}
                       onChange={(e) =>
                         setFormData({ ...formData, qualification: e.target.value })
                       }
                       placeholder="M.Sc. Physics (Utkal University)"
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
 
@@ -685,10 +720,11 @@ export const SuperadminTeachersPage: React.FC = () => {
                     </label>
                     <input
                       type="text"
+                      disabled={isCreatingTeacher}
                       value={formData.dateOfBirth}
                       onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                       placeholder="12/04/1988"
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -699,10 +735,11 @@ export const SuperadminTeachersPage: React.FC = () => {
                   </label>
                   <input
                     type="email"
+                    disabled={isCreatingTeacher}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="teacher@antariksh.edu.in"
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                   />
                 </div>
 
@@ -721,6 +758,7 @@ export const SuperadminTeachersPage: React.FC = () => {
                         >
                           <input
                             type="checkbox"
+                            disabled={isCreatingTeacher}
                             checked={checked}
                             onChange={() => toggleBatchCheckbox(b.code)}
                             className="w-4 h-4 rounded text-[#C6922E]"
@@ -738,16 +776,19 @@ export const SuperadminTeachersPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400"
+                    disabled={isCreatingTeacher}
+                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 disabled:opacity-40"
                   >
                     Cancel
                   </button>
-                  <button
+                  <LoadingButton
                     type="submit"
+                    isLoading={isCreatingTeacher}
+                    loadingText="Creating Teacher..."
                     className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm hover:brightness-105"
                   >
                     Create Teacher
-                  </button>
+                  </LoadingButton>
                 </div>
               </form>
             </div>
@@ -767,11 +808,20 @@ export const SuperadminTeachersPage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setShowEditModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  disabled={isUpdatingTeacher}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg disabled:opacity-40"
+                  aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {modalError && (
+                <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+                  <span>{modalError}</span>
+                </div>
+              )}
 
               <form onSubmit={handleUpdateTeacher} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -782,9 +832,10 @@ export const SuperadminTeachersPage: React.FC = () => {
                     <input
                       type="text"
                       required
+                      disabled={isUpdatingTeacher}
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
 
@@ -796,6 +847,7 @@ export const SuperadminTeachersPage: React.FC = () => {
                       type="tel"
                       required
                       maxLength={14}
+                      disabled={isUpdatingTeacher}
                       value={formData.phone}
                       onChange={(e) => {
                         let val = e.target.value.replace(/[^0-9]/g, '');
@@ -804,7 +856,7 @@ export const SuperadminTeachersPage: React.FC = () => {
                         if (val.length > 10) val = val.slice(-10);
                         setFormData({ ...formData, phone: val });
                       }}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -816,11 +868,12 @@ export const SuperadminTeachersPage: React.FC = () => {
                     </label>
                     <input
                       type="text"
+                      disabled={isUpdatingTeacher}
                       value={formData.qualification}
                       onChange={(e) =>
                         setFormData({ ...formData, qualification: e.target.value })
                       }
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
 
@@ -830,9 +883,10 @@ export const SuperadminTeachersPage: React.FC = () => {
                     </label>
                     <input
                       type="text"
+                      disabled={isUpdatingTeacher}
                       value={formData.dateOfBirth}
                       onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -843,9 +897,10 @@ export const SuperadminTeachersPage: React.FC = () => {
                   </label>
                   <input
                     type="email"
+                    disabled={isUpdatingTeacher}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                   />
                 </div>
 
@@ -863,6 +918,7 @@ export const SuperadminTeachersPage: React.FC = () => {
                         >
                           <input
                             type="checkbox"
+                            disabled={isUpdatingTeacher}
                             checked={checked}
                             onChange={() => toggleBatchCheckbox(b.code)}
                             className="w-4 h-4 rounded text-[#C6922E]"
@@ -880,16 +936,19 @@ export const SuperadminTeachersPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowEditModal(false)}
-                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400"
+                    disabled={isUpdatingTeacher}
+                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 disabled:opacity-40"
                   >
                     Cancel
                   </button>
-                  <button
+                  <LoadingButton
                     type="submit"
+                    isLoading={isUpdatingTeacher}
+                    loadingText="Saving Changes..."
                     className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm hover:brightness-105"
                   >
                     Save Changes
-                  </button>
+                  </LoadingButton>
                 </div>
               </form>
             </div>

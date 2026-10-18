@@ -13,12 +13,23 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../config/apiConfig';
+import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 
 export const StudentDashboardPage: React.FC = () => {
   const { student, logout, token } = useAuth();
   const [totalLectures, setTotalLectures] = useState<number | null>(null);
   const [subjects, setSubjects] = useState<string[]>([]);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await logout();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchStats() {
@@ -104,11 +115,21 @@ export const StudentDashboardPage: React.FC = () => {
                 <span>Profile</span>
               </Link>
               <button
-                onClick={logout}
-                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-100 dark:bg-rose-600/20 dark:hover:bg-rose-600/30 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30 transition-all flex items-center gap-1.5 cursor-pointer"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-100 dark:bg-rose-600/20 dark:hover:bg-rose-600/30 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>Logout</span>
+                {isLoggingOut ? (
+                  <>
+                    <LoadingSpinner size="xs" color="current" />
+                    <span>Logging out...</span>
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Logout</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

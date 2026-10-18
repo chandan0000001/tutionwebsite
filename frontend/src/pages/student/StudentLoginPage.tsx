@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { LogIn, User, Lock, Eye, EyeOff, AlertCircle, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { LogIn, User, Lock, Eye, EyeOff, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { LoadingButton } from '../../components/common/LoadingButton';
+import { NotificationBanner } from '../../components/common/NotificationBanner';
 
 export const StudentLoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -47,12 +49,16 @@ export const StudentLoginPage: React.FC = () => {
       return;
     }
 
-    setIsSubmitting(true);
-    const result = await login(username.trim(), password);
-    setIsSubmitting(false);
-
-    if (!result.success) {
-      setErrorMessage(result.message || 'Login failed. Please verify your credentials.');
+    try {
+      setIsSubmitting(true);
+      const result = await login(username.trim(), password);
+      if (!result.success) {
+        setErrorMessage(result.message || 'Login failed. Please verify your credentials.');
+      }
+    } catch {
+      setErrorMessage('A network error occurred during authentication. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -88,15 +94,12 @@ export const StudentLoginPage: React.FC = () => {
         {/* Card */}
         <div className="bg-white dark:bg-[#111827] rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8">
           {errorMessage && (
-            <div
-              className="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-3 text-rose-700 dark:text-rose-300 text-xs sm:text-sm animate-in fade-in duration-200"
-              role="alert"
-            >
-              <AlertCircle className="w-5 h-5 shrink-0 text-rose-600 dark:text-rose-400 mt-0.5" />
-              <div>
-                <p className="font-bold">Authentication Error</p>
-                <p className="mt-0.5">{errorMessage}</p>
-              </div>
+            <div className="mb-6">
+              <NotificationBanner
+                type="error"
+                message={errorMessage}
+                onClose={() => setErrorMessage(null)}
+              />
             </div>
           )}
 
@@ -118,10 +121,11 @@ export const StudentLoginPage: React.FC = () => {
                   type="text"
                   autoComplete="username"
                   required
+                  disabled={isSubmitting}
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter your username"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] transition-colors disabled:opacity-60"
                 />
               </div>
               <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
@@ -146,15 +150,17 @@ export const StudentLoginPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
+                  disabled={isSubmitting}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full pl-10 pr-11 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] transition-colors"
+                  className="w-full pl-10 pr-11 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] transition-colors disabled:opacity-60"
                 />
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 disabled:opacity-50"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -163,23 +169,15 @@ export const StudentLoginPage: React.FC = () => {
             </div>
 
             {/* Submit CTA */}
-            <button
+            <LoadingButton
               type="submit"
-              disabled={isSubmitting}
-              className="w-full mt-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] hover:brightness-105 active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+              isLoading={isSubmitting}
+              loadingText="Authenticating..."
+              icon={<LogIn className="w-4 h-4" />}
+              className="w-full mt-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] hover:brightness-105 active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
-              {isSubmitting ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-[#0B1120] border-t-transparent rounded-full animate-spin"></div>
-                  <span>Authenticating...</span>
-                </>
-              ) : (
-                <>
-                  <LogIn className="w-4 h-4" />
-                  <span>Portal Login</span>
-                </>
-              )}
-            </button>
+              Portal Login
+            </LoadingButton>
           </form>
 
           {/* Security Notice */}

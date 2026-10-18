@@ -12,7 +12,6 @@ import {
   UserX,
   Trash2,
   AlertCircle,
-  CheckCircle2,
   X,
   ChevronLeft,
   ChevronRight,
@@ -23,6 +22,10 @@ import { API_BASE_URL } from '../../config/apiConfig';
 import { SuperadminHeader } from '../../components/superadmin/SuperadminHeader';
 import { CredentialsModal } from '../../components/common/CredentialsModal';
 import { ConfirmModal, type ConfirmVariant } from '../../components/common/ConfirmModal';
+import { LoadingSpinner } from '../../components/common/LoadingSpinner';
+import { LoadingButton } from '../../components/common/LoadingButton';
+import { TableSkeleton, CardSkeleton } from '../../components/common/SkeletonLoader';
+import { NotificationBanner } from '../../components/common/NotificationBanner';
 
 interface StudentItem {
   _id: string;
@@ -63,14 +66,19 @@ export const SuperadminStudentsPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Modals
+  // Modals & Action States
   const [showAddModal, setShowAddModal] = useState(false);
+  const [isEnrolling, setIsEnrolling] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [modalError, setModalError] = useState<string | null>(null);
   const [editingStudent, setEditingStudent] = useState<StudentItem | null>(null);
   const [editingStudentBatches, setEditingStudentBatches] = useState<string[]>([]);
   const [newBatchToAssign, setNewBatchToAssign] = useState<string>('');
   const [batchActionLoading, setBatchActionLoading] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [importStage, setImportStage] = useState<'idle' | 'uploading' | 'validating' | 'importing'>('idle');
+  const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
 
   // One-time credentials popup
   const [credentialsPopup, setCredentialsPopup] = useState<{
@@ -202,8 +210,27 @@ export const SuperadminStudentsPage: React.FC = () => {
   // Create Student
   const handleCreateStudent = async (e: React.FormEvent) => {
     e.preventDefault();
+    setModalError(null);
     setErrorMessage(null);
 
+    if (!formData.name.trim()) {
+      setModalError('Full name is required.');
+      return;
+    }
+    if (!formData.phone.trim() || formData.phone.length !== 10) {
+      setModalError('Mobile phone must be exactly 10 digits.');
+      return;
+    }
+    if (!formData.dateOfBirth.trim()) {
+      setModalError('Date of birth is required.');
+      return;
+    }
+    if (!formData.batchCode) {
+      setModalError('Please select a target batch.');
+      return;
+    }
+
+    setIsEnrolling(true);
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/students`, {
         method: 'POST',
@@ -219,17 +246,31 @@ export const SuperadminStudentsPage: React.FC = () => {
         setShowAddModal(false);
         setCredentialsPopup(data.oneTimeCredentials);
         setSuccessMessage('Student registered successfully.');
+        setFormData({
+          name: '',
+          phone: '',
+          dateOfBirth: '',
+          email: '',
+          address: '',
+          college: '',
+          fatherName: '',
+          motherName: '',
+          batchCode: batches[0]?.code || '',
+        });
         fetchStudents();
       } else {
-        setErrorMessage(data.message || 'Failed to register student.');
+        setModalError(data.message || 'Failed to register student.');
       }
     } catch {
-      setErrorMessage('Network error while enrolling student.');
+      setModalError('Network error while enrolling student. Please try again.');
+    } finally {
+      setIsEnrolling(false);
     }
   };
 
   // Open Edit
   const openEdit = (s: StudentItem) => {
+    setModalError(null);
     setEditingStudent(s);
     setEditingStudentBatches(
       (s.batchCodes && s.batchCodes.length > 0 ? s.batchCodes : [s.batchCode]).filter(Boolean)
@@ -253,6 +294,7 @@ export const SuperadminStudentsPage: React.FC = () => {
   const handleAssignBatch = async (batchCode: string) => {
     if (!editingStudent || !batchCode) return;
     setBatchActionLoading(true);
+    setModalError(null);
     setErrorMessage(null);
     try {
       const res = await fetch(`${API_BASE_URL}/students/${editingStudent._id}/batches`, {
@@ -271,10 +313,10 @@ export const SuperadminStudentsPage: React.FC = () => {
         setSuccessMessage(data.message || `Student enrolled in ${batchCode}`);
         fetchStudents();
       } else {
-        setErrorMessage(data.message || 'Failed to assign batch.');
+        setModalError(data.message || 'Failed to assign batch.');
       }
     } catch {
-      setErrorMessage('Network error while assigning batch.');
+      setModalError('Network error while assigning batch.');
     } finally {
       setBatchActionLoading(false);
     }
@@ -284,6 +326,7 @@ export const SuperadminStudentsPage: React.FC = () => {
   const handleRemoveBatch = async (batchCode: string) => {
     if (!editingStudent || !batchCode) return;
     setBatchActionLoading(true);
+    setModalError(null);
     setErrorMessage(null);
     try {
       const res = await fetch(`${API_BASE_URL}/students/${editingStudent._id}/batches/${batchCode}`, {
@@ -299,10 +342,10 @@ export const SuperadminStudentsPage: React.FC = () => {
         setSuccessMessage(data.message || `Removed from ${batchCode}`);
         fetchStudents();
       } else {
-        setErrorMessage(data.message || 'Failed to remove batch.');
+        setModalError(data.message || 'Failed to remove batch.');
       }
     } catch {
-      setErrorMessage('Network error while removing batch.');
+      setModalError('Network error while removing batch.');
     } finally {
       setBatchActionLoading(false);
     }
@@ -312,8 +355,23 @@ export const SuperadminStudentsPage: React.FC = () => {
   const handleUpdateStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingStudent) return;
+    setModalError(null);
     setErrorMessage(null);
 
+    if (!formData.name.trim()) {
+      setModalError('Full name is required.');
+      return;
+    }
+    if (!formData.phone.trim() || formData.phone.length !== 10) {
+      setModalError('Mobile phone must be exactly 10 digits.');
+      return;
+    }
+    if (!formData.dateOfBirth.trim()) {
+      setModalError('Date of birth is required.');
+      return;
+    }
+
+    setIsUpdating(true);
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/students/${editingStudent._id}`, {
         method: 'PUT',
@@ -331,15 +389,18 @@ export const SuperadminStudentsPage: React.FC = () => {
         setSuccessMessage('Student details updated successfully.');
         fetchStudents();
       } else {
-        setErrorMessage(data.message || 'Failed to update student.');
+        setModalError(data.message || 'Failed to update student.');
       }
     } catch {
-      setErrorMessage('Network error while updating student.');
+      setModalError('Network error while updating student. Please try again.');
+    } finally {
+      setIsUpdating(false);
     }
   };
 
   // Execute Toggle Status
   const executeToggleStatus = async (s: StudentItem) => {
+    setConfirmState((prev) => ({ ...prev, isLoading: true }));
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/students/${s._id}/status`, {
         method: 'PATCH',
@@ -355,7 +416,7 @@ export const SuperadminStudentsPage: React.FC = () => {
     } catch {
       setErrorMessage('Network error while toggling status.');
     } finally {
-      setConfirmState((prev) => ({ ...prev, isOpen: false }));
+      setConfirmState((prev) => ({ ...prev, isOpen: false, isLoading: false }));
     }
   };
 
@@ -377,6 +438,7 @@ export const SuperadminStudentsPage: React.FC = () => {
 
   // Reset Student Password
   const executeResetStudentPassword = async (s: StudentItem) => {
+    setConfirmState((prev) => ({ ...prev, isLoading: true }));
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/students/${s._id}/reset-password`, {
         method: 'POST',
@@ -395,7 +457,7 @@ export const SuperadminStudentsPage: React.FC = () => {
     } catch {
       setErrorMessage('Network error while resetting password.');
     } finally {
-      setConfirmState((prev) => ({ ...prev, isOpen: false }));
+      setConfirmState((prev) => ({ ...prev, isOpen: false, isLoading: false }));
     }
   };
 
@@ -416,6 +478,7 @@ export const SuperadminStudentsPage: React.FC = () => {
 
   // Delete Student Directly from Database
   const executeDeleteStudent = async (s: StudentItem) => {
+    setConfirmState((prev) => ({ ...prev, isLoading: true }));
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/students/${s._id}`, {
         method: 'DELETE',
@@ -431,7 +494,7 @@ export const SuperadminStudentsPage: React.FC = () => {
     } catch {
       setErrorMessage('Network error while deleting student.');
     } finally {
-      setConfirmState((prev) => ({ ...prev, isOpen: false }));
+      setConfirmState((prev) => ({ ...prev, isOpen: false, isLoading: false }));
     }
   };
 
@@ -452,6 +515,8 @@ export const SuperadminStudentsPage: React.FC = () => {
 
   // Download Excel Template
   const handleDownloadTemplate = async () => {
+    setIsDownloadingTemplate(true);
+    setErrorMessage(null);
     try {
       const res = await fetch(`${API_BASE_URL}/superadmin/students/template`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -467,6 +532,8 @@ export const SuperadminStudentsPage: React.FC = () => {
       a.remove();
     } catch {
       setErrorMessage('Failed to download Excel template.');
+    } finally {
+      setIsDownloadingTemplate(false);
     }
   };
 
@@ -476,6 +543,7 @@ export const SuperadminStudentsPage: React.FC = () => {
     if (!importFile || !importBatchCode) return;
 
     setIsImporting(true);
+    setImportStage('uploading');
     setErrorMessage(null);
     setImportResult(null);
 
@@ -484,11 +552,22 @@ export const SuperadminStudentsPage: React.FC = () => {
     bodyData.append('batchCode', importBatchCode);
 
     try {
+      const validationTimeout = setTimeout(() => {
+        setImportStage('validating');
+      }, 500);
+
+      const enrollTimeout = setTimeout(() => {
+        setImportStage('importing');
+      }, 1200);
+
       const res = await fetch(`${API_BASE_URL}/superadmin/students/import`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: bodyData,
       });
+
+      clearTimeout(validationTimeout);
+      clearTimeout(enrollTimeout);
 
       const data = await res.json();
       if (res.ok && data.success) {
@@ -501,6 +580,7 @@ export const SuperadminStudentsPage: React.FC = () => {
       setErrorMessage('Network error during Excel upload.');
     } finally {
       setIsImporting(false);
+      setImportStage('idle');
     }
   };
 
@@ -586,29 +666,24 @@ export const SuperadminStudentsPage: React.FC = () => {
 
         {/* Alerts */}
         {errorMessage && (
-          <div className="mb-4 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-3 text-rose-700 dark:text-rose-300 text-xs">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-bold">Error</p>
-              <p>{errorMessage}</p>
-            </div>
-            <button onClick={() => setErrorMessage(null)} className="text-slate-400">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <NotificationBanner
+            type="error"
+            title="Error"
+            message={errorMessage}
+            onDismiss={() => setErrorMessage(null)}
+            className="mb-4"
+          />
         )}
 
         {successMessage && (
-          <div className="mb-4 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex items-start gap-3 text-emerald-700 dark:text-emerald-300 text-xs">
-            <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-bold">Success</p>
-              <p>{successMessage}</p>
-            </div>
-            <button onClick={() => setSuccessMessage(null)} className="text-slate-400">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <NotificationBanner
+            type="success"
+            title="Success"
+            message={successMessage}
+            onDismiss={() => setSuccessMessage(null)}
+            autoDismissMs={5000}
+            className="mb-4"
+          />
         )}
 
         {/* Credentials Modal */}
@@ -656,12 +731,7 @@ export const SuperadminStudentsPage: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                 {isLoading ? (
-                  <tr>
-                    <td colSpan={8} className="py-12 text-center text-slate-500">
-                      <div className="w-7 h-7 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
-                      <p className="mt-2 text-xs">Loading student records...</p>
-                    </td>
-                  </tr>
+                  <TableSkeleton rows={6} cols={8} />
                 ) : students.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="py-12 text-center text-slate-500">
@@ -771,9 +841,8 @@ export const SuperadminStudentsPage: React.FC = () => {
           {/* Dedicated Mobile Cards View */}
           <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800/80">
             {isLoading ? (
-              <div className="py-12 text-center text-slate-500">
-                <div className="w-7 h-7 mx-auto border-3 border-slate-200 border-t-[#C6922E] rounded-full animate-spin"></div>
-                <p className="mt-2 text-xs">Loading student records...</p>
+              <div className="p-4">
+                <CardSkeleton count={4} />
               </div>
             ) : students.length === 0 ? (
               <div className="py-12 text-center text-slate-500">
@@ -911,16 +980,30 @@ export const SuperadminStudentsPage: React.FC = () => {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
             <div className="bg-white dark:bg-[#111827] rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-5">
-                <h3 className="font-display font-black text-xl text-slate-900 dark:text-white">
-                  Enroll Student
-                </h3>
+                <div>
+                  <h3 className="font-display font-black text-xl text-slate-900 dark:text-white">
+                    Enroll Student
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Register student and provision login credentials.
+                  </p>
+                </div>
                 <button
                   onClick={() => setShowAddModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  disabled={isEnrolling}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg disabled:opacity-40"
+                  aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
+
+              {modalError && (
+                <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+                  <span>{modalError}</span>
+                </div>
+              )}
 
               <form onSubmit={handleCreateStudent} className="space-y-4">
                 <div>
@@ -929,9 +1012,10 @@ export const SuperadminStudentsPage: React.FC = () => {
                   </label>
                   <select
                     required
+                    disabled={isEnrolling}
                     value={formData.batchCode}
                     onChange={(e) => setFormData({ ...formData, batchCode: e.target.value })}
-                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs font-bold focus:ring-2 focus:ring-[#C6922E]"
+                    className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs font-bold focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                   >
                     {batches.map((b) => (
                       <option key={b.code} value={b.code}>
@@ -949,10 +1033,11 @@ export const SuperadminStudentsPage: React.FC = () => {
                     <input
                       type="text"
                       required
+                      disabled={isEnrolling}
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="e.g. Dipti Ranjan"
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
 
@@ -964,6 +1049,7 @@ export const SuperadminStudentsPage: React.FC = () => {
                       type="tel"
                       required
                       maxLength={10}
+                      disabled={isEnrolling}
                       value={formData.phone}
                       onChange={(e) =>
                         setFormData({
@@ -972,7 +1058,7 @@ export const SuperadminStudentsPage: React.FC = () => {
                         })
                       }
                       placeholder="9876543210"
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -985,10 +1071,11 @@ export const SuperadminStudentsPage: React.FC = () => {
                     <input
                       type="text"
                       required
+                      disabled={isEnrolling}
                       value={formData.dateOfBirth}
                       onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                       placeholder="20/05/2007"
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
 
@@ -998,9 +1085,11 @@ export const SuperadminStudentsPage: React.FC = () => {
                     </label>
                     <input
                       type="email"
+                      disabled={isEnrolling}
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      placeholder="student@example.com"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -1012,9 +1101,10 @@ export const SuperadminStudentsPage: React.FC = () => {
                     </label>
                     <input
                       type="text"
+                      disabled={isEnrolling}
                       value={formData.college}
                       onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
 
@@ -1024,9 +1114,10 @@ export const SuperadminStudentsPage: React.FC = () => {
                     </label>
                     <input
                       type="text"
+                      disabled={isEnrolling}
                       value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -1035,16 +1126,19 @@ export const SuperadminStudentsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400"
+                    disabled={isEnrolling}
+                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 disabled:opacity-40"
                   >
                     Cancel
                   </button>
-                  <button
+                  <LoadingButton
                     type="submit"
+                    isLoading={isEnrolling}
+                    loadingText="Enrolling..."
                     className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm hover:brightness-105"
                   >
                     Enroll Student
-                  </button>
+                  </LoadingButton>
                 </div>
               </form>
             </div>
@@ -1064,18 +1158,34 @@ export const SuperadminStudentsPage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setShowEditModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  disabled={isUpdating || batchActionLoading}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg disabled:opacity-40"
+                  aria-label="Close modal"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
+              {modalError && (
+                <div className="mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+                  <span>{modalError}</span>
+                </div>
+              )}
+
               <form onSubmit={handleUpdateStudent} className="space-y-4">
                 {/* Multi-Batch Management Section */}
                 <div className="bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2.5">
-                  <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300">
-                    Enrolled Batches ({editingStudentBatches.length})
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300">
+                      Enrolled Batches ({editingStudentBatches.length})
+                    </label>
+                    {batchActionLoading && (
+                      <span className="text-[11px] text-amber-600 dark:text-amber-400 flex items-center gap-1 font-medium animate-pulse">
+                        <LoadingSpinner size="xs" color="gold" /> Updating assignments...
+                      </span>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {editingStudentBatches.map((bc) => (
                       <span
@@ -1086,9 +1196,9 @@ export const SuperadminStudentsPage: React.FC = () => {
                         {editingStudentBatches.length > 1 && (
                           <button
                             type="button"
-                            disabled={batchActionLoading}
+                            disabled={batchActionLoading || isUpdating}
                             onClick={() => handleRemoveBatch(bc)}
-                            className="text-rose-500 hover:text-rose-700 ml-1 font-black cursor-pointer leading-none text-sm"
+                            className="text-rose-500 hover:text-rose-700 ml-1 font-black cursor-pointer leading-none text-sm disabled:opacity-40"
                             title={`Remove from ${bc}`}
                           >
                             &times;
@@ -1102,9 +1212,9 @@ export const SuperadminStudentsPage: React.FC = () => {
                   <div className="flex items-center gap-2 pt-1">
                     <select
                       value={newBatchToAssign}
-                      disabled={batchActionLoading}
+                      disabled={batchActionLoading || isUpdating}
                       onChange={(e) => setNewBatchToAssign(e.target.value)}
-                      className="flex-1 py-1.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1E293B] text-xs font-semibold focus:ring-2 focus:ring-[#C6922E]"
+                      className="flex-1 py-1.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1E293B] text-xs font-semibold focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     >
                       <option value="">Enroll in additional batch...</option>
                       {batches
@@ -1115,14 +1225,17 @@ export const SuperadminStudentsPage: React.FC = () => {
                           </option>
                         ))}
                     </select>
-                    <button
+                    <LoadingButton
                       type="button"
-                      disabled={!newBatchToAssign || batchActionLoading}
+                      size="sm"
+                      isLoading={batchActionLoading}
+                      loadingText="Adding..."
+                      disabled={!newBatchToAssign || batchActionLoading || isUpdating}
                       onClick={() => handleAssignBatch(newBatchToAssign)}
-                      className="px-3 py-1.5 rounded-xl bg-[#17365D] hover:bg-[#102A43] text-white text-xs font-bold shrink-0 disabled:opacity-50 transition-colors cursor-pointer"
+                      className="shrink-0"
                     >
                       + Add Batch
-                    </button>
+                    </LoadingButton>
                   </div>
                 </div>
 
@@ -1134,9 +1247,10 @@ export const SuperadminStudentsPage: React.FC = () => {
                     <input
                       type="text"
                       required
+                      disabled={isUpdating}
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
 
@@ -1148,6 +1262,7 @@ export const SuperadminStudentsPage: React.FC = () => {
                       type="tel"
                       required
                       maxLength={10}
+                      disabled={isUpdating}
                       value={formData.phone}
                       onChange={(e) =>
                         setFormData({
@@ -1155,7 +1270,7 @@ export const SuperadminStudentsPage: React.FC = () => {
                           phone: e.target.value.replace(/[^0-9]/g, ''),
                         })
                       }
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -1168,9 +1283,10 @@ export const SuperadminStudentsPage: React.FC = () => {
                     <input
                       type="text"
                       required
+                      disabled={isUpdating}
                       value={formData.dateOfBirth}
                       onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
 
@@ -1180,9 +1296,10 @@ export const SuperadminStudentsPage: React.FC = () => {
                     </label>
                     <input
                       type="email"
+                      disabled={isUpdating}
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E]"
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -1191,16 +1308,19 @@ export const SuperadminStudentsPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowEditModal(false)}
-                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400"
+                    disabled={isUpdating}
+                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 disabled:opacity-40"
                   >
                     Cancel
                   </button>
-                  <button
+                  <LoadingButton
                     type="submit"
+                    isLoading={isUpdating}
+                    loadingText="Saving Changes..."
                     className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm hover:brightness-105"
                   >
                     Save Changes
-                  </button>
+                  </LoadingButton>
                 </div>
               </form>
             </div>
@@ -1222,7 +1342,9 @@ export const SuperadminStudentsPage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => setShowImportModal(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  disabled={isImporting}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg disabled:opacity-40"
+                  aria-label="Close import modal"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1242,10 +1364,20 @@ export const SuperadminStudentsPage: React.FC = () => {
                     </div>
                     <button
                       onClick={handleDownloadTemplate}
-                      className="py-2 px-3.5 rounded-xl bg-[#C6922E] hover:bg-[#A3741E] text-white text-xs font-bold shrink-0 flex items-center gap-1.5 shadow-xs"
+                      disabled={isDownloadingTemplate}
+                      className="py-2 px-3.5 rounded-xl bg-[#C6922E] hover:bg-[#A3741E] text-white text-xs font-bold shrink-0 flex items-center gap-1.5 shadow-xs disabled:opacity-50"
                     >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>Download .xlsx</span>
+                      {isDownloadingTemplate ? (
+                        <>
+                          <LoadingSpinner size="xs" color="white" />
+                          <span>Downloading...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Download className="w-3.5 h-3.5" />
+                          <span>Download .xlsx</span>
+                        </>
+                      )}
                     </button>
                   </div>
 
@@ -1257,9 +1389,10 @@ export const SuperadminStudentsPage: React.FC = () => {
                       </label>
                       <select
                         required
+                        disabled={isImporting}
                         value={importBatchCode}
                         onChange={(e) => setImportBatchCode(e.target.value)}
-                        className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs font-bold focus:ring-2 focus:ring-[#C6922E]"
+                        className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs font-bold focus:ring-2 focus:ring-[#C6922E] disabled:opacity-50"
                       >
                         {batches.map((b) => (
                           <option key={b.code} value={b.code}>
@@ -1277,36 +1410,64 @@ export const SuperadminStudentsPage: React.FC = () => {
                         type="file"
                         accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                         required
+                        disabled={isImporting}
                         onChange={(e) => setImportFile(e.target.files?.[0] || null)}
-                        className="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#17365D] file:text-white hover:file:bg-[#1E4273] cursor-pointer"
+                        className="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#17365D] file:text-white hover:file:bg-[#1E4273] cursor-pointer disabled:opacity-50"
                       />
                     </div>
+
+                    {/* Stage feedback if importing */}
+                    {isImporting && (
+                      <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 text-xs animate-in fade-in">
+                        <div className="flex items-center gap-2 font-bold text-amber-900 dark:text-amber-200 mb-2">
+                          <LoadingSpinner size="xs" color="gold" />
+                          <span>
+                            {importStage === 'uploading' && 'Step 1/3: Uploading Excel spreadsheet...'}
+                            {importStage === 'validating' && 'Step 2/3: Validating format, phone & email records...'}
+                            {importStage === 'importing' && 'Step 3/3: Enrolling students and generating credentials...'}
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                          <div
+                            className="bg-[#C6922E] h-full transition-all duration-500 rounded-full"
+                            style={{
+                              width:
+                                importStage === 'uploading'
+                                  ? '35%'
+                                  : importStage === 'validating'
+                                  ? '70%'
+                                  : '95%',
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
                       <button
                         type="button"
                         onClick={() => setShowImportModal(false)}
-                        className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400"
+                        disabled={isImporting}
+                        className="py-2.5 px-4 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 disabled:opacity-40"
                       >
                         Cancel
                       </button>
-                      <button
+                      <LoadingButton
                         type="submit"
+                        isLoading={isImporting}
+                        loadingText={
+                          importStage === 'uploading'
+                            ? 'Uploading...'
+                            : importStage === 'validating'
+                            ? 'Validating...'
+                            : 'Enrolling...'
+                        }
+                        icon={<Upload className="w-4 h-4" />}
                         disabled={!importFile || isImporting}
-                        className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                        className="py-2.5 px-6 rounded-xl text-xs font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] shadow-sm"
                       >
-                        {isImporting ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-[#0B1120] border-t-transparent rounded-full animate-spin"></div>
-                            <span>Importing Data...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Upload className="w-4 h-4" />
-                            <span>Upload & Enroll</span>
-                          </>
-                        )}
-                      </button>
+                        Upload & Enroll
+                      </LoadingButton>
                     </div>
                   </form>
                 </div>
