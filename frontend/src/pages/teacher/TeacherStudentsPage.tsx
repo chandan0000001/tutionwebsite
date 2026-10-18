@@ -38,6 +38,8 @@ interface StudentItem {
   };
   batch: string;
   batchCode: string;
+  batchIds?: string[];
+  batchCodes?: string[];
   isActive: boolean;
   createdAt: string;
 }
@@ -68,6 +70,9 @@ export const TeacherStudentsPage: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<StudentItem | null>(null);
+  const [editingStudentBatches, setEditingStudentBatches] = useState<string[]>([]);
+  const [newBatchToAssign, setNewBatchToAssign] = useState<string>('');
+  const [batchActionLoading, setBatchActionLoading] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
 
   // One-time credentials popup
@@ -242,6 +247,10 @@ export const TeacherStudentsPage: React.FC = () => {
   // Open Edit Modal
   const openEdit = (s: StudentItem) => {
     setEditingStudent(s);
+    setEditingStudentBatches(
+      (s.batchCodes && s.batchCodes.length > 0 ? s.batchCodes : [s.batchCode || selectedBatch]).filter(Boolean)
+    );
+    setNewBatchToAssign('');
     setFormData({
       name: s.name,
       phone: s.phone,
@@ -253,6 +262,65 @@ export const TeacherStudentsPage: React.FC = () => {
       motherName: s.motherName || '',
     });
     setShowEditModal(true);
+  };
+
+  // Assign batch handler (scoped to teacher's authorized batches)
+  const handleAssignBatch = async (batchCode: string) => {
+    if (!editingStudent || !batchCode) return;
+    setBatchActionLoading(true);
+    setErrorMessage(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/students/${editingStudent._id}/batches`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ batchCode }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        const updatedCodes = data.student?.batchCodes || [...editingStudentBatches, batchCode];
+        setEditingStudentBatches(Array.from(new Set(updatedCodes)));
+        setNewBatchToAssign('');
+        setSuccessMessage(data.message || `Student enrolled in ${batchCode}`);
+        fetchStudents();
+      } else {
+        setErrorMessage(data.message || 'Failed to assign batch.');
+      }
+    } catch {
+      setErrorMessage('Network error while assigning batch.');
+    } finally {
+      setBatchActionLoading(false);
+    }
+  };
+
+  // Remove batch handler (scoped to teacher's authorized batches)
+  const handleRemoveBatch = async (batchCode: string) => {
+    if (!editingStudent || !batchCode) return;
+    setBatchActionLoading(true);
+    setErrorMessage(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/students/${editingStudent._id}/batches/${batchCode}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        const remaining = editingStudentBatches.filter((b) => b !== batchCode);
+        setEditingStudentBatches(remaining);
+        setSuccessMessage(data.message || `Removed from ${batchCode}`);
+        fetchStudents();
+      } else {
+        setErrorMessage(data.message || 'Failed to remove batch.');
+      }
+    } catch {
+      setErrorMessage('Network error while removing batch.');
+    } finally {
+      setBatchActionLoading(false);
+    }
   };
 
   // Update Student
@@ -966,6 +1034,64 @@ export const TeacherStudentsPage: React.FC = () => {
               </div>
 
               <form onSubmit={handleUpdateStudent} className="space-y-4">
+                {/* Multi-Batch Management Section */}
+                <div className="bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2.5">
+                  <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300">
+                    Enrolled Batches ({editingStudentBatches.length})
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {editingStudentBatches.map((bc) => {
+                      const isTeacherAuthorized = batches.some((b) => b.code === bc);
+                      return (
+                        <span
+                          key={bc}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/10 text-[#C6922E] dark:text-[#F4C76B] border border-amber-500/20 shadow-xs"
+                        >
+                          <span>{bc}</span>
+                          {editingStudentBatches.length > 1 && isTeacherAuthorized && (
+                            <button
+                              type="button"
+                              disabled={batchActionLoading}
+                              onClick={() => handleRemoveBatch(bc)}
+                              className="text-rose-500 hover:text-rose-700 ml-1 font-black cursor-pointer leading-none text-sm"
+                              title={`Remove student from ${bc}`}
+                            >
+                              &times;
+                            </button>
+                          )}
+                        </span>
+                      );
+                    })}
+                  </div>
+
+                  {/* Add to authorized batch */}
+                  <div className="flex items-center gap-2 pt-1">
+                    <select
+                      value={newBatchToAssign}
+                      disabled={batchActionLoading}
+                      onChange={(e) => setNewBatchToAssign(e.target.value)}
+                      className="flex-1 py-1.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1E293B] text-xs font-semibold focus:ring-2 focus:ring-[#C6922E]"
+                    >
+                      <option value="">Enroll in another of your authorized batches...</option>
+                      {batches
+                        .filter((b) => !editingStudentBatches.includes(b.code))
+                        .map((b) => (
+                          <option key={b.code} value={b.code}>
+                            {b.name} ({b.code})
+                          </option>
+                        ))}
+                    </select>
+                    <button
+                      type="button"
+                      disabled={!newBatchToAssign || batchActionLoading}
+                      onClick={() => handleAssignBatch(newBatchToAssign)}
+                      className="px-3 py-1.5 rounded-xl bg-[#17365D] hover:bg-[#102A43] text-white text-xs font-bold shrink-0 disabled:opacity-50 transition-colors cursor-pointer"
+                    >
+                      + Add Batch
+                    </button>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">

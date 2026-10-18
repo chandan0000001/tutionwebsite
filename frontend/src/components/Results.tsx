@@ -133,15 +133,19 @@ export const Results: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Student Avatar + Name + Score */}
+                {/* Department / Track Record Avatar + Name + Score */}
                 <div className="flex items-center gap-3.5 mb-3.5">
-                  <div className="relative w-14 h-14 rounded-full overflow-hidden bg-slate-100 dark:bg-[#172033] border-2 border-slate-200 dark:border-[#F4C76B]/60 shrink-0 shadow-sm">
-                    <img
-                      src={item.photoUrl}
-                      alt={item.studentName}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
+                  <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-slate-100 dark:bg-[#172033] border-2 border-slate-200 dark:border-[#F4C76B]/60 shrink-0 shadow-sm flex items-center justify-center">
+                    {item.photoUrl ? (
+                      <img
+                        src={item.photoUrl}
+                        alt={item.studentName}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <Trophy className="w-5 h-5 text-[#C6922E] dark:text-[#F4C76B]" />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <h3 className="font-['Outfit',sans-serif] text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#17365D] dark:group-hover:text-[#F4C76B] transition-colors break-words">

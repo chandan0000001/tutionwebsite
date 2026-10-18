@@ -1,16 +1,101 @@
+import mongoose from 'mongoose';
 import { Lecture } from '../models/Lecture.js';
+import { Batch } from '../models/Batch.js';
 import { extractYouTubeId, getYouTubeEmbedUrl } from '../utils/youtube.js';
 import { createSafeSearchRegex } from '../utils/sanitizeSearch.js';
 
 const PAGE_SIZE = 10;
 
 /**
+ * Helper: Extract student's authorized batch codes from record
+ */
+function getStudentEnrolledCodes(student) {
+  const codes = new Set();
+  if (Array.isArray(student.batchCodes)) {
+    student.batchCodes.forEach((c) => codes.add(String(c).trim().toUpperCase()));
+  }
+  if (student.batchCode) {
+    codes.add(String(student.batchCode).trim().toUpperCase());
+  }
+  if (student.batch) {
+    const raw = String(student.batch).trim().toUpperCase();
+    codes.add(raw.startsWith('BATCH-') ? raw : `BATCH-${raw}`);
+  }
+  return Array.from(codes).filter(Boolean);
+}
+
+/**
  * GET /api/lectures
- * Retrieve batch-filtered, published lectures with 10-per-page pagination
+ * Retrieve batch-filtered, published lectures with 10-per-page pagination.
+ * Supports multi-batch student enrollment with batch switching and verification.
  */
 export async function getLectures(req, res, next) {
   try {
-    const studentBatch = req.student.batch;
+    const enrolledCodes = getStudentEnrolledCodes(req.student);
+    if (enrolledCodes.length === 0) {
+      return res.status(200).json({
+        success: true,
+        batch: '',
+        batchCode: '',
+        enrolledBatches: [],
+        pagination: {
+          totalRecords: 0,
+          totalPages: 1,
+          currentPage: 1,
+          pageSize: PAGE_SIZE,
+          hasNextPage: false,
+          hasPrevPage: false,
+        },
+        data: [],
+      });
+    }
+
+    // Load full batch documents for student's enrolled batches
+    const enrolledBatchDocs = await Batch.find({
+      $or: [
+        { code: { $in: enrolledCodes } },
+        { academicYear: { $in: enrolledCodes.map((c) => c.replace('BATCH-', '')) } },
+      ],
+      isActive: true,
+    }).select('_id code name academicYear courseName').lean();
+
+    // Determine target batch
+    let selectedBatchCode = '';
+    const requestedBatch = (req.query.batchCode || req.query.batch || req.query.batchId || '').trim();
+
+    if (requestedBatch) {
+      // Validate requested batch against student's enrolled batches
+      let matchedDoc = null;
+      if (mongoose.Types.ObjectId.isValid(requestedBatch)) {
+        matchedDoc = enrolledBatchDocs.find((b) => b._id.toString() === requestedBatch);
+      }
+      if (!matchedDoc) {
+        const cleanReq = requestedBatch.toUpperCase();
+        matchedDoc = enrolledBatchDocs.find(
+          (b) =>
+            b.code.toUpperCase() === cleanReq ||
+            b.code.toUpperCase() === `BATCH-${cleanReq}` ||
+            b.academicYear.toUpperCase() === cleanReq.replace('BATCH-', '')
+        );
+      }
+
+      if (!matchedDoc) {
+        return res.status(403).json({
+          success: false,
+          message: `Access denied: You are not enrolled in batch '${requestedBatch}'.`,
+        });
+      }
+      selectedBatchCode = matchedDoc.code;
+    } else {
+      // Default to student's primary batch or first enrolled batch
+      if (req.student.batchCode && enrolledCodes.includes(req.student.batchCode.toUpperCase())) {
+        selectedBatchCode = req.student.batchCode.toUpperCase();
+      } else {
+        selectedBatchCode = enrolledCodes[0];
+      }
+    }
+
+    const academicYear = selectedBatchCode.replace('BATCH-', '');
 
     // Parse and sanitize query parameters
     let page = parseInt(req.query.page || '1', 10);
@@ -24,19 +109,13 @@ export async function getLectures(req, res, next) {
       limit = PAGE_SIZE;
     }
 
-    const studentBatchCode =
-      req.student.batchCode ||
-      (studentBatch && studentBatch.startsWith('BATCH-')
-        ? studentBatch
-        : `BATCH-${studentBatch}`);
-
-    // Filter criteria: Authenticated student's batch ONLY & isPublished: true
+    // Filter criteria: ONLY selected authorized batch & isPublished: true
     const filter = {
       $or: [
-        { batch: studentBatch },
-        { batchCode: studentBatchCode },
-        { batchCode: studentBatch },
-        { batch: studentBatchCode },
+        { batch: academicYear },
+        { batchCode: selectedBatchCode },
+        { batchCode: academicYear },
+        { batch: selectedBatchCode },
       ],
       isPublished: true,
     };
@@ -81,7 +160,9 @@ export async function getLectures(req, res, next) {
 
     return res.status(200).json({
       success: true,
-      batch: studentBatch,
+      batch: academicYear,
+      batchCode: selectedBatchCode,
+      enrolledBatches: enrolledBatchDocs,
       pagination: {
         totalRecords,
         totalPages,
@@ -99,27 +180,32 @@ export async function getLectures(req, res, next) {
 
 /**
  * GET /api/lectures/:id
- * Retrieve single lecture details ensuring it belongs to the student's batch and is published
+ * Retrieve single lecture details ensuring it belongs to one of student's enrolled batches and is published
  */
 export async function getLectureById(req, res, next) {
   try {
     const { id } = req.params;
-    const studentBatch = req.student.batch;
+    const enrolledCodes = getStudentEnrolledCodes(req.student);
 
-    const studentBatchCode =
-      req.student.batchCode ||
-      (studentBatch && studentBatch.startsWith('BATCH-')
-        ? studentBatch
-        : `BATCH-${studentBatch}`);
+    if (enrolledCodes.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Lecture not found or not accessible to your batch.',
+      });
+    }
+
+    const batchOrConditions = [];
+    enrolledCodes.forEach((code) => {
+      const year = code.replace('BATCH-', '');
+      batchOrConditions.push({ batch: code });
+      batchOrConditions.push({ batchCode: code });
+      batchOrConditions.push({ batch: year });
+      batchOrConditions.push({ batchCode: `BATCH-${year}` });
+    });
 
     const lecture = await Lecture.findOne({
       _id: id,
-      $or: [
-        { batch: studentBatch },
-        { batchCode: studentBatchCode },
-        { batchCode: studentBatch },
-        { batch: studentBatchCode },
-      ],
+      $or: batchOrConditions,
       isPublished: true,
     }).lean();
 
@@ -146,20 +232,38 @@ export async function getLectureById(req, res, next) {
 
 /**
  * GET /api/lectures/subjects
- * Retrieve list of distinct subjects available in this batch
+ * Retrieve list of distinct subjects available in selected batch or enrolled batches
  */
 export async function getBatchSubjects(req, res, next) {
   try {
-    const studentBatch = req.student.batch;
+    const enrolledCodes = getStudentEnrolledCodes(req.student);
+    const requestedBatch = (req.query.batchCode || req.query.batch || '').trim().toUpperCase();
+
+    let targetCodes = enrolledCodes;
+    if (requestedBatch) {
+      const isEnrolled = enrolledCodes.some(
+        (c) => c === requestedBatch || c === `BATCH-${requestedBatch}` || c.replace('BATCH-', '') === requestedBatch
+      );
+      if (!isEnrolled) {
+        return res.status(403).json({
+          success: false,
+          message: `Access denied: You are not enrolled in batch '${requestedBatch}'.`,
+        });
+      }
+      targetCodes = [requestedBatch, `BATCH-${requestedBatch}`, requestedBatch.replace('BATCH-', '')];
+    }
 
     const subjects = await Lecture.distinct('subject', {
-      batch: studentBatch,
+      $or: [
+        { batchCode: { $in: targetCodes } },
+        { batch: { $in: targetCodes.map((c) => c.replace('BATCH-', '')) } },
+      ],
       isPublished: true,
     });
 
     return res.status(200).json({
       success: true,
-      data: subjects.sort(),
+      data: subjects.filter(Boolean).sort(),
     });
   } catch (error) {
     next(error);

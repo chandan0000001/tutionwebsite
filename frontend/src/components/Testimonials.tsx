@@ -75,13 +75,22 @@ export const Testimonials: React.FC = () => {
 
               {/* Author Info */}
               <div className="pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-3">
-                <div className="w-11 h-11 rounded-full overflow-hidden bg-slate-100 dark:bg-black/40 border-2 border-[#17365D]/30 dark:border-[#F4C76B]/40 shrink-0 shadow-sm">
-                  <img
-                    src={item.avatarUrl}
-                    alt={item.displayName}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-all"
-                    loading="lazy"
-                  />
+                <div className="w-11 h-11 rounded-full overflow-hidden bg-slate-100 dark:bg-black/40 border-2 border-[#17365D]/30 dark:border-[#F4C76B]/40 shrink-0 shadow-sm flex items-center justify-center font-bold text-xs text-[#17365D] dark:text-[#F4C76B]">
+                  {item.avatarUrl ? (
+                    <img
+                      src={item.avatarUrl}
+                      alt={item.displayName}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-all"
+                      loading="lazy"
+                    />
+                  ) : (
+                    item.displayName
+                      .split(' ')
+                      .filter(Boolean)
+                      .slice(0, 2)
+                      .map((n) => n[0])
+                      .join('')
+                  )}
                 </div>
                 <div className="flex flex-col text-left min-w-0">
                   <span className="text-xs font-bold text-slate-900 dark:text-white truncate">

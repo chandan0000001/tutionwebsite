@@ -57,7 +57,12 @@ export async function getAssignedBatches(req, res, next) {
     const batchesWithCounts = await Promise.all(
       batches.map(async (batch) => {
         const studentCount = await Student.countDocuments({
-          $or: [{ batchCode: batch.code }, { batch: batch.academicYear }],
+          $or: [
+            { batchIds: batch._id },
+            { batchCodes: batch.code },
+            { batchCode: batch.code },
+            { batch: batch.academicYear },
+          ],
           isActive: true,
         });
 
@@ -96,8 +101,21 @@ export async function getBatchStudents(req, res, next) {
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit || '20', 10)));
     const search = (req.query.search || '').trim();
 
+    const batchDoc = await Batch.findOne({
+      $or: [{ code: batchCode }, { academicYear }],
+    });
+
+    const batchCondition = [
+      { batchCodes: batchCode },
+      { batchCode },
+      { batch: academicYear },
+    ];
+    if (batchDoc) {
+      batchCondition.push({ batchIds: batchDoc._id });
+    }
+
     const filter = {
-      $or: [{ batchCode }, { batch: academicYear }],
+      $or: batchCondition,
     };
 
     if (search) {
@@ -202,6 +220,10 @@ export async function createStudent(req, res, next) {
     const initialPassword = cleanPhone;
     const passwordHash = await bcrypt.hash(initialPassword, ENV.BCRYPT_SALT_ROUNDS);
 
+    const batchDoc = await Batch.findOne({
+      $or: [{ code: batchCode }, { academicYear }],
+    });
+
     const newStudent = await Student.create({
       name: name.trim(),
       phone: cleanPhone,
@@ -213,6 +235,8 @@ export async function createStudent(req, res, next) {
       motherName: motherName ? String(motherName).trim() : 'N/A',
       batch: academicYear,
       batchCode,
+      batchCodes: [batchCode],
+      batchIds: batchDoc ? [batchDoc._id] : [],
       username,
       passwordHash,
       isActive: true,
@@ -261,9 +285,21 @@ export async function updateStudent(req, res, next) {
     const academicYear = rawBatch.replace('BATCH-', '');
     const { id } = req.params;
 
+    const batchDoc = await Batch.findOne({
+      $or: [{ code: rawBatch }, { academicYear }],
+    });
+    const batchCondition = [
+      { batchCodes: rawBatch },
+      { batchCode: rawBatch },
+      { batch: academicYear },
+    ];
+    if (batchDoc) {
+      batchCondition.push({ batchIds: batchDoc._id });
+    }
+
     const student = await Student.findOne({
       _id: id,
-      $or: [{ batchCode: rawBatch }, { batch: academicYear }],
+      $or: batchCondition,
     });
 
     if (!student) {
@@ -341,9 +377,21 @@ export async function toggleStudentStatus(req, res, next) {
     const academicYear = rawBatch.replace('BATCH-', '');
     const { id } = req.params;
 
+    const batchDoc = await Batch.findOne({
+      $or: [{ code: rawBatch }, { academicYear }],
+    });
+    const batchCondition = [
+      { batchCodes: rawBatch },
+      { batchCode: rawBatch },
+      { batch: academicYear },
+    ];
+    if (batchDoc) {
+      batchCondition.push({ batchIds: batchDoc._id });
+    }
+
     const student = await Student.findOne({
       _id: id,
-      $or: [{ batchCode: rawBatch }, { batch: academicYear }],
+      $or: batchCondition,
     });
 
     if (!student) {
@@ -388,9 +436,21 @@ export async function deleteStudent(req, res, next) {
     const academicYear = rawBatch.replace('BATCH-', '');
     const { id } = req.params;
 
+    const batchDoc = await Batch.findOne({
+      $or: [{ code: rawBatch }, { academicYear }],
+    });
+    const batchCondition = [
+      { batchCodes: rawBatch },
+      { batchCode: rawBatch },
+      { batch: academicYear },
+    ];
+    if (batchDoc) {
+      batchCondition.push({ batchIds: batchDoc._id });
+    }
+
     const student = await Student.findOne({
       _id: id,
-      $or: [{ batchCode: rawBatch }, { batch: academicYear }],
+      $or: batchCondition,
     });
 
     if (!student) {
@@ -507,6 +567,10 @@ export async function bulkImportStudents(req, res, next) {
       const initialPassword = record.phone;
       const passwordHash = await bcrypt.hash(initialPassword, ENV.BCRYPT_SALT_ROUNDS);
 
+      const batchDoc = await Batch.findOne({
+        $or: [{ code: targetBatch }, { academicYear: targetAcademicYear }],
+      });
+
       const newStudent = await Student.create({
         name: record.name,
         phone: record.phone,
@@ -518,6 +582,8 @@ export async function bulkImportStudents(req, res, next) {
         motherName: record.motherName || 'N/A',
         batch: targetAcademicYear,
         batchCode: targetBatch,
+        batchCodes: [targetBatch],
+        batchIds: batchDoc ? [batchDoc._id] : [],
         username,
         passwordHash,
         isActive: true,

@@ -99,9 +99,16 @@ export function validateYouTubeUrl(rawInput) {
     // https://www.youtube.com/watch?v=VIDEO_ID
     // https://www.youtube.com/embed/VIDEO_ID
     // https://www.youtube.com/v/VIDEO_ID
+    // https://www.youtube.com/live/VIDEO_ID
+    // https://www.youtube.com/shorts/VIDEO_ID
     if (parsed.searchParams.has('v')) {
       videoId = parsed.searchParams.get('v');
-    } else if (parsed.pathname.startsWith('/embed/') || parsed.pathname.startsWith('/v/')) {
+    } else if (
+      parsed.pathname.startsWith('/embed/') ||
+      parsed.pathname.startsWith('/v/') ||
+      parsed.pathname.startsWith('/live/') ||
+      parsed.pathname.startsWith('/shorts/')
+    ) {
       const parts = parsed.pathname.split('/').filter(Boolean);
       if (parts.length >= 2) {
         videoId = parts[1];

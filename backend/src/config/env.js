@@ -21,17 +21,17 @@ const stripQuotes = (val) => {
   return trimmed;
 };
 
-// 1. Validate NODE_ENV strictly
+// 1. Validate NODE_ENV strictly (fail closed if missing or invalid)
 const VALID_ENVIRONMENTS = new Set(['development', 'test', 'production']);
 const rawNodeEnv = stripQuotes(process.env.NODE_ENV);
 
-if (rawNodeEnv && !VALID_ENVIRONMENTS.has(rawNodeEnv)) {
+if (!rawNodeEnv || !VALID_ENVIRONMENTS.has(rawNodeEnv)) {
   throw new Error(
-    `[FATAL SECURITY CONFIGURATION] Invalid NODE_ENV '${rawNodeEnv}'. Expected one of: development, test, production.`
+    `[FATAL SECURITY CONFIGURATION] NODE_ENV is unset or invalid ('${rawNodeEnv || ''}'). Expected one of: development, test, production.`
   );
 }
 
-const NODE_ENV = rawNodeEnv || 'development';
+const NODE_ENV = rawNodeEnv;
 const isProduction = NODE_ENV === 'production';
 const isTest = NODE_ENV === 'test';
 const isDevelopment = NODE_ENV === 'development';

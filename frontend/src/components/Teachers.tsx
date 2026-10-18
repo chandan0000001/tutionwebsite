@@ -80,15 +80,26 @@ export const Teachers: React.FC = () => {
                 }`}
               >
                 <div>
-                  {/* Portrait Container */}
-                  <div className="relative h-64 w-full overflow-hidden bg-slate-100 dark:bg-[#172033]">
-                    <img
-                      src={faculty.avatarUrl}
-                      alt={`${faculty.name} - ${faculty.subject}`}
-                      className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-transparent dark:from-[#202B3D] dark:via-[#202B3D]/30 dark:to-transparent"></div>
+                  {/* Portrait / Department Icon Container */}
+                  <div className="relative h-48 w-full overflow-hidden bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-[#172033] dark:via-[#1c263c] dark:to-[#202B3D] flex items-center justify-center border-b border-slate-200 dark:border-[#344054]">
+                    {faculty.avatarUrl ? (
+                      <img
+                        src={faculty.avatarUrl}
+                        alt={`${faculty.name} - ${faculty.subject}`}
+                        className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center p-6 text-center">
+                        <div className="w-16 h-16 rounded-2xl bg-[#17365D]/10 dark:bg-[#F4C76B]/10 border border-[#17365D]/20 dark:border-[#F4C76B]/30 flex items-center justify-center mb-2 shadow-inner group-hover:scale-110 transition-transform">
+                          <BookOpen className="w-8 h-8 text-[#17365D] dark:text-[#F4C76B]" />
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-[#AAB4C3]">
+                          Antariksh Academy
+                        </span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent dark:from-[#202B3D] dark:via-transparent dark:to-transparent pointer-events-none"></div>
 
                     {/* Subject Pill */}
                     <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
@@ -97,7 +108,7 @@ export const Teachers: React.FC = () => {
                         {faculty.subject}
                       </span>
                       <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100/90 dark:bg-[#172033]/90 text-[#C6922E] dark:text-[#F4C76B] px-2 py-0.5 rounded border border-slate-200 dark:border-[#344054]">
-                        Faculty Desk
+                        Academic Wing
                       </span>
                     </div>
                   </div>

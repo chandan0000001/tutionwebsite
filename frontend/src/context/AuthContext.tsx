@@ -14,6 +14,8 @@ export interface UserProfile {
   dateOfBirth?: string;
   batch?: string;
   batchCode?: string;
+  batchIds?: string[];
+  batchCodes?: string[];
   assignedBatches?: string[];
   isActive: boolean;
   mustChangePassword: boolean;
@@ -50,7 +52,7 @@ interface AuthContextType {
     newPassword: string,
     confirmPassword?: string
   ) => Promise<{ success: boolean; message?: string }>;
-  logout: () => void;
+  logout: () => void | Promise<void>;
   refreshProfile: () => Promise<void>;
   clearError: () => void;
 }
@@ -70,13 +72,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const clearError = () => setError(null);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    const currentToken =
+      token || localStorage.getItem(TOKEN_STORAGE_KEY) || localStorage.getItem(LEGACY_TOKEN_STORAGE_KEY);
+
+    // Call backend to revoke session in MongoDB
+    if (currentToken) {
+      try {
+        await fetch(`${API_BASE_URL}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${currentToken}`,
+            Accept: 'application/json',
+          },
+        });
+      } catch {
+        // Fall through safely even if offline
+      }
+    }
+
     localStorage.removeItem(TOKEN_STORAGE_KEY);
     localStorage.removeItem(LEGACY_TOKEN_STORAGE_KEY);
     setToken(null);
     setUser(null);
     setError(null);
-  }, []);
+  }, [token]);
 
   // Verify session & fetch authenticated user profile
   const refreshProfile = useCallback(async () => {

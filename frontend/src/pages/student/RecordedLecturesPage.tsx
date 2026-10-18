@@ -41,10 +41,22 @@ interface PaginationMeta {
   hasPrevPage: boolean;
 }
 
+interface EnrolledBatch {
+  _id: string;
+  code: string;
+  name: string;
+  academicYear: string;
+  courseName?: string;
+}
+
 export const RecordedLecturesPage: React.FC = () => {
   const { student, token, logout } = useAuth();
 
   const [lectures, setLectures] = useState<LectureItem[]>([]);
+  const [enrolledBatches, setEnrolledBatches] = useState<EnrolledBatch[]>([]);
+  const [selectedBatchCode, setSelectedBatchCode] = useState<string>(
+    student?.batchCode || student?.batch || ''
+  );
   const [pagination, setPagination] = useState<PaginationMeta>({
     totalRecords: 0,
     totalPages: 1,
@@ -81,10 +93,13 @@ export const RecordedLecturesPage: React.FC = () => {
     setCurrentPage(1);
   };
 
-  // Fetch distinct batch subjects once
+  // Fetch distinct batch subjects for selected batch
   useEffect(() => {
     if (!token) return;
-    fetch(`${API_BASE_URL}/lectures/subjects`, {
+    const url = selectedBatchCode
+      ? `${API_BASE_URL}/lectures/subjects?batchCode=${encodeURIComponent(selectedBatchCode)}`
+      : `${API_BASE_URL}/lectures/subjects`;
+    fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -94,7 +109,7 @@ export const RecordedLecturesPage: React.FC = () => {
         }
       })
       .catch(() => {});
-  }, [token]);
+  }, [token, selectedBatchCode]);
 
   // Fetch paginated lectures
   const fetchLectures = useCallback(async () => {
@@ -106,6 +121,9 @@ export const RecordedLecturesPage: React.FC = () => {
     queryParams.set('page', `${currentPage}`);
     queryParams.set('limit', '10');
 
+    if (selectedBatchCode) {
+      queryParams.set('batchCode', selectedBatchCode);
+    }
     if (selectedSubject !== 'All') {
       queryParams.set('subject', selectedSubject);
     }
@@ -135,6 +153,12 @@ export const RecordedLecturesPage: React.FC = () => {
         if (data.pagination) {
           setPagination(data.pagination);
         }
+        if (Array.isArray(data.enrolledBatches) && data.enrolledBatches.length > 0) {
+          setEnrolledBatches(data.enrolledBatches);
+          if (!selectedBatchCode && data.batchCode) {
+            setSelectedBatchCode(data.batchCode);
+          }
+        }
       } else {
         throw new Error(data.message || 'Failed to load batch lectures.');
       }
@@ -147,7 +171,7 @@ export const RecordedLecturesPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [token, currentPage, selectedSubject, debouncedSearch, logout]);
+  }, [token, currentPage, selectedBatchCode, selectedSubject, debouncedSearch, logout]);
 
   useEffect(() => {
     fetchLectures();
@@ -193,10 +217,30 @@ export const RecordedLecturesPage: React.FC = () => {
             <span>Back to Student Dashboard</span>
           </Link>
 
-          <div className="flex items-center gap-3">
-            <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#17365D] text-white dark:bg-[#1E293B] dark:text-[#F4C76B] border border-[#C6922E]/40">
-              Batch {student?.batch || '2026'}
-            </span>
+          <div className="flex flex-wrap items-center gap-3">
+            {enrolledBatches.length > 1 ? (
+              <div className="flex items-center gap-1.5 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 shadow-sm">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Current Batch:</span>
+                <select
+                  value={selectedBatchCode}
+                  onChange={(e) => {
+                    setSelectedBatchCode(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="bg-transparent text-xs font-black text-[#17365D] dark:text-[#F4C76B] focus:outline-none cursor-pointer"
+                >
+                  {enrolledBatches.map((b) => (
+                    <option key={b._id || b.code} value={b.code} className="dark:bg-[#1E293B] text-slate-900 dark:text-white">
+                      {b.name || b.code} ({b.academicYear || b.code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#17365D] text-white dark:bg-[#1E293B] dark:text-[#F4C76B] border border-[#C6922E]/40">
+                Batch {selectedBatchCode || student?.batchCode || student?.batch || '2026'}
+              </span>
+            )}
             <span className="text-xs text-slate-500 dark:text-slate-400">
               Enrolled: <strong className="text-slate-800 dark:text-white">{student?.name}</strong>
             </span>

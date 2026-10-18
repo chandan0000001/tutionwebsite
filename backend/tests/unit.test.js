@@ -196,3 +196,50 @@ describe('Excel Student Import & Template Service', () => {
   });
 });
 
+import { Student } from '../src/models/Student.js';
+
+describe('Student Multi-Batch Model & Normalization', () => {
+  test('normalizes, uppercases, and deduplicates multiple batchCodes on pre-save hook', async () => {
+    const student = new Student({
+      name: 'Rohan Sharma',
+      username: 'rohan.sharma',
+      passwordHash: 'dummy_hash_123',
+      phone: '9876543210',
+      dateOfBirth: '2008-05-15',
+      batchCodes: ['batch-2026', 'BATCH-NEET', 'batch-2026', '  batch-foundation  '],
+    });
+
+    // Execute validate or pre-save normalization
+    await new Promise((resolve, reject) => {
+      // Find the pre-save hook registered on studentSchema
+      student.$__schema.s.hooks.execPre('save', student, [student], (err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+
+    assert.deepEqual(student.batchCodes, ['BATCH-2026', 'BATCH-NEET', 'BATCH-FOUNDATION']);
+    assert.equal(student.batchCode, 'BATCH-2026');
+    assert.equal(student.batch, '2026');
+  });
+
+  test('toSafeObject strips passwordHash and includes batchCodes array', () => {
+    const student = new Student({
+      name: 'Priya Das',
+      username: 'priya.das',
+      passwordHash: '$2b$12$SuperSecretHashedPassword',
+      phone: '9876543211',
+      dateOfBirth: '2008-06-20',
+      batchCodes: ['BATCH-2026', 'BATCH-NEET'],
+      batchCode: 'BATCH-2026',
+      batch: '2026',
+    });
+
+    const safeObj = student.toSafeObject();
+    assert.equal(safeObj.passwordHash, undefined);
+    assert.deepEqual(safeObj.batchCodes, ['BATCH-2026', 'BATCH-NEET']);
+    assert.equal(safeObj.name, 'Priya Das');
+  });
+});
+
+

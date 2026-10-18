@@ -1,11 +1,13 @@
 import { test, describe, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
+import jwt from 'jsonwebtoken';
 import { getClientIp, checkLoginRateLimit, recordFailedLogin, recordSuccessfulLogin, resetAllRateLimits } from '../src/utils/loginRateLimiter.js';
 import { validateYouTubeUrl, extractYouTubeId, getYouTubeEmbedUrl } from '../src/utils/youtube.js';
 import { escapeRegex, createSafeSearchRegex, sanitizePhoneSearch } from '../src/utils/sanitizeSearch.js';
 import { generateToken, verifyToken } from '../src/utils/token.js';
 import { errorHandler } from '../src/middleware/errorHandler.js';
-import { requirePasswordChangeComplete } from '../src/middleware/authMiddleware.js';
+import { requirePasswordChangeComplete, authenticateUser, requireAssignedBatch } from '../src/middleware/authMiddleware.js';
+import { ENV } from '../src/config/env.js';
 
 describe('1. Proxy-Aware Rate Limiting & Spoof Resistance', () => {
   beforeEach(async () => {
@@ -58,6 +60,20 @@ describe('1. Proxy-Aware Rate Limiting & Spoof Resistance', () => {
     assert.ok(resB.attemptsRemaining >= 8);
   });
 
+  test('Distributed brute-force attack on a single account across different IPs triggers account lockout', async () => {
+    const targetUsername = 'distributed.victim';
+    // 50 attempts from 50 distinct IPs
+    for (let i = 1; i <= 50; i++) {
+      const distinctReq = { ip: `198.51.100.${i}`, socket: {} };
+      await recordFailedLogin(distinctReq, targetUsername);
+    }
+
+    // Now even from a completely fresh IP 99, the account check detects lockout
+    const freshReq = { ip: '198.51.100.99', socket: {} };
+    const check = await checkLoginRateLimit(freshReq, targetUsername);
+    assert.equal(check.isLocked, true);
+  });
+
   test('Reset rate limits on successful login clears the failed count', async () => {
     const req = { ip: '192.0.2.1', socket: {} };
     const username = 'test.student';
@@ -79,6 +95,8 @@ describe('2. YouTube Strict Server-Side Validation & Sanitization', () => {
       'https://youtu.be/dQw4w9WgXcQ',
       'https://www.youtube.com/embed/dQw4w9WgXcQ',
       'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ',
+      'https://www.youtube.com/live/dQw4w9WgXcQ',
+      'https://www.youtube.com/shorts/dQw4w9WgXcQ',
     ];
 
     for (const u of urls) {
@@ -232,6 +250,37 @@ describe('4. Session Invalidation & Token Versioning', () => {
 
     assert.equal(nextCalled, true);
   });
+
+  test('authenticateUser strictly rejects tokens missing session identifier (sid)', async () => {
+    const tokenWithoutSid = jwt.sign(
+      { sub: '507f1f77bcf86cd799439011', role: 'student' },
+      ENV.JWT_SECRET
+    );
+
+    const req = {
+      headers: {
+        authorization: `Bearer ${tokenWithoutSid}`,
+      },
+    };
+
+    let statusCode = null;
+    let jsonBody = null;
+    const res = {
+      status(code) {
+        statusCode = code;
+        return this;
+      },
+      json(data) {
+        jsonBody = data;
+        return this;
+      },
+    };
+
+    await authenticateUser(req, res, () => {});
+
+    assert.equal(statusCode, 401);
+    assert.ok(jsonBody.message.includes('missing session identifier (sid)'));
+  });
 });
 
 describe('5. Error Handler Sanitization (No Leaks in Production)', () => {
@@ -284,3 +333,64 @@ describe('5. Error Handler Sanitization (No Leaks in Production)', () => {
     assert.equal(jsonBody.message, 'Invalid or expired session token.');
   });
 });
+
+describe('6. Teacher Batch Scoping & Access Control', () => {
+  test('Superadmin has universal batch access across all batches', () => {
+    const req = {
+      user: { role: 'superadmin', username: 'aa_superadmin' },
+      params: { batchCode: 'BATCH-2026' },
+    };
+    let nextCalled = false;
+    requireAssignedBatch(req, {}, () => {
+      nextCalled = true;
+    });
+    assert.equal(nextCalled, true);
+  });
+
+  test('Teacher is permitted access for their assigned batches (with or without prefix)', () => {
+    const teacherReq = {
+      user: {
+        role: 'teacher',
+        username: 'sudeepdash',
+        assignedBatches: ['BATCH-2026', 'BATCH-NEET'],
+      },
+      params: { batchCode: '2026' },
+    };
+    let nextCalled = false;
+    requireAssignedBatch(teacherReq, {}, () => {
+      nextCalled = true;
+    });
+    assert.equal(nextCalled, true);
+  });
+
+  test('Teacher is rejected with 403 when attempting to manage an unassigned batch', () => {
+    const teacherReq = {
+      user: {
+        role: 'teacher',
+        username: 'sudeepdash',
+        assignedBatches: ['BATCH-2026'],
+      },
+      params: { batchCode: 'BATCH-JEE-ADVANCED' },
+    };
+    let statusCode = null;
+    let jsonBody = null;
+    const res = {
+      status(code) {
+        statusCode = code;
+        return this;
+      },
+      json(data) {
+        jsonBody = data;
+        return this;
+      },
+    };
+    let nextCalled = false;
+    requireAssignedBatch(teacherReq, res, () => {
+      nextCalled = true;
+    });
+    assert.equal(nextCalled, false);
+    assert.equal(statusCode, 403);
+    assert.ok(jsonBody.message.includes('not assigned to manage batch'));
+  });
+});
+

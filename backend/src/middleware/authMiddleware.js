@@ -32,15 +32,20 @@ export async function authenticateUser(req, res, next) {
       });
     }
 
-    // 1. If token includes a session ID (sid), verify session status in MongoDB
-    if (decoded.sid) {
-      const sessionCheck = await validateSession(decoded.sid);
-      if (!sessionCheck.valid) {
-        return res.status(401).json({
-          success: false,
-          message: sessionCheck.reason || 'Session has been revoked or expired. Please log in again.',
-        });
-      }
+    // 1. Session ID (sid) is strictly mandatory on all tokens for stateful session validation & revocation
+    if (!decoded.sid) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid session token: missing session identifier (sid). Please log in again.',
+      });
+    }
+
+    const sessionCheck = await validateSession(decoded.sid);
+    if (!sessionCheck.valid) {
+      return res.status(401).json({
+        success: false,
+        message: sessionCheck.reason || 'Session has been revoked or expired. Please log in again.',
+      });
     }
 
     let user = null;

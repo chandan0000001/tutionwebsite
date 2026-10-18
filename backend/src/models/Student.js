@@ -73,16 +73,32 @@ const studentSchema = new mongoose.Schema(
     },
     batch: {
       type: String,
-      required: [true, 'Academic batch year is required (e.g. 2026, 2027)'],
       trim: true,
       index: true,
+      default: '',
     },
     batchCode: {
       type: String,
       trim: true,
       uppercase: true,
       index: true,
+      default: '',
     },
+    batchIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Batch',
+        index: true,
+      },
+    ],
+    batchCodes: [
+      {
+        type: String,
+        trim: true,
+        uppercase: true,
+        index: true,
+      },
+    ],
     role: {
       type: String,
       default: 'student',
@@ -116,14 +132,48 @@ const studentSchema = new mongoose.Schema(
   }
 );
 
-// Pre-save hook to synchronize batch and batchCode
+// Pre-save hook to synchronize multi-batch arrays and legacy single fields
 studentSchema.pre('save', function (next) {
-  if (!this.batchCode && this.batch) {
-    this.batchCode = this.batch.startsWith('BATCH-') ? this.batch.toUpperCase() : `BATCH-${this.batch}`.toUpperCase();
+  if (!Array.isArray(this.batchCodes)) {
+    this.batchCodes = [];
   }
-  if (!this.batch && this.batchCode) {
+  if (!Array.isArray(this.batchIds)) {
+    this.batchIds = [];
+  }
+
+  // Normalize and deduplicate batchCodes
+  this.batchCodes = Array.from(
+    new Set(this.batchCodes.map((c) => String(c).trim().toUpperCase()).filter(Boolean))
+  );
+
+  // Synchronize legacy single-batch input into array
+  if (this.batchCode) {
+    const cleanCode = this.batchCode.trim().toUpperCase();
+    if (!this.batchCodes.includes(cleanCode)) {
+      this.batchCodes.push(cleanCode);
+    }
+  } else if (this.batch) {
+    const clean = String(this.batch).trim().toUpperCase();
+    const code = clean.startsWith('BATCH-') ? clean : `BATCH-${clean}`;
+    if (!this.batchCodes.includes(code)) {
+      this.batchCodes.push(code);
+    }
+  }
+
+  // Synchronize primary batch & batchCode
+  if (this.batchCodes.length === 0) {
+    this.batchCode = '';
+    this.batch = '';
+  } else {
+    // If current batchCode is valid and in batchCodes, keep it; otherwise default to first
+    if (!this.batchCode || !this.batchCodes.includes(this.batchCode.toUpperCase())) {
+      this.batchCode = this.batchCodes[0];
+    } else {
+      this.batchCode = this.batchCode.toUpperCase();
+    }
     this.batch = this.batchCode.replace('BATCH-', '');
   }
+
   next();
 });
 
@@ -132,6 +182,10 @@ studentSchema.methods.toSafeObject = function () {
   const obj = this.toObject();
   delete obj.passwordHash;
   delete obj.__v;
+  obj.batchIds = Array.isArray(obj.batchIds) ? obj.batchIds : [];
+  obj.batchCodes = Array.isArray(obj.batchCodes) && obj.batchCodes.length > 0
+    ? obj.batchCodes
+    : (obj.batchCode ? [obj.batchCode] : []);
   return obj;
 };
 

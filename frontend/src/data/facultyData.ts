@@ -13,7 +13,8 @@ export interface FacultyMember {
 }
 
 /**
- * Faculty Profiles for Antariksh Academy
+ * Genuine Faculty & Department Leadership for Antariksh Academy
+ * Led by Senior Educators Prasant Kumar Behera and Sudeep Dash
  */
 export const FACULTY_DATA: FacultyMember[] = [
   {
@@ -24,15 +25,14 @@ export const FACULTY_DATA: FacultyMember[] = [
     phone: '+91 90901 60793',
     roleTitle: 'Senior Faculty — Physics (CHSE Board, NEET-UG & JEE)',
     shortIntro:
-      'Focuses on conceptual visualization of physical principles, real-world analogies, and step-by-step mathematical translation for both CHSE +2 boards, NEET-UG, and JEE Main/Advanced numericals.',
+      'Focuses on conceptual visualization of physical principles, real-world analogies, and step-by-step mathematical translation for CHSE +2 boards, NEET-UG, and JEE Main/Advanced numericals.',
     areasOfExpertise: [
       'Mechanics, Gravitation & Kinematics',
       'Electrodynamics, AC & Magnetism',
       'Ray & Wave Optics',
       'High-Yield Numerical Speed Shortcuts',
     ],
-    avatarUrl:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
+    avatarUrl: '',
     avatarCaption: 'Senior Physics Faculty',
     isPlaceholder: false,
   },
@@ -51,34 +51,32 @@ export const FACULTY_DATA: FacultyMember[] = [
       'Permutations, Probability & Matrices',
       'OUAT / JEE Speed Calculation Techniques',
     ],
-    avatarUrl:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80',
+    avatarUrl: '',
     avatarCaption: 'Senior Mathematics Faculty',
     isPlaceholder: false,
   },
   {
     id: 'faculty-03',
     placeholderId: 'Faculty Member 03',
-    name: 'Faculty — Chemistry',
+    name: 'Department of Chemistry',
     subject: 'Chemistry',
     roleTitle: 'Faculty — Chemistry (Physical, Organic & Inorganic)',
     shortIntro:
-      'Specializes in demystifying chemical bonding, reaction mechanisms, and thermodynamics, guiding students to score with high precision in NEET and board exams.',
+      'Specializes in demystifying chemical bonding, reaction mechanisms, and thermodynamics, guiding students to score with high precision in NEET and CHSE board examinations.',
     areasOfExpertise: [
       'Organic Reaction Mechanisms',
       'Chemical Thermodynamics & Equilibrium',
       'Inorganic Chemistry & Coordination Compounds',
       'NEET High-Yield Question Strategies',
     ],
-    avatarUrl:
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
-    avatarCaption: 'Chemistry Faculty',
-    isPlaceholder: true,
+    avatarUrl: '',
+    avatarCaption: 'Chemistry Department',
+    isPlaceholder: false,
   },
   {
     id: 'faculty-04',
     placeholderId: 'Faculty Member 04',
-    name: 'Faculty — Biology',
+    name: 'Department of Biology',
     subject: 'Biology',
     roleTitle: 'Faculty — Biology (Botany & Zoology)',
     shortIntro:
@@ -89,15 +87,14 @@ export const FACULTY_DATA: FacultyMember[] = [
       'Ecology, Biotechnology & Molecular Biology',
       'NCERT Line-by-Line Retention Maps',
     ],
-    avatarUrl:
-      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
-    avatarCaption: 'Biology Faculty',
-    isPlaceholder: true,
+    avatarUrl: '',
+    avatarCaption: 'Biology Department',
+    isPlaceholder: false,
   },
   {
     id: 'faculty-05',
     placeholderId: 'Faculty Member 05',
-    name: 'Faculty — English & IT',
+    name: 'Department of English & IT',
     subject: 'English & Information Technology',
     roleTitle: 'Faculty — English & Academic Communication',
     shortIntro:
@@ -108,15 +105,14 @@ export const FACULTY_DATA: FacultyMember[] = [
       'C++ / IT Syllabus for CHSE Board',
       'Academic Presentation Skills',
     ],
-    avatarUrl:
-      'https://images.unsplash.com/photo-1580894732444-8ecded7900cd?auto=format&fit=crop&w=600&q=80',
-    avatarCaption: 'English & IT Faculty',
-    isPlaceholder: true,
+    avatarUrl: '',
+    avatarCaption: 'English & IT Department',
+    isPlaceholder: false,
   },
   {
     id: 'faculty-06',
     placeholderId: 'Faculty Member 06',
-    name: 'Faculty — Agro & Mental Aptitude',
+    name: 'Department of Agricultural & Mental Aptitude',
     subject: 'OUAT / ICAR Mental Aptitude & General Science',
     roleTitle: 'Faculty — Agricultural Aptitude & Reasoning',
     shortIntro:
@@ -127,15 +123,14 @@ export const FACULTY_DATA: FacultyMember[] = [
       'Previous 10 Years Entrance Pattern Analysis',
       'Time Management under Exam Conditions',
     ],
-    avatarUrl:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80',
-    avatarCaption: 'Aptitude & Entrance Faculty',
-    isPlaceholder: true,
+    avatarUrl: '',
+    avatarCaption: 'Aptitude & Entrance Department',
+    isPlaceholder: false,
   },
   {
     id: 'faculty-07',
     placeholderId: 'Faculty Member 07',
-    name: 'Director & Academic Mentor',
+    name: 'Academic Mentoring & Student Support',
     subject: 'Academic Mentoring and Strategy',
     roleTitle: 'Director — Academic Strategy & Student Progress',
     shortIntro:
@@ -146,9 +141,8 @@ export const FACULTY_DATA: FacultyMember[] = [
       'Exam Stress Management & Test Demystification',
       'Parent-Student Academic Progress Alignments',
     ],
-    avatarUrl:
-      'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=600&q=80',
+    avatarUrl: '',
     avatarCaption: 'Leadership & Academic Strategy',
-    isPlaceholder: true,
+    isPlaceholder: false,
   },
 ];

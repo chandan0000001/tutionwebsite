@@ -1,13 +1,18 @@
 import app from './app.js';
 import { ENV } from './config/env.js';
 import { connectDB, disconnectDB } from './config/db.js';
+import { migrateStudentBatches } from './utils/batchMigration.js';
 
 let server;
 
 async function startServer() {
   try {
     // Attempt database connection
-    await connectDB().catch((err) => {
+    await connectDB().then(async () => {
+      await migrateStudentBatches().catch((err) => {
+        console.warn('[MIGRATION WARNING]', err.message);
+      });
+    }).catch((err) => {
       console.warn(
         `[DB WARNING] Could not connect to MongoDB: ${err.message}. Ensure MongoDB is running.`
       );
