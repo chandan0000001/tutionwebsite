@@ -32,7 +32,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: '2-Year Integrated Classroom Program • Bijipur Center',
     storyQuote:
       'Rigorous problem-solving frameworks and time-tested numerical shortcuts ensure students tackle multi-concept problems with precision and speed.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-blue-600',
   },
   {
@@ -46,7 +46,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Medical Achievers Classroom Program',
     storyQuote:
       'NCERT biology decoded with diagrammatic flowcharts and weekly OMR simulation drills designed to eliminate negative marking under exam pressure.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-emerald-600',
   },
   {
@@ -60,7 +60,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Odisha CHSE +2 Science Foundation Program',
     storyQuote:
       'Balancing council syllabus theory with step-marking techniques, personalized copy corrections, and exhaustive 10-year council question series.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-[#FC1682]',
   },
   {
@@ -74,7 +74,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'OUAT & ICAR Special Entrance Batch',
     storyQuote:
       'Specialized speed techniques in quantitative reasoning, agro-mental aptitude, and foundational science built specifically for entrance cutoffs.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-purple-600',
   },
 
@@ -90,7 +90,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Integrated Board + Entrance Classroom Program',
     storyQuote:
       'Structured DPPs and weekly computer-based test simulations provide continuous feedback, turning abstract physics and calculus into scoring strengths.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-blue-600',
   },
   {
@@ -104,7 +104,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Class 12 Medical Intensive Batch',
     storyQuote:
       'Focusing on high-yield chapters, assertion-reasoning logic, and rapid elimination strategies to maximize scores within the 200-minute test.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-emerald-600',
   },
   {
@@ -118,7 +118,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'CHSE Council Regular Batch',
     storyQuote:
       'Thorough coverage of textbook derivations, definitions, and laboratory viva preparation under senior faculty guidance.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-[#FC1682]',
   },
   {
@@ -132,7 +132,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Agro-Science & Aptitude Weekend Modules',
     storyQuote:
       'Systematic training in agro-mental aptitude and speed arithmetic enables students to clear competitive cutoffs with confidence.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-purple-600',
   },
 
@@ -148,7 +148,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: '2-Year Integrated Classroom Program',
     storyQuote:
       'Conceptual depth taught from fundamentals ensures students understand why formulas work before applying them in speed tests.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-blue-600',
   },
   {
@@ -162,7 +162,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Target Medical Entrance Batch',
     storyQuote:
       'Small batch sizes ensure educators track individual chapter performance and clarify doubts in daily evening desks.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-emerald-600',
   },
   {
@@ -176,7 +176,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Class 11 & 12 Foundation Program',
     storyQuote:
       'Individual copy evaluation with red-pen guidance shows students exactly how to maximize marks in subjective council formats.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-[#FC1682]',
   },
   {
@@ -190,7 +190,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Agro-Entrances Fast-Track Program',
     storyQuote:
       'Targeted practice in mental reasoning and quantitative precision tailored to the latest entrance syllabus.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-purple-600',
   },
 
@@ -206,7 +206,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Integrated JEE Batch • Berhampur',
     storyQuote:
       'Personal faculty mentorship kept students disciplined throughout the demanding +2 phase and guided effective test strategy.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-blue-600',
   },
   {
@@ -220,7 +220,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Pre-Medical Classroom Program',
     storyQuote:
       'Consistent revision cycles and error analysis notebooks converted weak areas into high-scoring sections.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-emerald-600',
   },
   {
@@ -234,7 +234,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'CHSE Council Comprehensive Program',
     storyQuote:
       'Solving model question papers under strict exam timer conditions gave students exceptional composure on exam day.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-[#FC1682]',
   },
   {
@@ -248,7 +248,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Competitive Entrance Batch',
     storyQuote:
       'Comprehensive study notes and daily problem sheets created the exact discipline required for entrance success.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-purple-600',
   },
 
@@ -264,7 +264,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: '2-Year Integrated Classroom Program',
     storyQuote:
       'Individual attention in small batches allowed faculty to clarify every concept without hesitation.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-blue-600',
   },
   {
@@ -278,7 +278,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Medical Achievers Batch',
     storyQuote:
       'Biological taxonomy and physiological concepts reinforced through structured revision cycles.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-emerald-600',
   },
   {
@@ -292,7 +292,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Board Focus Classroom Batch',
     storyQuote:
       'Writing test papers under timer conditions trained students to complete 3-hour council papers well in advance.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-[#FC1682]',
   },
   {
@@ -306,7 +306,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Agro-Entrances Module',
     storyQuote:
       'Speed calculation techniques enabled students to maximize attempted questions with near-zero error rates.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-purple-600',
   },
 
@@ -322,7 +322,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Integrated Board + Entrance Batch',
     storyQuote:
       'Building solid mathematical intuition laid the foundation for top engineering selections.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-blue-600',
   },
   {
@@ -336,7 +336,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'PCB Medical Classroom Program',
     storyQuote:
       'Personal access to educators for doubt clearing made all the difference in clearing cutoffs on the first attempt.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-emerald-600',
   },
   {
@@ -350,7 +350,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Council Board Foundation Program',
     storyQuote:
       'Subjective test copy correction guided students to write according to council marking schemes.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-[#FC1682]',
   },
   {
@@ -364,7 +364,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Competitive Entrance Wing',
     storyQuote:
       'Structured time management training was instrumental in competitive exam success.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-purple-600',
   },
 
@@ -380,7 +380,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Regular Integrated Classroom Program',
     storyQuote:
       'Step-by-step guidance and continuous problem sets kept preparation on track without any academic gaps.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-blue-600',
   },
   {
@@ -394,7 +394,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Medical Achievers Classroom Program',
     storyQuote:
       'Strict emphasis on NCERT diagrams and weekly full-length timed tests gave students immense composure.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-emerald-600',
   },
   {
@@ -408,7 +408,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Council Comprehensive Program',
     storyQuote:
       'Precise framing of definitions and neat derivation diagrams ensured full marks in council evaluations.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-[#FC1682]',
   },
   {
@@ -422,7 +422,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Foundation & Aptitude Program',
     storyQuote:
       'Speed techniques taught for aptitude papers enabled students to clear qualifying cutoffs comfortably.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-purple-600',
   },
 
@@ -438,7 +438,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: '2-Year Advanced Classroom Foundation',
     storyQuote:
       'Creating an environment where tackling tough advanced numerical problems became an everyday habit.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-blue-600',
   },
   {
@@ -452,7 +452,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: '2-Year PCB Medical Foundation Batch',
     storyQuote:
       'Personal access to educators whenever stuck helped build rock-solid conceptual confidence.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-emerald-600',
   },
   {
@@ -466,7 +466,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Integrated CHSE Council Classroom',
     storyQuote:
       'Comprehensive chapter-wise tests and model papers ensured zero surprises in annual council examinations.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-[#FC1682]',
   },
   {
@@ -480,7 +480,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Competitive Entrance Coaching Program',
     storyQuote:
       'Mentorship built not just academic competence in mathematics and science, but mental clarity for competitive rigor.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-purple-600',
   },
 
@@ -496,7 +496,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Integrated JEE Entrance Classroom Batch',
     storyQuote:
       'Conceptual depth taught in physical principles made exam questions feel intuitive and approachable.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-blue-600',
   },
   {
@@ -510,7 +510,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Medical Achievers Program',
     storyQuote:
       'Handwritten summary sheets and continuous unit tests helped students retain complex anatomical and chemical details.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-emerald-600',
   },
   {
@@ -524,7 +524,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Council Board Rigor Batch',
     storyQuote:
       'Practicing under strict timer conditions trained students to complete 3-hour long council subjective papers smoothly.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-[#FC1682]',
   },
 
@@ -540,7 +540,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Inaugural Antariksh Classroom Batch',
     storyQuote:
       'From the very first day, faculty set high standards for discipline, problem sets, and daily conceptual clarity.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-blue-600',
   },
   {
@@ -554,7 +554,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Medical Foundation Batch',
     storyQuote:
       'Dedicated educators proved that students in Berhampur can clear national medical entrance tests without relocating to distant hubs.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-emerald-600',
   },
   {
@@ -568,7 +568,7 @@ export const RESULTS_DATA: ResultItem[] = [
     details: 'Council Board Comprehensive Program',
     storyQuote:
       'Personal mentorship and constant encouragement from our teachers formed the bedrock of high percentages.',
-    photoUrl: '',
+    photoUrl: '/logo_transparent.png',
     badgeColor: 'bg-[#FC1682]',
   },
 ];

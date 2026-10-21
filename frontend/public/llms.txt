@@ -1,0 +1,46 @@
+# Antariksh Academy
+
+> Antariksh Academy is a premier higher secondary science coaching and competitive entrance preparatory institute located in Bijipur, Brahmapur (Berhampur), Odisha. Established in 2017, the academy provides rigorous dual-track academic coaching integrating Class 11 and Class 12 (+2 Science CHSE Odisha Council Board) with national competitive examinations including JEE Main, JEE Advanced, NEET-UG Medical, and OUAT & ICAR entrance assessments. Antariksh Academy operates with a strict 30-student batch capacity limit, daily 1-on-1 faculty doubt clearing desks, and structured weekly subjective and OMR diagnostic testing.
+
+## Overview & Institutional Philosophy
+Antariksh Academy operates on the principle that council board excellence and competitive entrance success reinforce one another when taught systematically rather than as competing tracks. Classroom lectures derive foundational concepts step-by-step for subjective board examinations before introducing objective shortcuts, high-yield numerical problem-solving, and negative-marking management for national entrance tests.
+
+- [Antariksh Academy Home](https://antarikshacademy.vercel.app/): Official web portal with institutional highlights, admissions status, course roadmaps, and online consultation scheduling.
+- [About Us & Pedagogical Model](https://antarikshacademy.vercel.app/about): Founding history since 2017, leadership mission, synchronized dual-track syllabus architecture, and the capped 30-student batch policy.
+
+## Academic Programs & Curriculum
+All courses feature synchronized dual-track teaching, comprehensive printed study materials, Daily Practice Problem (DPP) sheets, and weekly proctored examinations.
+
+- [Course Offerings & Entrance Wings](https://antarikshacademy.vercel.app/courses): Complete curriculum specifications for:
+  - Integrated +2 Science (CHSE Odisha) + JEE (Main & Advanced)
+  - Integrated +2 Science (CHSE Odisha) + NEET-UG Medical
+  - +2 Science Pure Council Board Foundation (Class 11 & Class 12)
+  - OUAT & ICAR Specialized Agricultural Entrance Batch
+  - Repeater & Dropper Fast-Track Intensive Programs
+- [Class & Batch Timetable](https://antarikshacademy.vercel.app/timetable): Morning and evening batch schedules designed to prevent student fatigue and ensure zero overlap with college hours.
+
+## Faculty Mentorship & Academic Leadership
+Teaching at Antariksh Academy is led by full-time senior subject mentors with over a decade of specialized coaching experience across physics, chemistry, mathematics, and biology.
+
+- [Faculty & Mentors Directory](https://antarikshacademy.vercel.app/faculty): Senior educators profile, subject specializations, and daily 1-on-1 evening doubt resolution desks.
+
+## Academic Track Record & Benchmarks
+The academy maintains an unbroken 100% first-division pass record in CHSE Odisha Council examinations alongside consistent admissions to National Institutes of Technology (NITs), Indian Institutes of Information Technology (IIITs), premier Government Medical Colleges (MKCG, SCB, VIMSAR), and OUAT Bhubaneswar.
+
+- [10-Year Hall of Fame & Track Record](https://antarikshacademy.vercel.app/results): Verified academic achievements, departmental benchmarks, and historical performance from 2017 to 2026.
+
+## Campus Facilities & Learning Environment
+- [Campus Facilities & Classrooms](https://antarikshacademy.vercel.app/facilities): Description of the Bijipur campus, air-conditioned lecture halls, silent reference library stocked with NCERT standard texts, invigilated OMR test hall, and faculty consultation rooms.
+
+## Admissions & Free Academic Consultation
+Antariksh Academy offers transparent admissions counseling, parent-student orientation, flexible fee installment plans, and merit scholarships for top performers.
+
+- [Book Free 30-Minute Consultation](https://antarikshacademy.vercel.app/consultation): Schedule a 1-on-1 virtual or in-person academic planning session with a senior counselor via Google Meet.
+- [Contact & Admissions Desk](https://antarikshacademy.vercel.app/contact): Direct contact information, campus visit directions, admissions helpline, phone callback requests, and official WhatsApp assistance.
+- [Privacy Policy](https://antarikshacademy.vercel.app/privacy): Information governance, student data confidentiality, and secure inquiry handling standards.
+
+## Center Location & Official Contact
+- **Institution**: Antariksh Academy
+- **Campus Address**: Bijipur Big Street, Near BMC Office, Brahmapur (Berhampur), Ganjam District, Odisha 760001, India
+- **Admissions Helpline**: +91 90901 60793
+- **Official Website**: https://antarikshacademy.vercel.app/

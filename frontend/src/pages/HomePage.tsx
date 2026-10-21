@@ -1212,15 +1212,20 @@ export const HomePage: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100 dark:bg-[#172033] border-2 border-amber-400 dark:border-[#F4C76B]/40 shrink-0 shadow-sm">
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100 dark:bg-[#172033] border-2 border-amber-400 dark:border-[#F4C76B]/40 shrink-0 shadow-sm flex items-center justify-center p-1">
                       <img
-                        src={item.photoUrl}
-                        alt={item.studentName}
+                        src={item.photoUrl || '/logo_transparent.png'}
+                        alt={`${item.studentName} Emblem`}
                         width="48"
                         height="48"
                         loading="lazy"
                         decoding="async"
-                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          target.onerror = null;
+                          target.src = '/logo_transparent.png';
+                        }}
+                        className="w-full h-full object-contain"
                       />
                     </div>
                     <div className="min-w-0 flex-1">
