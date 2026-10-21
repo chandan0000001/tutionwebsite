@@ -315,7 +315,7 @@ export const HomePage: React.FC = () => {
               {/* Institutional Authority Seal Badge */}
               <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] shadow-xs max-w-full">
                 <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#C6922E] dark:bg-[#F4C76B] shrink-0"></span>
-                <span className="font-cinzel text-[10px] sm:text-xs font-bold text-[#C6922E] dark:text-[#F4C76B] tracking-wider uppercase whitespace-nowrap">
+                <span className="font-cinzel text-[10px] sm:text-xs font-bold text-[#854D0E] dark:text-[#F4C76B] tracking-wider uppercase whitespace-nowrap">
                   <span className="hidden sm:inline">Antariksh Academy • </span>Estd. 2017
                 </span>
                 <span className="text-slate-300 dark:text-[#344054]">|</span>
@@ -360,7 +360,7 @@ export const HomePage: React.FC = () => {
                   to="/consultation"
                   className="px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm text-[#17365D] dark:text-[#F3F4F6] hover:text-[#102A43] dark:hover:text-white bg-white dark:bg-[#202B3D] hover:bg-slate-50 dark:hover:bg-[#26334A] border border-slate-300 dark:border-[#344054] hover:border-[#17365D] dark:hover:border-[#F4C76B]/50 shadow-xs transition-all flex items-center justify-center gap-2 text-center font-display min-h-[44px] active:scale-[0.98]"
                 >
-                  <Calendar className="w-4 h-4 text-[#C6922E] dark:text-[#F4C76B] shrink-0" />
+                  <Calendar className="w-4 h-4 text-[#854D0E] dark:text-[#F4C76B] shrink-0" />
                   <span>Book Free Consultation</span>
                 </Link>
               </div>
@@ -370,7 +370,7 @@ export const HomePage: React.FC = () => {
                 <span>Prefer a phone conversation or campus visit?</span>
                 <Link
                   to="/contact"
-                  className="text-[#C6922E] hover:text-[#9A701C] dark:text-[#F4C76B] dark:hover:text-[#FDE68A] font-bold transition-colors inline-flex items-center gap-0.5 underline underline-offset-2"
+                  className="text-[#854D0E] hover:text-[#713F12] dark:text-[#F4C76B] dark:hover:text-[#FDE68A] font-bold transition-colors inline-flex items-center gap-0.5 underline underline-offset-2"
                 >
                   <span>Request a Callback →</span>
                 </Link>
@@ -379,8 +379,8 @@ export const HomePage: React.FC = () => {
               {/* 3 Core Value Guarantees */}
               <div className="grid grid-cols-3 gap-1.5 sm:gap-3 pt-1 sm:pt-2">
                 <div className="bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] rounded-xl p-2 sm:p-3 shadow-xs flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1 sm:gap-2.5">
-                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-amber-500/15 text-[#C6922E] dark:text-[#F4C76B] flex items-center justify-center shrink-0">
-                    <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#C6922E] dark:text-[#F4C76B]" />
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-amber-500/15 text-[#854D0E] dark:text-[#F4C76B] flex items-center justify-center shrink-0">
+                    <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#854D0E] dark:text-[#F4C76B]" />
                   </div>
                   <div>
                     <span className="block text-[11px] sm:text-xs font-bold text-slate-900 dark:text-[#F3F4F6] font-display leading-tight">30 / Batch</span>
@@ -415,7 +415,7 @@ export const HomePage: React.FC = () => {
               {/* Social Proof Trust Ticker */}
               <div className="flex flex-wrap items-center gap-2 sm:gap-4 pt-1 sm:pt-2 pb-1 border-t border-slate-200 dark:border-[#344054]/70 pr-14 sm:pr-0">
                 <div className="flex items-center gap-1.5">
-                  <div className="flex text-[#C6922E] dark:text-[#F4C76B]">
+                  <div className="flex text-[#854D0E] dark:text-[#F4C76B]">
                     {[1, 2, 3, 4, 5].map((s) => (
                       <Star key={s} className="w-3.5 h-3.5 fill-[#C6922E] dark:fill-[#F4C76B]" />
                     ))}
@@ -442,14 +442,14 @@ export const HomePage: React.FC = () => {
                 
                 <div className="flex items-center justify-between pb-3 sm:pb-4 mb-3 sm:mb-4 border-b border-slate-200 dark:border-[#344054]/70">
                   <div>
-                    <span className="font-cinzel text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-[#C6922E] dark:text-[#F4C76B] block">
+                    <span className="font-cinzel text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-[#854D0E] dark:text-[#F4C76B] block">
                       Direct Admissions Desk
                     </span>
                     <h3 className="font-display text-base sm:text-xl font-extrabold text-[#172033] dark:text-[#F3F4F6]">
                       Request a Parent Meeting or Callback
                     </h3>
                   </div>
-                  <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-50 dark:bg-[#172033] border border-amber-200 dark:border-[#344054] text-[#C6922E] dark:text-[#F4C76B] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shrink-0 flex items-center gap-1 font-stat">
+                  <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-50 dark:bg-[#172033] border border-amber-200 dark:border-[#344054] text-[#854D0E] dark:text-[#F4C76B] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider shrink-0 flex items-center gap-1 font-stat">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#C6922E] dark:bg-[#F4C76B] animate-pulse"></span>
                     2026–27 Batches
                   </span>
@@ -504,10 +504,11 @@ export const HomePage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-800 dark:text-[#F3F4F6] uppercase tracking-wider mb-1 font-display">
+                    <label htmlFor="hero-name" className="block text-[11px] font-bold text-slate-800 dark:text-[#F3F4F6] uppercase tracking-wider mb-1 font-display">
                       Parent / Student Name <span className="text-amber-600 dark:text-[#F4C76B]">*</span>
                     </label>
                     <input
+                      id="hero-name"
                       type="text"
                       required
                       placeholder="e.g. Rajesh Patnaik"
@@ -518,7 +519,7 @@ export const HomePage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-800 dark:text-[#F3F4F6] uppercase tracking-wider mb-1 font-display">
+                    <label htmlFor="hero-phone" className="block text-[11px] font-bold text-slate-800 dark:text-[#F3F4F6] uppercase tracking-wider mb-1 font-display">
                       10-Digit Mobile Number <span className="text-amber-600 dark:text-[#F4C76B]">*</span>
                     </label>
                     <div className="relative">
@@ -526,6 +527,7 @@ export const HomePage: React.FC = () => {
                         +91
                       </div>
                       <input
+                        id="hero-phone"
                         type="tel"
                         required
                         inputMode="numeric"
@@ -545,10 +547,11 @@ export const HomePage: React.FC = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-800 dark:text-[#F3F4F6] uppercase tracking-wider mb-1 font-display">
+                      <label htmlFor="hero-class" className="block text-[11px] font-bold text-slate-800 dark:text-[#F3F4F6] uppercase tracking-wider mb-1 font-display">
                         Current Class
                       </label>
                       <select
+                        id="hero-class"
                         value={heroTargetClass}
                         onChange={(e) => setHeroTargetClass(e.target.value)}
                         className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#172033] border border-slate-300 dark:border-[#344054] text-base sm:text-xs text-slate-900 dark:text-[#F3F4F6] focus:border-[#17365D] dark:focus:border-[#F4C76B] focus:outline-none transition-all min-h-[44px]"
@@ -561,10 +564,11 @@ export const HomePage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-800 dark:text-[#F3F4F6] uppercase tracking-wider mb-1 font-display">
+                      <label htmlFor="hero-course" className="block text-[11px] font-bold text-slate-800 dark:text-[#F3F4F6] uppercase tracking-wider mb-1 font-display">
                         Target Exam
                       </label>
                       <select
+                        id="hero-course"
                         value={heroCourse}
                         onChange={(e) => setHeroCourse(e.target.value)}
                         className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-[#172033] border border-slate-300 dark:border-[#344054] text-base sm:text-xs text-slate-900 dark:text-[#F3F4F6] focus:border-[#17365D] dark:focus:border-[#F4C76B] focus:outline-none transition-all min-h-[44px]"
@@ -662,7 +666,7 @@ export const HomePage: React.FC = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-6 text-center">
             
             <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] shadow-xs hover:border-[#17365D]/30 dark:hover:border-[#F4C76B]/40 transition-colors">
-              <span className="block text-2xl sm:text-4xl font-extrabold text-[#C6922E] dark:text-[#F4C76B] font-stat mb-0.5 sm:mb-1">
+              <span className="block text-2xl sm:text-4xl font-extrabold text-[#854D0E] dark:text-[#F4C76B] font-stat mb-0.5 sm:mb-1">
                 10+
               </span>
               <span className="font-display text-[11px] sm:text-xs font-bold text-slate-800 dark:text-[#F3F4F6] block uppercase tracking-wider">
@@ -692,7 +696,7 @@ export const HomePage: React.FC = () => {
             </div>
 
             <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] shadow-xs hover:border-[#17365D]/30 dark:hover:border-[#F4C76B]/40 transition-colors">
-              <span className="block text-2xl sm:text-4xl font-extrabold text-[#C6922E] dark:text-[#F4C76B] font-stat mb-0.5 sm:mb-1">
+              <span className="block text-2xl sm:text-4xl font-extrabold text-[#854D0E] dark:text-[#F4C76B] font-stat mb-0.5 sm:mb-1">
                 100%
               </span>
               <span className="font-display text-[11px] sm:text-xs font-bold text-slate-800 dark:text-[#F3F4F6] block uppercase tracking-wider">
@@ -722,8 +726,8 @@ export const HomePage: React.FC = () => {
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] text-[#C6922E] dark:text-[#F4C76B] text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-2 font-cinzel shadow-xs">
-                <Camera className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B]" />
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] text-[#854D0E] dark:text-[#F4C76B] text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-2 font-cinzel shadow-xs">
+                <Camera className="w-3.5 h-3.5 text-[#854D0E] dark:text-[#F4C76B]" />
                 <span>Inside Antariksh Academy • Photo Album</span>
               </div>
               <h2 className="font-display text-xl sm:text-3xl lg:text-4xl font-extrabold text-[#172033] dark:text-[#F3F4F6] tracking-tight">
@@ -738,18 +742,18 @@ export const HomePage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsCarouselPaused(!isCarouselPaused)}
-                className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 dark:bg-[#202B3D] dark:hover:bg-[#263449] text-xs font-bold text-slate-700 dark:text-[#D1D5DB] flex items-center gap-1.5 border border-slate-200 dark:border-[#344054] transition-colors cursor-pointer shadow-xs"
+                className="min-h-[44px] px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 dark:bg-[#202B3D] dark:hover:bg-[#263449] text-xs font-bold text-slate-700 dark:text-[#D1D5DB] flex items-center gap-1.5 border border-slate-200 dark:border-[#344054] transition-colors cursor-pointer shadow-xs"
                 aria-label={isCarouselPaused ? 'Resume auto-swiping' : 'Pause auto-swiping'}
                 title={isCarouselPaused ? 'Resume auto-swiping' : 'Pause auto-swiping'}
               >
                 {isCarouselPaused ? (
                   <>
-                    <Play className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                    <Play className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                     <span>Play</span>
                   </>
                 ) : (
                   <>
-                    <Pause className="w-3 h-3 text-[#C6922E] dark:text-[#F4C76B]" />
+                    <Pause className="w-3.5 h-3.5 text-amber-700 dark:text-[#F4C76B]" />
                     <span>Pause</span>
                   </>
                 )}
@@ -759,18 +763,18 @@ export const HomePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handlePrevSlide}
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white hover:bg-[#17365D] hover:text-white dark:bg-[#202B3D] dark:hover:bg-[#F4C76B] dark:hover:text-[#0F172A] text-slate-700 dark:text-white flex items-center justify-center transition-all border border-slate-200 dark:border-[#344054] cursor-pointer active:scale-95 shadow-xs"
+                  className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl bg-white hover:bg-[#17365D] hover:text-white dark:bg-[#202B3D] dark:hover:bg-[#F4C76B] dark:hover:text-[#0F172A] text-slate-700 dark:text-white flex items-center justify-center transition-all border border-slate-200 dark:border-[#344054] cursor-pointer active:scale-95 shadow-xs"
                   aria-label="Previous photo slide"
                 >
-                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
                   type="button"
                   onClick={handleNextSlide}
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white hover:bg-[#17365D] hover:text-white dark:bg-[#202B3D] dark:hover:bg-[#F4C76B] dark:hover:text-[#0F172A] text-slate-700 dark:text-white flex items-center justify-center transition-all border border-slate-200 dark:border-[#344054] cursor-pointer active:scale-95 shadow-xs"
+                  className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl bg-white hover:bg-[#17365D] hover:text-white dark:bg-[#202B3D] dark:hover:bg-[#F4C76B] dark:hover:text-[#0F172A] text-slate-700 dark:text-white flex items-center justify-center transition-all border border-slate-200 dark:border-[#344054] cursor-pointer active:scale-95 shadow-xs"
                   aria-label="Next photo slide"
                 >
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -797,6 +801,11 @@ export const HomePage: React.FC = () => {
                   <img
                     src={slide.imageUrl}
                     alt={slide.title}
+                    width="1200"
+                    height="480"
+                    loading={idx === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    fetchPriority={idx === 0 ? 'high' : 'auto'}
                     className="w-full h-full object-cover transform duration-1000 ease-out group-hover:scale-105"
                   />
 
@@ -847,7 +856,8 @@ export const HomePage: React.FC = () => {
                   <button
                     key={slide.id}
                     onClick={() => setActiveSlide(idx)}
-                    className={`px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
+                    aria-label={`Go to slide ${idx + 1}: ${slide.shortLabel}`}
+                    className={`min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                       activeSlide === idx
                         ? 'bg-[#F4C76B] text-[#0F172A] shadow-md font-extrabold'
                         : 'bg-[#202B3D] text-[#AAB4C3] hover:text-[#F3F4F6] hover:bg-[#263449]'
@@ -919,7 +929,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#C6922E] dark:text-[#F4C76B] bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] px-3.5 py-1 rounded-full shadow-xs">
+            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#854D0E] dark:text-[#F4C76B] bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] px-3.5 py-1 rounded-full shadow-xs">
               The Antariksh Business Advantage
             </span>
             <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#172033] dark:text-[#F3F4F6] tracking-tight mt-3 mb-2 sm:mb-3">
@@ -1035,7 +1045,7 @@ export const HomePage: React.FC = () => {
           
           {/* Mobile Streamlined Teaser Card (< md) - Eliminates Home Page Bloat & Directs to Dedicated /courses Page */}
           <div className="md:hidden bg-white dark:bg-[#172033] border border-slate-200 dark:border-[#344054] rounded-2xl p-5 text-center space-y-3 shadow-xs">
-            <span className="font-cinzel text-[10px] font-bold uppercase tracking-widest text-[#C6922E] dark:text-[#F4C76B] bg-amber-50 dark:bg-[#202B3D] border border-amber-200 dark:border-[#344054] px-3 py-1 rounded-full inline-block">
+            <span className="font-cinzel text-[10px] font-bold uppercase tracking-widest text-[#854D0E] dark:text-[#F4C76B] bg-amber-50 dark:bg-[#202B3D] border border-amber-200 dark:border-[#344054] px-3 py-1 rounded-full inline-block">
               Curated Academic Pathways
             </span>
             <h2 className="font-display text-lg font-bold text-[#172033] dark:text-white">
@@ -1058,7 +1068,7 @@ export const HomePage: React.FC = () => {
           <div className="hidden md:block">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-10 gap-3 sm:gap-4">
               <div>
-                <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#C6922E] dark:text-[#F4C76B] bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] px-3.5 py-1 rounded-full shadow-xs">
+                <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#854D0E] dark:text-[#F4C76B] bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] px-3.5 py-1 rounded-full shadow-xs">
                   Curated Academic Pathways
                 </span>
                 <h2 className="font-display text-xl sm:text-3xl lg:text-4xl font-extrabold text-[#172033] dark:text-[#F3F4F6] tracking-tight mt-2.5">
@@ -1070,7 +1080,7 @@ export const HomePage: React.FC = () => {
                 className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-slate-800 dark:text-[#F3F4F6] bg-white dark:bg-[#202B3D] hover:bg-slate-50 dark:hover:bg-[#26334A] border border-slate-300 dark:border-[#344054] hover:border-[#17365D] dark:hover:border-[#F4C76B]/50 transition-colors shrink-0 shadow-xs"
               >
                 <span>Explore All Course Syllabus & Batches</span>
-                <ArrowRight className="w-4 h-4 text-[#C6922E] dark:text-[#F4C76B]" />
+                <ArrowRight className="w-4 h-4 text-[#854D0E] dark:text-[#F4C76B]" />
               </Link>
             </div>
 
@@ -1082,7 +1092,7 @@ export const HomePage: React.FC = () => {
                 >
                   <div>
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                      <span className="text-[10px] sm:text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-[#172033] text-[#C6922E] dark:text-[#F4C76B] border border-amber-200 dark:border-[#F4C76B]/30 uppercase tracking-wider">
+                      <span className="text-[10px] sm:text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-[#172033] text-[#854D0E] dark:text-[#F4C76B] border border-amber-200 dark:border-[#F4C76B]/30 uppercase tracking-wider">
                         {course.badge}
                       </span>
                       <span className="text-[10px] font-bold text-slate-500 dark:text-[#AAB4C3] font-stat shrink-0">
@@ -1133,7 +1143,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] rounded-2xl p-5 sm:p-7 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="space-y-1 text-left">
-              <span className="font-cinzel text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#C6922E] dark:text-[#F4C76B] block">
+              <span className="font-cinzel text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#854D0E] dark:text-[#F4C76B] block">
                 Direct Admissions & Faculty Desks
               </span>
               <h3 className="font-display text-base sm:text-xl font-bold text-[#172033] dark:text-[#F3F4F6]">
@@ -1162,8 +1172,8 @@ export const HomePage: React.FC = () => {
           
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-4">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] text-[#C6922E] dark:text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-2 shadow-xs">
-                <Award className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B]" />
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] text-[#854D0E] dark:text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-2 shadow-xs">
+                <Award className="w-3.5 h-3.5 text-[#854D0E] dark:text-[#F4C76B]" />
                 <span className="font-cinzel">10 Years of Proven Success (2017–2026)</span>
               </div>
               <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#172033] dark:text-[#F3F4F6] tracking-tight">
@@ -1196,14 +1206,22 @@ export const HomePage: React.FC = () => {
                         Verified
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-50 dark:bg-[#172033] text-[#C6922E] dark:text-[#F4C76B] border border-amber-200 dark:border-[#F4C76B]/30 font-cinzel">
+                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-50 dark:bg-[#172033] text-[#854D0E] dark:text-[#F4C76B] border border-amber-200 dark:border-[#F4C76B]/30 font-cinzel">
                       {item.category}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100 dark:bg-[#172033] border-2 border-amber-400 dark:border-[#F4C76B]/40 shrink-0 shadow-sm">
-                      <img src={item.photoUrl} alt={item.studentName} className="w-full h-full object-cover" />
+                      <img
+                        src={item.photoUrl}
+                        alt={item.studentName}
+                        width="48"
+                        height="48"
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h4 className="font-display text-sm font-bold text-slate-900 dark:text-white break-words">
@@ -1239,7 +1257,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#C6922E] dark:text-[#F4C76B] bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] px-3.5 py-1 rounded-full shadow-xs">
+            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#854D0E] dark:text-[#F4C76B] bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] px-3.5 py-1 rounded-full shadow-xs">
               Friction-Free Enrollment
             </span>
             <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#172033] dark:text-[#F3F4F6] tracking-tight mt-3 mb-2 sm:mb-3">
@@ -1306,7 +1324,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#C6922E] dark:text-[#F4C76B] bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] px-3.5 py-1 rounded-full shadow-xs">
+            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#854D0E] dark:text-[#F4C76B] bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] px-3.5 py-1 rounded-full shadow-xs">
               Voices of Trust
             </span>
             <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-[#172033] dark:text-[#F3F4F6] tracking-tight mt-3 mb-2">
@@ -1325,7 +1343,7 @@ export const HomePage: React.FC = () => {
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-1 text-[#C6922E] dark:text-[#F4C76B]">
+                    <div className="flex items-center gap-1 text-[#854D0E] dark:text-[#F4C76B]">
                       {Array.from({ length: item.rating }).map((_, i) => (
                         <Star key={i} className="w-3.5 h-3.5 fill-[#C6922E] dark:fill-[#F4C76B]" />
                       ))}
@@ -1342,11 +1360,19 @@ export const HomePage: React.FC = () => {
 
                 <div className="pt-3 border-t border-slate-100 dark:border-[#344054]/60 flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 dark:bg-[#172033] border-2 border-amber-400 dark:border-[#F4C76B]/40 shrink-0">
-                    <img src={item.avatarUrl} alt={item.displayName} className="w-full h-full object-cover" />
+                    <img
+                      src={item.avatarUrl}
+                      alt={item.displayName}
+                      width="40"
+                      height="40"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div>
                     <span className="text-xs font-bold text-slate-900 dark:text-[#F3F4F6] block font-display">{item.displayName}</span>
-                    <span className="text-[11px] text-[#C6922E] dark:text-[#F4C76B] font-semibold block">{item.subTitle}</span>
+                    <span className="text-[11px] text-[#854D0E] dark:text-[#F4C76B] font-semibold block">{item.subTitle}</span>
                   </div>
                 </div>
               </div>
@@ -1361,7 +1387,7 @@ export const HomePage: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center mb-8 sm:mb-10">
-            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#C6922E] dark:text-[#F4C76B] bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] px-3.5 py-1 rounded-full shadow-xs">
+            <span className="font-cinzel text-xs font-bold uppercase tracking-widest text-[#854D0E] dark:text-[#F4C76B] bg-white dark:bg-[#202B3D] border border-slate-200 dark:border-[#344054] px-3.5 py-1 rounded-full shadow-xs">
               Frequently Asked Questions
             </span>
             <h2 className="font-display text-xl sm:text-3xl font-extrabold text-[#172033] dark:text-[#F3F4F6] tracking-tight mt-3">
@@ -1380,6 +1406,8 @@ export const HomePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => toggleFaq(idx)}
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-answer-${idx}`}
                     className="w-full py-3.5 sm:py-4 px-4 sm:px-6 text-left flex items-center justify-between gap-3 font-display font-bold text-xs sm:text-base text-slate-900 hover:text-[#17365D] dark:text-[#F3F4F6] dark:hover:text-[#F4C76B] transition-colors cursor-pointer min-h-[48px]"
                   >
                     <span className="leading-snug">{faq.q}</span>
@@ -1388,7 +1416,10 @@ export const HomePage: React.FC = () => {
                     </span>
                   </button>
                   {isOpen && (
-                    <div className="px-4 sm:px-6 pb-4 pt-1 text-xs sm:text-sm text-slate-600 dark:text-[#AAB4C3] leading-relaxed border-t border-slate-100 dark:border-[#344054]/60">
+                    <div
+                      id={`faq-answer-${idx}`}
+                      className="px-4 sm:px-6 pb-4 pt-1 text-xs sm:text-sm text-slate-600 dark:text-[#AAB4C3] leading-relaxed border-t border-slate-100 dark:border-[#344054]/60"
+                    >
                       {faq.a}
                     </div>
                   )}
@@ -1403,8 +1434,8 @@ export const HomePage: React.FC = () => {
       {/* 11. HIGH-IMPACT CLOSING CONVERSION BANNER */}
       <section className="py-8 sm:py-16 bg-gradient-to-b from-[#F1F5F9] via-[#E2E8F0] to-[#F1F5F9] dark:bg-gradient-to-r dark:from-[#111827] dark:via-[#172033] dark:to-[#111827] text-slate-800 dark:text-[#F3F4F6] relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4 sm:space-y-6 relative">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#202B3D] text-[#C6922E] dark:text-[#F4C76B] text-xs font-bold uppercase tracking-wider border border-slate-200 dark:border-[#344054] font-cinzel shadow-xs">
-            <Calendar className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#202B3D] text-[#854D0E] dark:text-[#F4C76B] text-xs font-bold uppercase tracking-wider border border-slate-200 dark:border-[#344054] font-cinzel shadow-xs">
+            <Calendar className="w-3.5 h-3.5 text-[#854D0E] dark:text-[#F4C76B]" />
             <span>Admissions Desk 2026–27</span>
           </div>
 

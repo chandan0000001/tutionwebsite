@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -7,41 +8,56 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
-// Statically import all pages to eliminate lazy-chunk network roundtrips during page transitions
+// Keep HomePage directly imported for instantaneous first paint on mobile & desktop
 import HomePage from './pages/HomePage';
-import AboutPage from './pages/AboutPage';
-import CoursesPage from './pages/CoursesPage';
-import FacultyPage from './pages/FacultyPage';
-import ResultsPage from './pages/ResultsPage';
-import FacilitiesPage from './pages/FacilitiesPage';
-import TimetablePage from './pages/TimetablePage';
-import ConsultationPage from './pages/ConsultationPage';
-import ContactPage from './pages/ContactPage';
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 
-// Student Portal Pages
-import StudentLoginPage from './pages/student/StudentLoginPage';
-import ChangePasswordPage from './pages/student/ChangePasswordPage';
-import StudentDashboardPage from './pages/student/StudentDashboardPage';
-import RecordedLecturesPage from './pages/student/RecordedLecturesPage';
-import StudentProfilePage from './pages/student/StudentProfilePage';
+// Lazy-loaded secondary public pages
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const CoursesPage = lazy(() => import('./pages/CoursesPage'));
+const FacultyPage = lazy(() => import('./pages/FacultyPage'));
+const ResultsPage = lazy(() => import('./pages/ResultsPage'));
+const FacilitiesPage = lazy(() => import('./pages/FacilitiesPage'));
+const TimetablePage = lazy(() => import('./pages/TimetablePage'));
+const ConsultationPage = lazy(() => import('./pages/ConsultationPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 
-// Teacher Admin Portal Pages
-import TeacherDashboardPage from './pages/teacher/TeacherDashboardPage';
-import TeacherStudentsPage from './pages/teacher/TeacherStudentsPage';
-import TeacherLecturesPage from './pages/teacher/TeacherLecturesPage';
-import TeacherProfilePage from './pages/teacher/TeacherProfilePage';
-import TeacherChangePasswordPage from './pages/teacher/TeacherChangePasswordPage';
+// Lazy-loaded Student Portal Pages
+const StudentLoginPage = lazy(() => import('./pages/student/StudentLoginPage'));
+const ChangePasswordPage = lazy(() => import('./pages/student/ChangePasswordPage'));
+const StudentDashboardPage = lazy(() => import('./pages/student/StudentDashboardPage'));
+const RecordedLecturesPage = lazy(() => import('./pages/student/RecordedLecturesPage'));
+const StudentProfilePage = lazy(() => import('./pages/student/StudentProfilePage'));
 
-// Superadmin Portal Pages
-import SuperadminDashboardPage from './pages/superadmin/SuperadminDashboardPage';
-import SuperadminBatchesPage from './pages/superadmin/SuperadminBatchesPage';
-import SuperadminTeachersPage from './pages/superadmin/SuperadminTeachersPage';
-import SuperadminStudentsPage from './pages/superadmin/SuperadminStudentsPage';
-import SuperadminLecturesPage from './pages/superadmin/SuperadminLecturesPage';
-import SuperadminAuditLogsPage from './pages/superadmin/SuperadminAuditLogsPage';
-import SuperadminProfilePage from './pages/superadmin/SuperadminProfilePage';
-import SuperadminChangePasswordPage from './pages/superadmin/SuperadminChangePasswordPage';
+// Lazy-loaded Teacher Admin Portal Pages
+const TeacherDashboardPage = lazy(() => import('./pages/teacher/TeacherDashboardPage'));
+const TeacherStudentsPage = lazy(() => import('./pages/teacher/TeacherStudentsPage'));
+const TeacherLecturesPage = lazy(() => import('./pages/teacher/TeacherLecturesPage'));
+const TeacherProfilePage = lazy(() => import('./pages/teacher/TeacherProfilePage'));
+const TeacherChangePasswordPage = lazy(() => import('./pages/teacher/TeacherChangePasswordPage'));
+
+// Lazy-loaded Superadmin Portal Pages
+const SuperadminDashboardPage = lazy(() => import('./pages/superadmin/SuperadminDashboardPage'));
+const SuperadminBatchesPage = lazy(() => import('./pages/superadmin/SuperadminBatchesPage'));
+const SuperadminTeachersPage = lazy(() => import('./pages/superadmin/SuperadminTeachersPage'));
+const SuperadminStudentsPage = lazy(() => import('./pages/superadmin/SuperadminStudentsPage'));
+const SuperadminLecturesPage = lazy(() => import('./pages/superadmin/SuperadminLecturesPage'));
+const SuperadminAuditLogsPage = lazy(() => import('./pages/superadmin/SuperadminAuditLogsPage'));
+const SuperadminProfilePage = lazy(() => import('./pages/superadmin/SuperadminProfilePage'));
+const SuperadminChangePasswordPage = lazy(() => import('./pages/superadmin/SuperadminChangePasswordPage'));
+
+function RouteLoadingFallback() {
+  return (
+    <div
+      className="min-h-[50vh] flex flex-col items-center justify-center p-8 space-y-3"
+      role="status"
+      aria-label="Loading page"
+    >
+      <div className="w-8 h-8 border-3 border-slate-300 dark:border-[#344054] border-t-[#17365D] dark:border-t-[#F4C76B] rounded-full animate-spin"></div>
+      <span className="sr-only">Loading page content...</span>
+    </div>
+  );
+}
 
 export function App() {
   return (
@@ -56,8 +72,9 @@ export function App() {
 
             {/* Dynamic Route Content - Instant swap synchronized with StairsTransition */}
             <main className="flex-1">
-              <Routes>
-                {/* Public Institute Website Routes */}
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <Routes>
+                  {/* Public Institute Website Routes */}
                 <Route path="/" element={<HomePage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/courses" element={<CoursesPage />} />
@@ -224,7 +241,8 @@ export function App() {
                 {/* Catch-all route defaults back to Home */}
                 <Route path="*" element={<HomePage />} />
               </Routes>
-            </main>
+            </Suspense>
+          </main>
 
             {/* Global Footer */}
             <Footer />

@@ -8,7 +8,14 @@ export const PageLoader: React.FC = () => {
         <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-[#344054] border-t-[#17365D] dark:border-t-[#F4C76B] animate-spin"></div>
         {/* Inner brand emblem */}
         <div className="w-10 h-10 rounded-full bg-white dark:bg-[#172033] p-1 shadow-sm border border-slate-200 dark:border-[#344054]">
-          <img src="/logo_transparent.png" alt="Antariksh Logo" className="w-full h-full object-contain" />
+          <img
+            src="/logo_transparent.png"
+            alt="Antariksh Logo"
+            width="40"
+            height="40"
+            decoding="async"
+            className="w-full h-full object-contain"
+          />
         </div>
       </div>
       <p className="mt-4 text-xs font-bold text-[#17365D] dark:text-[#F4C76B] tracking-wider uppercase animate-pulse">

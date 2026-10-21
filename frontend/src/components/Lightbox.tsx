@@ -85,6 +85,7 @@ export const Lightbox: React.FC<LightboxProps> = ({
           <img
             src={current.imageUrl}
             alt={current.title}
+            decoding="async"
             className="max-h-[65vh] max-w-full object-contain rounded-xl shadow-2xl border border-[#344054]"
           />
         </div>

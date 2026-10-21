@@ -47,6 +47,10 @@ export const Footer: React.FC = () => {
                 <img
                   src="/logo_transparent.png"
                   alt="Antariksh Academy Logo"
+                  width="36"
+                  height="36"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-contain"
                 />
               </div>
@@ -66,7 +70,7 @@ export const Footer: React.FC = () => {
                 href={ACADEMY_CONFIG.contact.whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-xs"
+                className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs"
                 aria-label="WhatsApp"
               >
                 <WhatsAppIcon className="w-4 h-4" />
@@ -75,7 +79,7 @@ export const Footer: React.FC = () => {
                 href={ACADEMY_CONFIG.socials.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-[#1877F2] text-white flex items-center justify-center shadow-xs"
+                className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl bg-[#1877F2] text-white flex items-center justify-center shadow-xs"
                 aria-label="Facebook"
               >
                 <FacebookIcon className="w-4 h-4" />
@@ -84,7 +88,7 @@ export const Footer: React.FC = () => {
                 href={ACADEMY_CONFIG.socials.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#FC1682] via-rose-500 to-purple-600 text-white flex items-center justify-center shadow-xs"
+                className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-xl bg-gradient-to-tr from-[#FC1682] via-rose-500 to-purple-600 text-white flex items-center justify-center shadow-xs"
                 aria-label="Instagram"
               >
                 <InstagramIcon className="w-4 h-4" />
@@ -111,13 +115,13 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Streamlined Navigation Links */}
-          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 pt-2 text-xs border-t border-slate-200 dark:border-[#243042]">
-            <Link to="/" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Home</Link>
-            <Link to="/courses" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Courses</Link>
-            <Link to="/faculty" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Teachers</Link>
-            <Link to="/results" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Success Results</Link>
-            <Link to="/timetable" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Timetable</Link>
-            <Link to="/privacy" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] py-1 font-medium">Privacy Policy</Link>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1 pt-2 text-xs border-t border-slate-200 dark:border-[#243042]">
+            <Link to="/" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] min-h-[44px] flex items-center font-medium">Home</Link>
+            <Link to="/courses" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] min-h-[44px] flex items-center font-medium">Courses</Link>
+            <Link to="/faculty" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] min-h-[44px] flex items-center font-medium">Teachers</Link>
+            <Link to="/results" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] min-h-[44px] flex items-center font-medium">Success Results</Link>
+            <Link to="/timetable" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] min-h-[44px] flex items-center font-medium">Timetable</Link>
+            <Link to="/privacy" className="text-slate-600 dark:text-slate-300 hover:text-[#17365D] dark:hover:text-[#F4C76B] min-h-[44px] flex items-center font-medium">Privacy Policy</Link>
           </div>
 
           {/* Location & Copyright */}
@@ -139,6 +143,10 @@ export const Footer: React.FC = () => {
                 <img
                   src="/logo_transparent.png"
                   alt="Antariksh Academy Logo"
+                  width="40"
+                  height="40"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-contain"
                 />
               </div>
@@ -158,7 +166,7 @@ export const Footer: React.FC = () => {
 
             <div className="text-xs text-slate-600 dark:text-[#AAB4C3] space-y-1.5 pt-1">
               <div className="flex items-start gap-2">
-                <MapPin className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B] shrink-0 mt-0.5" />
+                <MapPin className="w-3.5 h-3.5 text-amber-700 dark:text-[#F4C76B] shrink-0 mt-0.5" />
                 <span>Bijipur Big Street, Brahmapur, Odisha 760001</span>
               </div>
               <div className="flex items-center gap-2">
@@ -182,31 +190,31 @@ export const Footer: React.FC = () => {
                 href={ACADEMY_CONFIG.socials.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-white dark:bg-[#172033] hover:bg-[#1877F2] hover:text-white text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-[#344054] flex items-center justify-center transition-colors shadow-xs"
+                className="min-w-[40px] min-h-[40px] w-10 h-10 rounded-xl bg-white dark:bg-[#172033] hover:bg-[#1877F2] hover:text-white text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-[#344054] flex items-center justify-center transition-colors shadow-xs"
                 aria-label="Facebook Page"
                 title="Facebook"
               >
-                <FacebookIcon className="w-3.5 h-3.5" />
+                <FacebookIcon className="w-4 h-4" />
               </a>
               <a
                 href={ACADEMY_CONFIG.socials.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-white dark:bg-[#172033] hover:bg-[#E4405F] hover:text-white text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-[#344054] flex items-center justify-center transition-colors shadow-xs"
+                className="min-w-[40px] min-h-[40px] w-10 h-10 rounded-xl bg-white dark:bg-[#172033] hover:bg-[#E4405F] hover:text-white text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-[#344054] flex items-center justify-center transition-colors shadow-xs"
                 aria-label="Instagram Profile"
                 title="Instagram"
               >
-                <InstagramIcon className="w-3.5 h-3.5" />
+                <InstagramIcon className="w-4 h-4" />
               </a>
               <a
                 href={ACADEMY_CONFIG.contact.whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-white dark:bg-[#172033] hover:bg-emerald-600 hover:text-white text-emerald-600 dark:text-emerald-400 border border-slate-300 dark:border-[#344054] flex items-center justify-center transition-colors shadow-xs"
+                className="min-w-[40px] min-h-[40px] w-10 h-10 rounded-xl bg-white dark:bg-[#172033] hover:bg-emerald-600 hover:text-white text-emerald-600 dark:text-emerald-400 border border-slate-300 dark:border-[#344054] flex items-center justify-center transition-colors shadow-xs"
                 aria-label="WhatsApp"
                 title="WhatsApp"
               >
-                <WhatsAppIcon className="w-3.5 h-3.5" />
+                <WhatsAppIcon className="w-4 h-4" />
               </a>
             </div>
           </div>
@@ -273,7 +281,7 @@ export const Footer: React.FC = () => {
                     className="text-slate-600 dark:text-[#AAB4C3] hover:text-[#17365D] dark:hover:text-[#F4C76B] transition-colors flex items-center justify-between group"
                   >
                     <span className="truncate">{c.title}</span>
-                    <span className="text-[10px] text-[#C6922E] dark:text-[#F4C76B]/80 font-semibold shrink-0 ml-1">
+                    <span className="text-[10px] text-amber-700 dark:text-[#F4C76B]/80 font-semibold shrink-0 ml-1">
                       {c.badge}
                     </span>
                   </Link>

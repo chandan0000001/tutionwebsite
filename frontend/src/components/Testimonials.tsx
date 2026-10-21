@@ -80,6 +80,9 @@ export const Testimonials: React.FC = () => {
                     <img
                       src={item.avatarUrl}
                       alt={item.displayName}
+                      width="44"
+                      height="44"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-all"
                       loading="lazy"
                     />

@@ -770,6 +770,10 @@ export const SuperadminLecturesPage: React.FC = () => {
                       <img
                         src={`https://img.youtube.com/vi/${previewYtId}/mqdefault.jpg`}
                         alt="Thumbnail"
+                        width="80"
+                        height="48"
+                        loading="lazy"
+                        decoding="async"
                         className="w-20 h-12 object-cover rounded-lg border border-slate-300 dark:border-slate-700"
                       />
                       <span className="text-[11px] text-emerald-600 font-bold">

@@ -221,6 +221,9 @@ export const StairsTransition: React.FC = () => {
           <img
             src="/logo_transparent.png"
             alt="Antariksh Academy"
+            width="56"
+            height="56"
+            decoding="async"
             className="w-full h-full object-contain"
           />
         </div>

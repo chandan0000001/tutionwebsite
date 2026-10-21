@@ -172,6 +172,9 @@ export const About: React.FC<AboutProps> = ({ onLearnMoreCourses, onOpenConsulta
               <img
                 src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80"
                 alt="Students studying science and mathematics with focused guidance"
+                width="800"
+                height="288"
+                decoding="async"
                 className="w-full h-48 sm:h-72 object-cover"
                 loading="lazy"
               />

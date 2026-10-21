@@ -112,6 +112,9 @@ export const Hero: React.FC<HeroProps> = ({ onExploreCourses, onBookConsultation
                   <img
                     src="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80"
                     alt="Students in classroom learning science and mathematics"
+                    width="800"
+                    height="256"
+                    decoding="async"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="eager"
                   />
@@ -178,6 +181,10 @@ export const Hero: React.FC<HeroProps> = ({ onExploreCourses, onBookConsultation
                       <img
                         src="/images/academy_faculty_fb.jpg"
                         alt="Antariksh Academy Faculty Team"
+                        width="32"
+                        height="32"
+                        loading="lazy"
+                        decoding="async"
                         className="w-8 h-8 rounded-full object-cover border-2 border-slate-200 dark:border-[#344054]"
                       />
                       <span className="text-[11px] font-bold text-slate-800 dark:text-white">

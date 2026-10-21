@@ -140,6 +140,9 @@ export const Results: React.FC = () => {
                       <img
                         src={item.photoUrl}
                         alt={item.studentName}
+                        width="48"
+                        height="48"
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         loading="lazy"
                       />

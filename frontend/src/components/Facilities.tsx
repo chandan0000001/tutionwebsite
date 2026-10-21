@@ -84,6 +84,9 @@ export const Facilities: React.FC = () => {
                   <img
                     src={facility.imageUrl}
                     alt={facility.title}
+                    width="600"
+                    height="256"
+                    decoding="async"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                   />

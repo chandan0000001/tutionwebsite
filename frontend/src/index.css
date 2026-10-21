@@ -128,7 +128,7 @@
 
 /* Academic Theme Typography & Brand Utility Classes */
 .gold-gradient-text {
-  background: linear-gradient(135deg, #B47E1F 0%, #C6922E 50%, #8A5B10 100%);
+  background: linear-gradient(135deg, #92400E 0%, #B45309 50%, #78350F 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -140,7 +140,7 @@
 }
 
 .academic-heading-gradient {
-  background: linear-gradient(135deg, #17365D 0%, #102A43 70%, #C6922E 100%);
+  background: linear-gradient(135deg, #17365D 0%, #102A43 70%, #92400E 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

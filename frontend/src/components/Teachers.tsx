@@ -31,6 +31,10 @@ export const Teachers: React.FC = () => {
             <img
               src="/images/academy_faculty_fb.jpg"
               alt="Antariksh Academy Berhampur Faculty"
+              width="384"
+              height="224"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover"
             />
             <div className="absolute bottom-2 left-2 right-2 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-md px-2 py-1 rounded text-[11px] font-bold text-[#17365D] dark:text-[#F4C76B] text-center border border-slate-200 dark:border-[#344054]">
@@ -86,6 +90,9 @@ export const Teachers: React.FC = () => {
                       <img
                         src={faculty.avatarUrl}
                         alt={`${faculty.name} - ${faculty.subject}`}
+                        width="320"
+                        height="192"
+                        decoding="async"
                         className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
                       />

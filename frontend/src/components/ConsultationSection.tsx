@@ -202,6 +202,7 @@ export const ConsultationSection: React.FC<ConsultationSectionProps> = ({
             <iframe
               title="Antariksh Academy 30-Minute Free Academic Consultation Calendar"
               src={bookingIframeUrl}
+              loading="lazy"
               className="w-full flex-1 border-0 rounded-xl sm:rounded-2xl min-h-[580px] sm:min-h-[680px]"
               onLoad={() => setIsIframeLoaded(true)}
               onError={() => {

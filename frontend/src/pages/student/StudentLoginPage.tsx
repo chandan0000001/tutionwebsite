@@ -79,6 +79,9 @@ export const StudentLoginPage: React.FC = () => {
             <img
               src="/logo_transparent.png"
               alt="Antariksh Academy"
+              width="64"
+              height="64"
+              decoding="async"
               className="w-full h-full object-contain"
             />
           </div>

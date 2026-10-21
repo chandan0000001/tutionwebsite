@@ -83,11 +83,13 @@ export const Navbar: React.FC = () => {
               <img
                 src="/logo_transparent.png"
                 alt="Antariksh Academy Logo"
+                width="40"
+                height="40"
                 className="w-full h-full object-contain"
               />
             </div>
             <div className="flex flex-col text-left shrink-0">
-              <span className="font-display font-black text-sm xs:text-base sm:text-xl lg:text-2xl tracking-tight text-[#17365D] dark:text-white group-hover:text-[#C6922E] dark:group-hover:text-[#F4C76B] transition-colors leading-none whitespace-nowrap">
+              <span className="font-display font-black text-sm xs:text-base sm:text-xl lg:text-2xl tracking-tight text-[#17365D] dark:text-white group-hover:text-[#854D0E] dark:group-hover:text-[#F4C76B] transition-colors leading-none whitespace-nowrap">
                 ANTARIKSH <span className="gold-gradient-text">ACADEMY</span>
               </span>
               <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-300 tracking-wider uppercase font-semibold mt-1 hidden 2xl:block whitespace-nowrap">
@@ -122,7 +124,7 @@ export const Navbar: React.FC = () => {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-xl text-slate-600 hover:text-[#17365D] hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-[#202B3D] border border-slate-200 dark:border-[#344054] transition-colors focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] cursor-pointer"
+              className="min-w-[40px] min-h-[40px] p-2 rounded-xl text-slate-600 hover:text-[#17365D] hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-[#202B3D] border border-slate-200 dark:border-[#344054] transition-colors focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] cursor-pointer flex items-center justify-center"
               aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
@@ -167,7 +169,7 @@ export const Navbar: React.FC = () => {
                 className="px-2.5 py-1.5 2xl:px-3 text-xs font-bold text-slate-700 hover:text-[#17365D] bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-[#1E293B] dark:hover:bg-[#2A374D] border border-slate-300 dark:border-slate-700 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                 title="Portal Login"
               >
-                <GraduationCap className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B] shrink-0" />
+                <GraduationCap className="w-3.5 h-3.5 text-[#854D0E] dark:text-[#F4C76B] shrink-0" />
                 <span>Portal Login</span>
               </Link>
             )}
@@ -197,7 +199,7 @@ export const Navbar: React.FC = () => {
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#202B3D] border border-slate-200 dark:border-[#344054] transition-colors focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] cursor-pointer shrink-0"
+              className="min-w-[44px] min-h-[44px] p-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#202B3D] border border-slate-200 dark:border-[#344054] transition-colors focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] cursor-pointer shrink-0 flex items-center justify-center"
               aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
@@ -211,7 +213,7 @@ export const Navbar: React.FC = () => {
             {/* Quick Consultation CTA - shown on tablets and wider mobile, hidden on compact phones to prevent navbar cramming */}
             <Link
               to="/consultation"
-              className="hidden sm:inline-flex px-3 py-1.5 text-xs font-extrabold text-white bg-gradient-to-r from-[#17365D] to-[#102A43] dark:text-[#0F172A] dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] rounded-xl shadow-xs transition-colors items-center gap-1.5 shrink-0"
+              className="hidden sm:inline-flex px-3 py-2 text-xs font-extrabold text-white bg-gradient-to-r from-[#17365D] to-[#102A43] dark:text-[#0F172A] dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] rounded-xl shadow-xs transition-colors items-center gap-1.5 shrink-0 min-h-[44px]"
               aria-label="Book Consultation"
             >
               <Calendar className="w-3.5 h-3.5 shrink-0 text-[#FDE68A] dark:text-[#0F172A]" />
@@ -221,12 +223,12 @@ export const Navbar: React.FC = () => {
             {/* Mobile Menu Hamburger Toggle */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#202B3D] border border-slate-200 dark:border-[#344054] focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] cursor-pointer shrink-0"
+              className="min-w-[44px] min-h-[44px] p-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#202B3D] border border-slate-200 dark:border-[#344054] focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] cursor-pointer shrink-0 flex items-center justify-center"
               aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={isOpen}
             >
               {isOpen ? (
-                <X className="w-5 h-5 text-[#C6922E] dark:text-[#F4C76B]" />
+                <X className="w-5 h-5 text-[#854D0E] dark:text-[#F4C76B]" />
               ) : (
                 <Menu className="w-5 h-5" />
               )}
