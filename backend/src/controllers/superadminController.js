@@ -38,6 +38,12 @@ function generateNumericTempPassword() {
  */
 export async function getDashboardStats(req, res, next) {
   try {
+    // Prevent intermediate or browser caches from returning stale dashboard metrics
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+
     const [
       totalStudents,
       activeStudents,
@@ -1119,9 +1125,15 @@ export async function deleteLecture(req, res, next) {
 
 export async function getAuditLogs(req, res, next) {
   try {
+    // Prevent browser and proxy caching so administrative audit records update in real time
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+
     const page = Math.max(1, parseInt(req.query.page || '1', 10));
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit || '25', 10)));
-    const action = (req.query.action || '').trim();
+    const action = (req.query.action || '').trim().toUpperCase();
     const actor = (req.query.actor || '').trim();
 
     const filter = {};

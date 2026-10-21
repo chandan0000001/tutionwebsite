@@ -49,6 +49,8 @@ const staffSchema = new mongoose.Schema(
     role: {
       type: String,
       required: [true, 'Role is required'],
+      lowercase: true,
+      trim: true,
       enum: ['teacher', 'superadmin'],
       index: true,
     },

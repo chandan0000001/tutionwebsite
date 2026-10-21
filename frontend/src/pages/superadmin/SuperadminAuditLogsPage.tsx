@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Eye,
   X,
+  RefreshCw,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../config/apiConfig';
@@ -39,6 +40,7 @@ export const SuperadminAuditLogsPage: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<Date>(new Date());
 
   // Inspector modal
   const [selectedLog, setSelectedLog] = useState<AuditLogItem | null>(null);
@@ -52,16 +54,23 @@ export const SuperadminAuditLogsPage: React.FC = () => {
       const url = new URL(`${API_BASE_URL}/superadmin/audit-logs`);
       url.searchParams.set('page', String(page));
       url.searchParams.set('limit', '25');
+      url.searchParams.set('_t', String(Date.now()));
       if (actionFilter) url.searchParams.set('action', actionFilter);
       if (actorSearch.trim()) url.searchParams.set('actor', actorSearch.trim());
 
       const res = await fetch(url.toString(), {
-        headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          Pragma: 'no-cache',
+        },
       });
       const data = await res.json();
 
       if (res.ok && data.success) {
         setLogs(data.data || []);
+        setLastRefreshedAt(new Date());
         if (data.pagination) {
           setTotalPages(data.pagination.totalPages || 1);
           setTotalRecords(data.pagination.totalRecords || 0);
@@ -87,11 +96,14 @@ export const SuperadminAuditLogsPage: React.FC = () => {
   };
 
   const getActionBadgeClass = (action: string) => {
-    if (action.includes('CREATE')) {
+    if (action.includes('ASSIGN') || action.includes('CREATE')) {
       return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
     }
     if (action.includes('DELETE') || action.includes('DEACTIVATE')) {
       return 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20';
+    }
+    if (action.includes('REMOVE')) {
+      return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20';
     }
     if (action.includes('PASSWORD')) {
       return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20';
@@ -107,14 +119,36 @@ export const SuperadminAuditLogsPage: React.FC = () => {
       <SuperadminHeader />
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        {/* Title */}
-        <div className="mb-6">
-          <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 dark:text-white">
-            Administrative Audit Trail
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Immutable log of sensitive operations: student enrollments, faculty provisioning, password resets, and content updates.
-          </p>
+        {/* Title and Live Status */}
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="font-display font-black text-2xl sm:text-3xl text-slate-900 dark:text-white">
+              Administrative Audit Trail
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+              Immutable log of sensitive operations: student enrollments, faculty provisioning, password resets, and content updates.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 self-start sm:self-auto">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#0E1524] border border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Live Updates</span>
+              <span className="text-slate-400 dark:text-slate-600">•</span>
+              <span>
+                {lastRefreshedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => fetchLogs()}
+              disabled={isLoading}
+              className="py-1.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0E1524] hover:bg-slate-50 dark:hover:bg-[#151F33] text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 cursor-pointer shadow-xs transition-all disabled:opacity-50"
+              title="Refresh audit records"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-[#C6922E]' : 'text-slate-500'}`} />
+              <span>{isLoading ? 'Updating...' : 'Refresh'}</span>
+            </button>
+          </div>
         </div>
 
         {/* Filter and Search */}
@@ -132,8 +166,11 @@ export const SuperadminAuditLogsPage: React.FC = () => {
               <option value="">All Action Types</option>
               <option value="STUDENT_CREATE">STUDENT_CREATE</option>
               <option value="STUDENT_UPDATE">STUDENT_UPDATE</option>
+              <option value="STUDENT_DELETE">STUDENT_DELETE</option>
               <option value="STUDENT_DEACTIVATE">STUDENT_DEACTIVATE</option>
               <option value="STUDENT_REACTIVATE">STUDENT_REACTIVATE</option>
+              <option value="STUDENT_BATCH_ASSIGN">STUDENT_BATCH_ASSIGN</option>
+              <option value="STUDENT_BATCH_REMOVE">STUDENT_BATCH_REMOVE</option>
               <option value="TEACHER_CREATE">TEACHER_CREATE</option>
               <option value="TEACHER_UPDATE">TEACHER_UPDATE</option>
               <option value="TEACHER_DEACTIVATE">TEACHER_DEACTIVATE</option>

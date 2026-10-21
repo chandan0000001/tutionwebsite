@@ -242,4 +242,93 @@ describe('Student Multi-Batch Model & Normalization', () => {
   });
 });
 
+import { AuditLog } from '../src/models/AuditLog.js';
+import { recordAuditLog } from '../src/utils/auditLogger.js';
+
+describe('AuditLog Model & Audit Logger Resilience', () => {
+  test('AuditLog schema accepts uppercase role and normalizes to lowercase', async () => {
+    const log = new AuditLog({
+      actorUsername: 'aa_superadmin',
+      actorRole: 'SUPERADMIN',
+      action: 'STUDENT_BATCH_ASSIGN',
+      targetType: 'Student',
+      targetId: '654321654321654321654321',
+    });
+
+    await log.validate();
+    assert.equal(log.actorRole, 'superadmin');
+    assert.equal(log.action, 'STUDENT_BATCH_ASSIGN');
+    assert.ok(log.actorId);
+  });
+
+  test('AuditLog schema auto-generates actorId when not explicitly passed', async () => {
+    const log = new AuditLog({
+      actorUsername: 'system',
+      actorRole: 'system',
+      action: 'BATCH_MIGRATION',
+      targetType: 'Batch',
+    });
+
+    await log.validate();
+    assert.ok(log.actorId);
+    assert.equal(log.actorUsername, 'system');
+  });
+
+  test('AuditLog schema normalizes lowercase action string to uppercase', async () => {
+    const log = new AuditLog({
+      actorUsername: 'aa_superadmin',
+      actorRole: 'superadmin',
+      action: 'student_batch_remove',
+      targetType: 'Student',
+    });
+
+    await log.validate();
+    assert.equal(log.action, 'STUDENT_BATCH_REMOVE');
+  });
+
+  test('recordAuditLog strips passwords, tokens, and hashes from details', async () => {
+    // Mock AuditLog.create to verify sanitization
+    const originalCreate = AuditLog.create;
+    let capturedPayload = null;
+    AuditLog.create = async (payload) => {
+      capturedPayload = payload;
+      return payload;
+    };
+
+    try {
+      await recordAuditLog({
+        actor: {
+          _id: '654321654321654321654321',
+          username: 'aa_superadmin',
+          role: 'ADMIN', // Should normalize to superadmin
+        },
+        action: 'student_create',
+        targetType: 'Student',
+        targetId: '654321654321654321654322',
+        details: {
+          name: 'Test Student',
+          phone: '9876543210',
+          password: 'secretPassword123',
+          passwordHash: '$2b$12$hashedPassword',
+          temporaryPassword: 'temp123',
+          token: 'jwt.token.string',
+        },
+      });
+
+      assert.ok(capturedPayload);
+      assert.equal(capturedPayload.action, 'STUDENT_CREATE');
+      assert.equal(capturedPayload.actorRole, 'superadmin');
+      assert.equal(capturedPayload.details.name, 'Test Student');
+      assert.equal(capturedPayload.details.phone, '9876543210');
+      assert.equal(capturedPayload.details.password, undefined);
+      assert.equal(capturedPayload.details.passwordHash, undefined);
+      assert.equal(capturedPayload.details.temporaryPassword, undefined);
+      assert.equal(capturedPayload.details.token, undefined);
+    } finally {
+      AuditLog.create = originalCreate;
+    }
+  });
+});
+
+
 

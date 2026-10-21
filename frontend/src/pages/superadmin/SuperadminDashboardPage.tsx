@@ -52,8 +52,13 @@ export const SuperadminDashboardPage: React.FC = () => {
       if (!token) return;
       setIsLoading(true);
       try {
-        const res = await fetch(`${API_BASE_URL}/superadmin/dashboard`, {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await fetch(`${API_BASE_URL}/superadmin/dashboard?_t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            Pragma: 'no-cache',
+          },
         });
         const data = await res.json();
         if (res.ok && data.success) {

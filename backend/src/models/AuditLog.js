@@ -4,31 +4,38 @@ const auditLogSchema = new mongoose.Schema(
   {
     actorId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
+      default: () => new mongoose.Types.ObjectId(),
       ref: 'Staff',
+      index: true,
     },
     actorUsername: {
       type: String,
       required: true,
       trim: true,
+      default: 'system',
       index: true,
     },
     actorRole: {
       type: String,
       required: true,
-      enum: ['teacher', 'superadmin', 'system'],
+      lowercase: true,
+      trim: true,
+      enum: ['teacher', 'superadmin', 'admin', 'system', 'student', 'staff'],
+      default: 'system',
       index: true,
     },
     action: {
       type: String,
       required: true,
       trim: true,
+      uppercase: true,
       index: true,
     },
     targetType: {
       type: String,
       required: true,
       trim: true,
+      default: 'System',
       index: true,
     },
     targetId: {
@@ -54,3 +61,4 @@ const auditLogSchema = new mongoose.Schema(
 auditLogSchema.index({ createdAt: -1 });
 
 export const AuditLog = mongoose.model('AuditLog', auditLogSchema);
+
