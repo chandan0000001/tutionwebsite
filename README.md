@@ -11,7 +11,7 @@ Official web platform for **Antariksh Academy Coaching Institute** (Bijipur, Bra
 ## 1. System Architecture & Component Workflow
 
 The platform follows a decoupled client-server architecture deployed across modern cloud services:
-- **Frontend Client**: React 19 + TypeScript + Vite + Tailwind CSS deployed on **Vercel** with a hardened Content Security Policy (CSP).
+- **Frontend Client**: React 19 + TypeScript + Vite + Tailwind CSS deployed on **Vercel** with a hardened Content Security Policy (CSP) and **Vercel Web Analytics** for privacy-first traffic insights.
 - **Backend API**: Node.js + Express 4 REST API deployed on **Render** behind a single reverse proxy layer.
 - **Database**: **MongoDB Atlas** storing all application entities, atomic rate-limiting counters, and session states.
 - **Integrated Services**: YouTube for video playback, Cal.com for consultation scheduling, and FormSubmit for parent inquiry delivery.
@@ -22,6 +22,7 @@ flowchart TD
         Browser["User Browser (Students, Teachers, Superadmin, Parents)"]
         SPA["React 19 + TypeScript + Vite SPA"]
         VercelHeaders["Vercel Security Layer (CSP, HSTS, X-Frame-Options)"]
+        Analytics["Vercel Web Analytics (@vercel/analytics)"]
     end
 
     subgraph ExternalServices["External Integrated Services"]
@@ -52,6 +53,7 @@ flowchart TD
 
     Browser -->|HTTPS Request| VercelHeaders
     VercelHeaders --> SPA
+    SPA --> Analytics
     SPA -->|IFrame Embed / Booking| CalCom
     SPA -->|Privacy Embed| YouTube
     SPA -->|Form POST| FormSubmit
@@ -208,7 +210,35 @@ flowchart TD
 
 ---
 
-## 5. Repository Architecture
+## 5. Kobra-Inspired UI Sound & Haptics Engine (Web Audio API)
+
+Antariksh Academy features a micro-interaction audio and haptic feedback architecture inspired by the interaction design of [Kobra Systems](https://kobra.systems/components/sound).
+
+- **100% Synthesized Web Audio API**: Zero external audio files to download (0 KB network overhead, 0 ms latency). Oscillators, biquad filters, and noise buffers synthesize all frequencies dynamically in real-time.
+- **16 Distinct Interaction Sounds**:
+  1. `tap`: Short punchy micro-tap (1300Hz sine wave with FM modulation, 18ms decay).
+  2. `select`: UI selection blip (triangle wave 900Hz → 780Hz, 55ms decay) for navigation items and tabs.
+  3. `toggleOn`: Upbeat state activation (sine 520Hz → 880Hz upward sweep, 85ms) when toggling switches or activating light mode.
+  4. `toggleOff`: Downbeat state deactivation (sine 780Hz → 420Hz downward sweep, 85ms) when deactivating switches or entering dark mode.
+  5. `open`: Menu & modal reveal chime (triangle 320Hz → 620Hz, lowpass filter at 2600Hz, 130ms).
+  6. `close`: Modal & sheet dismissal (triangle 560Hz → 300Hz, lowpass filter at 2200Hz, 110ms).
+  7. `tick`: Subtle tactile mechanical click (square wave 1400Hz, lowpass filter at 3000Hz, 14ms) for pagination and carousel steppers.
+  8. `sliderTick`: Bandpass white noise at 3000Hz + sine 700Hz body for smooth range sliders.
+  9. `success`: Harmonious dual-tone chord (triangle 784Hz [G5] + 1175Hz [D6]) for successful operations.
+  10. `error`: Descending dual low warning buzz (triangle 300Hz + 224Hz) for failed validation.
+  11. `warning`: Double chime alert (triangle 622Hz chimes spaced 85ms apart).
+  12. `destructive`: Low pitch drop (triangle 300Hz → 170Hz) + brown noise impact buffer for delete and destructive actions.
+  13. `copy`: Double high blip (sine 1200Hz + 1400Hz) for copy-to-clipboard interactions.
+  14. `notification`: Ambient chime bell (triangle 523Hz [C5] + 784Hz [G5]).
+  15. `swoosh`: Smooth frequency sweep transition (sine 300Hz → 2000Hz sweep).
+  16. `blocked`: Muted rejection thud (sine 180Hz, lowpass filter at 700Hz) for disabled controls.
+- **Tactile Vibration (Haptics)**: Programmatic vibration patterns via `navigator.vibrate` tailored for mobile devices (6ms–40ms bursts).
+- **Global Context & Smart Detection**: Automatically detects user interactions on buttons, tabs, links, switches, dialog triggers, and delete buttons without manual per-element boilerplate. Supports explicit `data-sound` overrides.
+- **Accessible Mute Toggle**: Dedicated sound toggle in both desktop and mobile navigation bars (`aria-pressed`, `aria-label`, 44×44px touch targets) with `localStorage` state persistence (`antariksh_sound_muted`).
+
+---
+
+## 6. Repository Architecture
 
 ```text
 antariksh-academy/
@@ -219,22 +249,22 @@ antariksh-academy/
 │   ├── src/
 │   │   ├── components/           # UI Components & Role Protection
 │   │   │   ├── auth/             # ProtectedRoute with role enforcement & 403 fallback
-│   │   │   ├── common/           # CredentialsModal for one-time temporary passwords
+│   │   │   ├── common/           # CredentialsModal, ConfirmModal, SoundToggle
 │   │   │   ├── superadmin/       # Superadmin navigation & management views
 │   │   │   └── teacher/          # Teacher navigation & batch views
 │   │   ├── config/               # Public API & Academy Configurations
-│   │   ├── context/              # AuthContext (stateful session) & ThemeContext
+│   │   ├── context/              # AuthContext, ThemeContext & SoundContext
 │   │   ├── data/                 # Course catalog, faculty profiles & testimonials
 │   │   ├── pages/                # Public Institute & Role Portal Pages
 │   │   │   ├── student/          # Student Login, Lectures, Profile, Change Password
 │   │   │   ├── teacher/          # Teacher Dashboard, Students, Lectures, Profile
 │   │   │   └── superadmin/       # Superadmin Dashboard, Batches, Teachers, Students, Logs
 │   │   ├── services/             # FormSubmit admissions submission
-│   │   ├── utils/                # Validation & date formatting helpers
-│   │   ├── App.tsx               # Route declarations & synchronized transitions
+│   │   ├── utils/                # Sound engine, validation & date formatting helpers
+│   │   ├── App.tsx               # Route declarations, Analytics & sound providers
 │   │   └── main.tsx              # Application entry point
-│   ├── public/                   # Logos, faculty assets, favicon
-│   ├── package.json              # Frontend scripts & dependencies
+│   ├── public/                   # Logos, faculty assets, favicon, llms.txt
+│   ├── package.json              # Frontend scripts & dependencies (@vercel/analytics)
 │   ├── vite.config.ts            # Vite build configuration
 │   ├── tsconfig.json             # TypeScript configuration
 │   ├── vercel.json               # Security headers & Content Security Policy (CSP)
@@ -268,7 +298,7 @@ antariksh-academy/
 
 ---
 
-## 6. Quick Start & Local Development
+## 7. Quick Start & Local Development
 
 ### Prerequisites
 - **Node.js**: v18+ (tested on Node.js v24.x)
@@ -315,9 +345,9 @@ npm run dev
 
 ---
 
-## 7. Production Deployment Guidelines
+## 8. Production Deployment Guidelines
 
-### 7.1 Backend on Render
+### 8.1 Backend on Render
 In the Render Dashboard under **Environment**:
 
 1. `NODE_ENV`: Set to `production`.
@@ -330,19 +360,19 @@ In the Render Dashboard under **Environment**:
 8. `BCRYPT_SALT_ROUNDS`: `12`.
 9. `SUPERADMIN_USERNAME` & `SUPERADMIN_PASSWORD`: Strong initial administrator credentials.
 
-### 7.2 Frontend on Vercel
+### 8.2 Frontend on Vercel
 In the Vercel Dashboard:
 1. `VITE_API_BASE_URL`: `https://your-backend-name.onrender.com/api`.
 2. The provided [`frontend/vercel.json`](file:///home/chandan/Desktop/tutionWebsite/frontend/vercel.json) will automatically enforce Content Security Policy (CSP), `X-Frame-Options`, `X-Content-Type-Options`, and `Referrer-Policy`.
 
 ---
 
-## 8. Automated Verification & Testing
+## 9. Automated Verification & Testing
 
-The project includes automated test coverage across all core functionality and security remediations:
+The project includes automated test coverage across all core functionality, access control, and security remediations:
 
 ```bash
-# Run all backend unit and security tests (34 tests across 8 suites)
+# Run all backend unit and security tests (45 tests across 11 suites)
 cd backend
 npm test
 
@@ -351,10 +381,13 @@ cd ../frontend
 npm run build
 ```
 
-All 34 automated tests run in <300ms:
-- **Rate Limiting & Proxy Safety**: IP detection, spoof resistance, victim DoS protection, shared NAT isolation.
+All 45 automated tests execute with 100% pass rate in <500ms:
+- **Rate Limiting & Proxy Safety**: Express trust proxy IP resolution, spoof resistance, victim DoS protection, shared NAT isolation.
 - **YouTube Validation**: Strict HTTPS, exact domain whitelist, 11-char ID validation.
 - **ReDoS Prevention**: Escapes all regex metacharacters, bounds query lengths to 64 chars.
 - **Session Lifecycle**: MongoDB token binding, single session logout, bulk revocation on password change.
 - **Sanitized Errors**: Zero stack traces or internal database leaks in production responses.
+- **Teacher Batch Scoping & Access Control**: Verifies universal superadmin access and strict teacher batch assignment boundary enforcement.
 - **Excel Import**: Column header mapping, in-sheet deduplication, template generation.
+- **Student Multi-Batch Normalization**: Uppercasing, sanitization, and deduplication of batchCodes on pre-save hooks.
+- **Audit Logger Resilience**: Robust uppercase normalization, automated actorId generation, and sanitization of passwords and sensitive tokens.
