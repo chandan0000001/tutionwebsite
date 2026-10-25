@@ -36,6 +36,7 @@ export const CredentialsModal: React.FC<CredentialsModalProps> = ({
       <div className="bg-white dark:bg-[#111827] rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 sm:p-8 relative">
         <button
           onClick={onClose}
+          data-sound="close"
           className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl transition-colors cursor-pointer"
           aria-label="Close dialog"
         >
@@ -96,6 +97,7 @@ export const CredentialsModal: React.FC<CredentialsModalProps> = ({
         <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
           <button
             onClick={handleCopy}
+            data-sound="copy"
             className="w-full sm:flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold text-[#0B1120] bg-gradient-to-r from-[#C6922E] via-[#F4C76B] to-[#C6922E] hover:brightness-105 active:scale-[0.99] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
           >
             {copied ? (
@@ -113,6 +115,7 @@ export const CredentialsModal: React.FC<CredentialsModalProps> = ({
 
           <button
             onClick={onClose}
+            data-sound="close"
             className="w-full sm:w-auto py-3 px-6 rounded-xl text-xs sm:text-sm font-bold text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100 dark:bg-[#1E293B] hover:bg-slate-200 dark:hover:bg-[#2A374D] transition-colors cursor-pointer"
           >
             Done

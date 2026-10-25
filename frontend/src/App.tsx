@@ -7,6 +7,7 @@ import { ScrollToTop } from './components/ScrollToTop';
 import { StairsTransition } from './components/StairsTransition';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
+import { SoundProvider } from './context/SoundContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 // Keep HomePage directly imported for instantaneous first paint on mobile & desktop
@@ -64,192 +65,194 @@ export function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter>
-          <ScrollToTop />
-          <StairsTransition />
-          <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#111827] flex flex-col font-['Plus_Jakarta_Sans',sans-serif] text-slate-800 dark:text-[#F3F4F6] antialiased selection:bg-[#C6922E]/20 dark:selection:bg-[#F4C76B]/30 transition-colors duration-200">
-            {/* Sticky Global Navigation */}
-            <Navbar />
+        <SoundProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <StairsTransition />
+            <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#111827] flex flex-col font-['Plus_Jakarta_Sans',sans-serif] text-slate-800 dark:text-[#F3F4F6] antialiased selection:bg-[#C6922E]/20 dark:selection:bg-[#F4C76B]/30 transition-colors duration-200">
+              {/* Sticky Global Navigation */}
+              <Navbar />
 
-            {/* Dynamic Route Content - Instant swap synchronized with StairsTransition */}
-            <main className="flex-1">
-              <Suspense fallback={<RouteLoadingFallback />}>
-                <Routes>
-                  {/* Public Institute Website Routes */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/courses" element={<CoursesPage />} />
-                <Route path="/faculty" element={<FacultyPage />} />
-                <Route path="/results" element={<ResultsPage />} />
-                <Route path="/facilities" element={<FacilitiesPage />} />
-                <Route path="/timetable" element={<TimetablePage />} />
-                <Route path="/consultation" element={<ConsultationPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/privacy" element={<PrivacyPolicyPage />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              {/* Dynamic Route Content - Instant swap synchronized with StairsTransition */}
+              <main className="flex-1">
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <Routes>
+                    {/* Public Institute Website Routes */}
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/courses" element={<CoursesPage />} />
+                  <Route path="/faculty" element={<FacultyPage />} />
+                  <Route path="/results" element={<ResultsPage />} />
+                  <Route path="/facilities" element={<FacilitiesPage />} />
+                  <Route path="/timetable" element={<TimetablePage />} />
+                  <Route path="/consultation" element={<ConsultationPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
 
-                {/* Authentication Routes */}
-                <Route path="/student/login" element={<StudentLoginPage />} />
-                <Route path="/login" element={<StudentLoginPage />} />
-                <Route path="/teacher/login" element={<StudentLoginPage />} />
-                <Route path="/superadmin/login" element={<StudentLoginPage />} />
+                  {/* Authentication Routes */}
+                  <Route path="/student/login" element={<StudentLoginPage />} />
+                  <Route path="/login" element={<StudentLoginPage />} />
+                  <Route path="/teacher/login" element={<StudentLoginPage />} />
+                  <Route path="/superadmin/login" element={<StudentLoginPage />} />
 
-                {/* Protected Student Portal Routes */}
-                <Route
-                  path="/student/change-password"
-                  element={
-                    <ProtectedRoute allowedRoles={['student']} allowPasswordChangeOnly>
-                      <ChangePasswordPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/student/dashboard"
-                  element={
-                    <ProtectedRoute allowedRoles={['student']}>
-                      <StudentDashboardPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/student/lectures"
-                  element={
-                    <ProtectedRoute allowedRoles={['student']}>
-                      <RecordedLecturesPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/student/profile"
-                  element={
-                    <ProtectedRoute allowedRoles={['student']}>
-                      <StudentProfilePage />
-                    </ProtectedRoute>
-                  }
-                />
+                  {/* Protected Student Portal Routes */}
+                  <Route
+                    path="/student/change-password"
+                    element={
+                      <ProtectedRoute allowedRoles={['student']} allowPasswordChangeOnly>
+                        <ChangePasswordPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/student/dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={['student']}>
+                        <StudentDashboardPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/student/lectures"
+                    element={
+                      <ProtectedRoute allowedRoles={['student']}>
+                        <RecordedLecturesPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/student/profile"
+                    element={
+                      <ProtectedRoute allowedRoles={['student']}>
+                        <StudentProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                {/* Protected Teacher Admin Portal Routes */}
-                <Route
-                  path="/teacher/dashboard"
-                  element={
-                    <ProtectedRoute allowedRoles={['teacher', 'superadmin']}>
-                      <TeacherDashboardPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/teacher/students"
-                  element={
-                    <ProtectedRoute allowedRoles={['teacher', 'superadmin']}>
-                      <TeacherStudentsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/teacher/lectures"
-                  element={
-                    <ProtectedRoute allowedRoles={['teacher', 'superadmin']}>
-                      <TeacherLecturesPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/teacher/profile"
-                  element={
-                    <ProtectedRoute allowedRoles={['teacher', 'superadmin']}>
-                      <TeacherProfilePage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/teacher/change-password"
-                  element={
-                    <ProtectedRoute
-                      allowedRoles={['teacher', 'superadmin']}
-                      allowPasswordChangeOnly
-                    >
-                      <TeacherChangePasswordPage />
-                    </ProtectedRoute>
-                  }
-                />
+                  {/* Protected Teacher Admin Portal Routes */}
+                  <Route
+                    path="/teacher/dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={['teacher', 'superadmin']}>
+                        <TeacherDashboardPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/teacher/students"
+                    element={
+                      <ProtectedRoute allowedRoles={['teacher', 'superadmin']}>
+                        <TeacherStudentsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/teacher/lectures"
+                    element={
+                      <ProtectedRoute allowedRoles={['teacher', 'superadmin']}>
+                        <TeacherLecturesPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/teacher/profile"
+                    element={
+                      <ProtectedRoute allowedRoles={['teacher', 'superadmin']}>
+                        <TeacherProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/teacher/change-password"
+                    element={
+                      <ProtectedRoute
+                        allowedRoles={['teacher', 'superadmin']}
+                        allowPasswordChangeOnly
+                      >
+                        <TeacherChangePasswordPage />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                {/* Protected Superadmin Portal Routes */}
-                <Route
-                  path="/superadmin/dashboard"
-                  element={
-                    <ProtectedRoute allowedRoles={['superadmin']}>
-                      <SuperadminDashboardPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/superadmin/batches"
-                  element={
-                    <ProtectedRoute allowedRoles={['superadmin']}>
-                      <SuperadminBatchesPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/superadmin/teachers"
-                  element={
-                    <ProtectedRoute allowedRoles={['superadmin']}>
-                      <SuperadminTeachersPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/superadmin/students"
-                  element={
-                    <ProtectedRoute allowedRoles={['superadmin']}>
-                      <SuperadminStudentsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/superadmin/lectures"
-                  element={
-                    <ProtectedRoute allowedRoles={['superadmin']}>
-                      <SuperadminLecturesPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/superadmin/audit-logs"
-                  element={
-                    <ProtectedRoute allowedRoles={['superadmin']}>
-                      <SuperadminAuditLogsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/superadmin/profile"
-                  element={
-                    <ProtectedRoute allowedRoles={['superadmin']}>
-                      <SuperadminProfilePage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/superadmin/change-password"
-                  element={
-                    <ProtectedRoute allowedRoles={['superadmin']} allowPasswordChangeOnly>
-                      <SuperadminChangePasswordPage />
-                    </ProtectedRoute>
-                  }
-                />
+                  {/* Protected Superadmin Portal Routes */}
+                  <Route
+                    path="/superadmin/dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={['superadmin']}>
+                        <SuperadminDashboardPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/superadmin/batches"
+                    element={
+                      <ProtectedRoute allowedRoles={['superadmin']}>
+                        <SuperadminBatchesPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/superadmin/teachers"
+                    element={
+                      <ProtectedRoute allowedRoles={['superadmin']}>
+                        <SuperadminTeachersPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/superadmin/students"
+                    element={
+                      <ProtectedRoute allowedRoles={['superadmin']}>
+                        <SuperadminStudentsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/superadmin/lectures"
+                    element={
+                      <ProtectedRoute allowedRoles={['superadmin']}>
+                        <SuperadminLecturesPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/superadmin/audit-logs"
+                    element={
+                      <ProtectedRoute allowedRoles={['superadmin']}>
+                        <SuperadminAuditLogsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/superadmin/profile"
+                    element={
+                      <ProtectedRoute allowedRoles={['superadmin']}>
+                        <SuperadminProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/superadmin/change-password"
+                    element={
+                      <ProtectedRoute allowedRoles={['superadmin']} allowPasswordChangeOnly>
+                        <SuperadminChangePasswordPage />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                {/* Catch-all route defaults back to Home */}
-                <Route path="*" element={<HomePage />} />
-              </Routes>
-            </Suspense>
-          </main>
+                  {/* Catch-all route defaults back to Home */}
+                  <Route path="*" element={<HomePage />} />
+                </Routes>
+              </Suspense>
+            </main>
 
-            {/* Global Footer */}
-            <Footer />
-          </div>
-        </BrowserRouter>
-        <Analytics />
+              {/* Global Footer */}
+              <Footer />
+            </div>
+          </BrowserRouter>
+          <Analytics />
+        </SoundProvider>
       </AuthProvider>
     </ThemeProvider>
   );

@@ -4,6 +4,7 @@ import { Menu, X, Phone, Calendar, MapPin, ChevronRight, MessageSquare, Sun, Moo
 import { ACADEMY_CONFIG } from '../config/academyConfig';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import { SoundToggle } from './common/SoundToggle';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -135,6 +136,9 @@ export const Navbar: React.FC = () => {
               )}
             </button>
 
+            {/* Sound Toggle Button (Kobra Systems UI Audio) */}
+            <SoundToggle />
+
             {/* Dynamic Portal CTA based on role */}
             {isAuthenticated && user ? (
               <Link
@@ -209,6 +213,9 @@ export const Navbar: React.FC = () => {
                 <Moon className="w-4 h-4 text-[#17365D]" />
               )}
             </button>
+
+            {/* Sound Toggle Button (Kobra Systems UI Audio) */}
+            <SoundToggle />
 
             {/* Quick Consultation CTA - shown on tablets and wider mobile, hidden on compact phones to prevent navbar cramming */}
             <Link

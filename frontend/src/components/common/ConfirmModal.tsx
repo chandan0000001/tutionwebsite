@@ -94,6 +94,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
         <button
           onClick={onClose}
           disabled={isLoading}
+          data-sound="close"
           className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl transition-colors cursor-pointer disabled:opacity-50"
           aria-label="Close modal"
         >
@@ -117,6 +118,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             type="button"
             onClick={onClose}
             disabled={isLoading}
+            data-sound="close"
             className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 transition-colors cursor-pointer disabled:opacity-50"
           >
             {cancelText}
@@ -125,6 +127,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
+            data-sound={variant === 'danger' ? 'destructive' : variant === 'primary' ? 'success' : 'tap'}
             className={`w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 ${getConfirmButtonClasses()}`}
           >
             {isLoading ? (
