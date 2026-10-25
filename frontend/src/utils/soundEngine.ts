@@ -60,15 +60,24 @@ class SoundEngine {
   private volume: number = 0.5;
 
   constructor() {
+    this.isEnabled = true;
     if (typeof window !== 'undefined') {
-      const savedMute = localStorage.getItem('antariksh_sound_muted');
-      this.isEnabled = savedMute !== 'true';
-
       const savedVolume = localStorage.getItem('antariksh_sound_volume');
       if (savedVolume) {
         const v = parseFloat(savedVolume);
         if (!isNaN(v) && v >= 0 && v <= 1) this.volume = v;
       }
+    }
+  }
+
+  /**
+   * Auto-activates and resumes Web AudioContext on user interaction
+   */
+  public activate(): void {
+    if (!this.isEnabled) return;
+    const ctx = this.getContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
     }
   }
 

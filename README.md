@@ -233,8 +233,8 @@ Antariksh Academy features a micro-interaction audio and haptic feedback archite
   15. `swoosh`: Smooth frequency sweep transition (sine 300Hz → 2000Hz sweep).
   16. `blocked`: Muted rejection thud (sine 180Hz, lowpass filter at 700Hz) for disabled controls.
 - **Tactile Vibration (Haptics)**: Programmatic vibration patterns via `navigator.vibrate` tailored for mobile devices (6ms–40ms bursts).
-- **Global Context & Smart Detection**: Automatically detects user interactions on buttons, tabs, links, switches, dialog triggers, and delete buttons without manual per-element boilerplate. Supports explicit `data-sound` overrides.
-- **Accessible Mute Toggle**: Dedicated sound toggle in both desktop and mobile navigation bars (`aria-pressed`, `aria-label`, 44×44px touch targets) with `localStorage` state persistence (`antariksh_sound_muted`).
+- **Auto-Activation on First Browser Interaction**: Clean zero-friction audio experience without UI clutter or manual toggle switches. The Web Audio `AudioContext` automatically unlocks and resumes when the user interacts with the browser or any button.
+- **Optimal Click-and-Release Event Architecture**: Capturing passive event listeners track initial touch/pointer down to prime the audio context, and produce the synthesized sound precisely when the user **releases their hand/pointer from the button** (preventing accidental triggers if dragged away). Also supports full keyboard accessibility (`Enter`/`Space` key release).
 
 ---
 
@@ -249,7 +249,7 @@ antariksh-academy/
 │   ├── src/
 │   │   ├── components/           # UI Components & Role Protection
 │   │   │   ├── auth/             # ProtectedRoute with role enforcement & 403 fallback
-│   │   │   ├── common/           # CredentialsModal, ConfirmModal, SoundToggle
+│   │   │   ├── common/           # CredentialsModal, ConfirmModal
 │   │   │   ├── superadmin/       # Superadmin navigation & management views
 │   │   │   └── teacher/          # Teacher navigation & batch views
 │   │   ├── config/               # Public API & Academy Configurations

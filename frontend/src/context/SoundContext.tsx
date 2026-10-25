@@ -11,6 +11,9 @@ interface SoundContextType {
 
 const SoundContext = createContext<SoundContextType | undefined>(undefined);
 
+const INTERACTIVE_SELECTOR =
+  'button, a[href], input[type="button"], input[type="submit"], input[type="reset"], [role="button"], [role="tab"], [role="menuitem"], [data-sound]';
+
 export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSoundEnabled, setIsSoundEnabledState] = useState<boolean>(() => soundEngine.isSoundEnabled());
 
@@ -32,8 +35,10 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     soundEngine.triggerHaptic(type);
   }, []);
 
-  // Global PointerDown & Keyboard interaction listener (inspired by Kobra Systems)
+  // Optimal global interaction listener: Auto-activates on browser interaction & produces sound when user clicks and releases hand from button
   useEffect(() => {
+    let activePressedTarget: HTMLElement | null = null;
+
     const resolveSoundType = (el: HTMLElement): SoundType | null => {
       // 1. Explicit data-sound override
       const explicit = el.getAttribute('data-sound') || el.closest('[data-sound]')?.getAttribute('data-sound');
@@ -130,32 +135,72 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return 'tap';
     };
 
+    /**
+     * Step 1: User puts finger/pointer down on a button
+     * - Auto-activates Web AudioContext on any browser interaction
+     * - Records pressed target (does NOT produce sound yet until user releases hand)
+     */
     const handlePointerDown = (e: PointerEvent) => {
-      // Primary click only (left button)
+      // Auto-activate AudioContext on browser interaction
+      soundEngine.activate();
+
+      // Only track primary clicks (left-click or touch)
       if (e.button !== 0 || !(e.target instanceof Element)) return;
 
-      const interactive = (e.target as HTMLElement).closest<HTMLElement>(
-        'button, a[href], input[type="button"], input[type="submit"], input[type="checkbox"], input[type="radio"], select, [role="button"], [role="tab"], [role="menuitem"], [data-sound]'
-      );
+      activePressedTarget = (e.target as HTMLElement).closest<HTMLElement>(INTERACTIVE_SELECTOR);
+    };
 
-      if (!interactive) return;
-
-      // Check if disabled
-      if (
-        (interactive as HTMLButtonElement).disabled ||
-        interactive.getAttribute('aria-disabled') === 'true'
-      ) {
-        soundEngine.play('blocked');
+    /**
+     * Step 2: User releases hand/pointer from the button
+     * - Produces sound ONLY when released over the same button/control that was pressed
+     */
+    const handlePointerUp = (e: PointerEvent) => {
+      if (e.button !== 0 || !activePressedTarget || !(e.target instanceof Element)) {
+        activePressedTarget = null;
         return;
       }
 
-      const sound = resolveSoundType(interactive);
-      if (sound) {
-        soundEngine.play(sound);
+      const releasedTarget = (e.target as HTMLElement).closest<HTMLElement>(INTERACTIVE_SELECTOR);
+
+      // Verify user released hand from the button they pressed (prevents sound if dragged away)
+      if (releasedTarget && (releasedTarget === activePressedTarget || activePressedTarget.contains(releasedTarget))) {
+        // Check if disabled
+        if (
+          (releasedTarget as HTMLButtonElement).disabled ||
+          releasedTarget.getAttribute('aria-disabled') === 'true'
+        ) {
+          soundEngine.play('blocked');
+        } else {
+          const sound = resolveSoundType(releasedTarget);
+          if (sound) {
+            soundEngine.play(sound);
+          }
+        }
+      }
+
+      activePressedTarget = null;
+    };
+
+    /**
+     * If touch gesture is canceled by system (e.g. scroll cancel)
+     */
+    const handlePointerCancel = () => {
+      activePressedTarget = null;
+    };
+
+    /**
+     * Form elements (checkboxes, radio buttons)
+     */
+    const handleChange = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target instanceof HTMLInputElement && (target.type === 'checkbox' || target.type === 'radio')) {
+        soundEngine.play(target.checked ? 'toggleOn' : 'toggleOff');
       }
     };
 
-    // Range slider input listener
+    /**
+     * Range slider inputs
+     */
     const handleInput = (e: Event) => {
       const target = e.target as HTMLElement;
       if (target instanceof HTMLInputElement && target.type === 'range') {
@@ -163,12 +208,51 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     };
 
+    /**
+     * Keyboard accessibility (Enter or Space key release)
+     */
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        soundEngine.activate();
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        const interactive = (document.activeElement as HTMLElement)?.closest<HTMLElement>(INTERACTIVE_SELECTOR);
+        if (interactive) {
+          if (
+            (interactive as HTMLButtonElement).disabled ||
+            interactive.getAttribute('aria-disabled') === 'true'
+          ) {
+            soundEngine.play('blocked');
+          } else {
+            const sound = resolveSoundType(interactive);
+            if (sound) {
+              soundEngine.play(sound);
+            }
+          }
+        }
+      }
+    };
+
+    // Attach passive, capturing event listeners for maximum responsiveness and zero layout overhead
     document.addEventListener('pointerdown', handlePointerDown, { capture: true, passive: true });
+    document.addEventListener('pointerup', handlePointerUp, { capture: true, passive: true });
+    document.addEventListener('pointercancel', handlePointerCancel, { capture: true, passive: true });
+    document.addEventListener('change', handleChange, { capture: true, passive: true });
     document.addEventListener('input', handleInput, { capture: true, passive: true });
+    document.addEventListener('keydown', handleKeyDown, { capture: true, passive: true });
+    document.addEventListener('keyup', handleKeyUp, { capture: true, passive: true });
 
     return () => {
       document.removeEventListener('pointerdown', handlePointerDown, { capture: true });
+      document.removeEventListener('pointerup', handlePointerUp, { capture: true });
+      document.removeEventListener('pointercancel', handlePointerCancel, { capture: true });
+      document.removeEventListener('change', handleChange, { capture: true });
       document.removeEventListener('input', handleInput, { capture: true });
+      document.removeEventListener('keydown', handleKeyDown, { capture: true });
+      document.removeEventListener('keyup', handleKeyUp, { capture: true });
     };
   }, []);
 
