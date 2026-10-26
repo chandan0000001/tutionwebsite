@@ -11,17 +11,19 @@ import { SoundProvider } from './context/SoundContext';
 import { CosmicBackgroundCanvas } from './components/canvas/CosmicBackgroundCanvas';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
-// Direct static imports for all public pages to guarantee 0ms instant paint during StairsTransition
+// Static import for root landing page (instant 0ms paint)
 import HomePage from './pages/HomePage';
-import AboutPage from './pages/AboutPage';
-import CoursesPage from './pages/CoursesPage';
-import FacultyPage from './pages/FacultyPage';
-import ResultsPage from './pages/ResultsPage';
-import FacilitiesPage from './pages/FacilitiesPage';
-import TimetablePage from './pages/TimetablePage';
-import ConsultationPage from './pages/ConsultationPage';
-import ContactPage from './pages/ContactPage';
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+
+// Lazy-loaded public pages (preloaded via navigation registry during stairs cascade)
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const CoursesPage = lazy(() => import('./pages/CoursesPage'));
+const FacultyPage = lazy(() => import('./pages/FacultyPage'));
+const ResultsPage = lazy(() => import('./pages/ResultsPage'));
+const FacilitiesPage = lazy(() => import('./pages/FacilitiesPage'));
+const TimetablePage = lazy(() => import('./pages/TimetablePage'));
+const ConsultationPage = lazy(() => import('./pages/ConsultationPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 
 // Lazy-loaded Student Portal Pages
 const StudentLoginPage = lazy(() => import('./pages/student/StudentLoginPage'));

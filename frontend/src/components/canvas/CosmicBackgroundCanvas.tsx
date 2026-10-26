@@ -15,14 +15,18 @@ export const CosmicBackgroundCanvas: React.FC<CosmicBackgroundCanvasProps> = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    // Respect reduced motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     let animationFrameId: number;
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
+    const isMobile = width < 768;
 
-    // Mouse tracking for reactive gravity
+    // Mouse tracking for reactive gravity (desktop only)
     let mouseX = -1000;
     let mouseY = -1000;
 
@@ -31,7 +35,9 @@ export const CosmicBackgroundCanvas: React.FC<CosmicBackgroundCanvasProps> = ({
       mouseY = e.clientY;
     };
 
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    if (!isMobile) {
+      window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    }
 
     // Particle definition
     interface Particle {
@@ -47,7 +53,8 @@ export const CosmicBackgroundCanvas: React.FC<CosmicBackgroundCanvasProps> = ({
     }
 
     const particles: Particle[] = [];
-    const count = Math.min(Math.floor((width * height) / 18000), density);
+    const maxDensity = isMobile ? Math.min(density, 20) : density;
+    const count = Math.min(Math.floor((width * height) / 22000), maxDensity);
 
     const colors = [
       'rgba(244, 199, 107, ', // Gold
@@ -56,14 +63,14 @@ export const CosmicBackgroundCanvas: React.FC<CosmicBackgroundCanvasProps> = ({
     ];
 
     for (let i = 0; i < count; i++) {
-      const depth = Math.random() * 0.8 + 0.2; // 0.2 = distant, 1.0 = close
+      const depth = Math.random() * 0.8 + 0.2;
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.3 * depth,
-        vy: (Math.random() - 0.5) * 0.3 * depth,
-        radius: (Math.random() * 1.5 + 0.6) * depth,
-        baseAlpha: Math.random() * 0.5 + 0.2,
+        vx: (Math.random() - 0.5) * 0.25 * depth,
+        vy: (Math.random() - 0.5) * 0.25 * depth,
+        radius: (Math.random() * 1.4 + 0.5) * depth,
+        baseAlpha: Math.random() * 0.45 + 0.2,
         alpha: 0,
         color: colors[Math.floor(Math.random() * colors.length)],
         depth,
@@ -76,7 +83,7 @@ export const CosmicBackgroundCanvas: React.FC<CosmicBackgroundCanvasProps> = ({
       height = canvas.height = window.innerHeight;
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
 
     // Visibility change handler (pause when tab hidden)
     let isTabVisible = true;
@@ -84,6 +91,24 @@ export const CosmicBackgroundCanvas: React.FC<CosmicBackgroundCanvasProps> = ({
       isTabVisible = document.visibilityState === 'visible';
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // If user prefers reduced motion, draw a single static starfield and stop
+    if (prefersReducedMotion) {
+      ctx.clearRect(0, 0, width, height);
+      const isDark = document.documentElement.classList.contains('dark');
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        const alpha = isDark ? p.baseAlpha : p.baseAlpha * 0.5;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `${p.color}${alpha})`;
+        ctx.fill();
+      }
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
+    }
 
     // Animation Loop
     let lastTime = performance.now();
@@ -97,8 +122,6 @@ export const CosmicBackgroundCanvas: React.FC<CosmicBackgroundCanvasProps> = ({
       lastTime = time;
 
       ctx.clearRect(0, 0, width, height);
-
-      // Check dark mode
       const isDark = document.documentElement.classList.contains('dark');
 
       for (let i = 0; i < particles.length; i++) {
@@ -114,17 +137,18 @@ export const CosmicBackgroundCanvas: React.FC<CosmicBackgroundCanvasProps> = ({
         if (p.y < 0) p.y = height;
         if (p.y > height) p.y = 0;
 
-        // Subtle mouse repulsion / aura
-        const dx = mouseX - p.x;
-        const dy = mouseY - p.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
         let auraAlpha = p.baseAlpha;
-        if (dist < 180) {
-          const factor = (180 - dist) / 180;
-          p.x -= (dx / dist) * factor * 1.5;
-          p.y -= (dy / dist) * factor * 1.5;
-          auraAlpha = Math.min(p.baseAlpha + factor * 0.5, 0.95);
+        if (!isMobile && mouseX > 0) {
+          const dx = mouseX - p.x;
+          const dy = mouseY - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 160) {
+            const factor = (160 - dist) / 160;
+            p.x -= (dx / dist) * factor * 1.5;
+            p.y -= (dy / dist) * factor * 1.5;
+            auraAlpha = Math.min(p.baseAlpha + factor * 0.5, 0.95);
+          }
         }
 
         // Render Particle Star
@@ -134,30 +158,38 @@ export const CosmicBackgroundCanvas: React.FC<CosmicBackgroundCanvasProps> = ({
         ctx.fillStyle = `${p.color}${alpha})`;
         ctx.fill();
 
-        // Constellation link to nearby particles
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const distBetween = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (distBetween < 95) {
-            const lineAlpha = (1 - distBetween / 95) * (isDark ? 0.14 : 0.08);
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = isDark
-              ? `rgba(244, 199, 107, ${lineAlpha})`
-              : `rgba(23, 54, 93, ${lineAlpha})`;
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
+        // Constellation link to nearby particles (desktop only for 60fps smoothness)
+        if (!isMobile) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const distBetween = Math.hypot(p.x - p2.x, p.y - p2.y);
+            if (distBetween < 85) {
+              const lineAlpha = (1 - distBetween / 85) * (isDark ? 0.12 : 0.07);
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = isDark
+                ? `rgba(244, 199, 107, ${lineAlpha})`
+                : `rgba(23, 54, 93, ${lineAlpha})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
           }
         }
       }
     };
 
-    animationFrameId = requestAnimationFrame(render);
+    // Stagger start slightly to let the initial frame paint instantly
+    const timer = setTimeout(() => {
+      animationFrameId = requestAnimationFrame(render);
+    }, 100);
 
     return () => {
+      clearTimeout(timer);
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('pointermove', handlePointerMove);
+      if (!isMobile) {
+        window.removeEventListener('pointermove', handlePointerMove);
+      }
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };

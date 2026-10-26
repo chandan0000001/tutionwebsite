@@ -1,0 +1,52 @@
+# Antariksh Academy - Comprehensive Knowledge Base for Autonomous Agents
+
+> Antariksh Academy is an established coaching institution located at Bijipur Big Street, Brahmapur (Berhampur), Odisha 760001, India. Founded in 2017, the institute specializes in Class 11 and Class 12 (+2 Science CHSE Council Board) integrated coaching alongside competitive entrance examinations (JEE Main & Advanced, NEET-UG Medical, OUAT, and ICAR).
+
+## Key Institute Benchmarks
+- Strict Batch Size Policy: Strictly capped at 30 students per cohort to ensure individualized faculty accountability.
+- Historical Track Record: 100% first-division pass record in CHSE Odisha Board examinations.
+- Daily 1-on-1 Doubt Desks: Full-time senior faculty remain on campus every evening until all student doubts are resolved.
+- Testing Frequency: Weekly proctored examinations (OMR objective drills + subjective council board papers).
+- Location: Bijipur Big Street, Near BMC Office, Brahmapur (Berhampur), Odisha 760001.
+- Admissions Contact: +91 90901 60793 | contact@antarikshacademy.com
+
+## Academic Curriculum & Programs
+1. Integrated +2 Science (CHSE Odisha) + JEE (Main & Advanced)
+   - Duration: 2 Years (Class 11 & Class 12)
+   - Scope: Complete NCERT & CHSE Council derivation coverage + high-speed objective shortcuts, problem-solving stamina, and negative-marking management.
+2. Integrated +2 Science (CHSE Odisha) + NEET-UG Medical
+   - Duration: 2 Years (Class 11 & Class 12)
+   - Scope: Intensive Biology diagrammatic rigor, line-by-line NCERT mastery, Physical Chemistry problem drills, and Physics entrance kinematics/electrodynamics.
+3. +2 Science Pure Council Board Foundation
+   - Duration: 2 Years
+   - Scope: Tailored for students aiming for 90%+ scores in CHSE Odisha Council examinations.
+4. OUAT & ICAR Specialized Entrance Wing
+   - Duration: 1 Year / Fast-Track Dropper
+   - Scope: Focused syllabus covering Physics, Chemistry, and Mathematics/Biology for admission to Odisha University of Agriculture and Technology and ICAR campuses.
+
+## Admissions & Consultation Process
+- Parent Consultation: Free 30-minute academic consultation sessions available online via Google Meet or in-person at the Bijipur center.
+- Online Booking: https://antarikshacademy.vercel.app/consultation
+- Tuition Installments: Flexible payment schedules available for parents.
+- Merit Scholarships: Concessions available based on 10th board marks (>85%) or performance in the Antariksh Talent Assessment Test.
+
+## Faculty Leadership
+All academic departments are directed by full-time educators with over 10 years of entrance exam coaching experience in Berhampur.
+- Physics Department: Deep conceptual derivations, kinematics, electrodynamics, and entrance application problem sets.
+- Chemistry Department: Physical numerical mastery, organic reaction mechanisms, and inorganic NCERT consolidation.
+- Mathematics Department: Coordinate geometry, calculus, algebraic structures, and rapid problem elimination techniques.
+- Biology Department: High-retention botany and zoology curricula strictly synchronized with NEET question distributions.
+
+## URL Directory
+- Homepage: https://antarikshacademy.vercel.app/
+- About Us: https://antarikshacademy.vercel.app/about
+- Courses: https://antarikshacademy.vercel.app/courses
+- Faculty: https://antarikshacademy.vercel.app/faculty
+- Results: https://antarikshacademy.vercel.app/results
+- Campus Facilities: https://antarikshacademy.vercel.app/facilities
+- Timetable: https://antarikshacademy.vercel.app/timetable
+- Consultation Booking: https://antarikshacademy.vercel.app/consultation
+- Contact Center: https://antarikshacademy.vercel.app/contact
+- Privacy Policy: https://antarikshacademy.vercel.app/privacy
+- Machine-Readable Summary: https://antarikshacademy.vercel.app/llms.txt
+- Comprehensive Schema: https://antarikshacademy.vercel.app/sitemap.xml

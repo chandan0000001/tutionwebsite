@@ -372,46 +372,46 @@ export const HomePage: React.FC = () => {
               {/* Architectural Technical Specifications Matrix (Oryzo Blueprint Precision) */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 pt-1">
                 <div className="border border-stone-200/90 dark:border-[#FFEDD7]/15 rounded-xl p-2.5 sm:p-3 bg-white/70 dark:bg-[#18120B]/70 backdrop-blur-md">
-                  <span className="font-mono-tech text-[8px] sm:text-[9px] uppercase tracking-wider text-stone-400 dark:text-[#9E8D7B] block truncate">
+                  <span className="font-mono-tech text-[8px] sm:text-[9px] uppercase tracking-wider text-stone-500 dark:text-[#9E8D7B] block truncate">
                     COHORT DENSITY
                   </span>
                   <span className="font-display text-base sm:text-lg font-black text-[#150F0A] dark:text-[#FFEDD7] block">
                     30 Max
                   </span>
-                  <span className="text-[9px] sm:text-[10px] text-stone-500 dark:text-[#9E8D7B] block truncate">
+                  <span className="text-[9px] sm:text-[10px] text-stone-600 dark:text-[#B8A795] block truncate">
                     Strict batch cap
                   </span>
                 </div>
                 <div className="border border-stone-200/90 dark:border-[#FFEDD7]/15 rounded-xl p-2.5 sm:p-3 bg-white/70 dark:bg-[#18120B]/70 backdrop-blur-md">
-                  <span className="font-mono-tech text-[8px] sm:text-[9px] uppercase tracking-wider text-stone-400 dark:text-[#9E8D7B] block truncate">
+                  <span className="font-mono-tech text-[8px] sm:text-[9px] uppercase tracking-wider text-stone-500 dark:text-[#9E8D7B] block truncate">
                     COUNCIL RECORD
                   </span>
                   <span className="font-display text-base sm:text-lg font-black text-[#150F0A] dark:text-[#FFEDD7] block">
                     100%
                   </span>
-                  <span className="text-[9px] sm:text-[10px] text-stone-500 dark:text-[#9E8D7B] block truncate">
+                  <span className="text-[9px] sm:text-[10px] text-stone-600 dark:text-[#B8A795] block truncate">
                     First class pass
                   </span>
                 </div>
                 <div className="border border-stone-200/90 dark:border-[#FFEDD7]/15 rounded-xl p-2.5 sm:p-3 bg-white/70 dark:bg-[#18120B]/70 backdrop-blur-md">
-                  <span className="font-mono-tech text-[8px] sm:text-[9px] uppercase tracking-wider text-stone-400 dark:text-[#9E8D7B] block truncate">
+                  <span className="font-mono-tech text-[8px] sm:text-[9px] uppercase tracking-wider text-stone-500 dark:text-[#9E8D7B] block truncate">
                     DOUBT SESSIONS
                   </span>
                   <span className="font-display text-base sm:text-lg font-black text-[#150F0A] dark:text-[#FFEDD7] block">
                     1-on-1
                   </span>
-                  <span className="text-[9px] sm:text-[10px] text-stone-500 dark:text-[#9E8D7B] block truncate">
+                  <span className="text-[9px] sm:text-[10px] text-stone-600 dark:text-[#B8A795] block truncate">
                     Daily evening desk
                   </span>
                 </div>
                 <div className="border border-stone-200/90 dark:border-[#FFEDD7]/15 rounded-xl p-2.5 sm:p-3 bg-white/70 dark:bg-[#18120B]/70 backdrop-blur-md">
-                  <span className="font-mono-tech text-[8px] sm:text-[9px] uppercase tracking-wider text-stone-400 dark:text-[#9E8D7B] block truncate">
+                  <span className="font-mono-tech text-[8px] sm:text-[9px] uppercase tracking-wider text-stone-500 dark:text-[#9E8D7B] block truncate">
                     TOP ENTRANCE
                   </span>
                   <span className="font-display text-base sm:text-lg font-black text-[#150F0A] dark:text-[#FFEDD7] block">
                     685 / 720
                   </span>
-                  <span className="text-[9px] sm:text-[10px] text-stone-500 dark:text-[#9E8D7B] block truncate">
+                  <span className="text-[9px] sm:text-[10px] text-stone-600 dark:text-[#B8A795] block truncate">
                     NEET • 99.2%ile JEE
                   </span>
                 </div>
@@ -468,9 +468,9 @@ export const HomePage: React.FC = () => {
                     <span className="font-cinzel text-[10px] font-bold uppercase tracking-widest text-amber-700 dark:text-[#F4C76B] block">
                       Direct Admissions Desk
                     </span>
-                    <h3 className="font-display text-base font-extrabold text-stone-900 dark:text-[#FFEDD7]">
+                    <h2 className="font-display text-base font-extrabold text-stone-900 dark:text-[#FFEDD7]">
                       Request Parent Meeting
-                    </h3>
+                    </h2>
                   </div>
                   <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-[#F4C76B] text-[9px] font-extrabold uppercase tracking-wider shrink-0 flex items-center gap-1 font-stat">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
@@ -683,14 +683,14 @@ export const HomePage: React.FC = () => {
 
           {/* Oryzo Technical Ruler & Radar Scroll Indicator */}
           <div className="mt-8 sm:mt-12 pt-4 border-t border-dashed border-stone-300 dark:border-[#FFEDD7]/15 flex flex-col sm:flex-row items-center justify-between gap-3 text-stone-500 dark:text-[#9E8D7B]">
-            <div className="font-mono-tech text-[10px] tracking-[0.3em] hidden md:block select-none text-stone-400 dark:text-stone-600">
+            <div className="font-mono-tech text-[10px] tracking-[0.3em] hidden md:block select-none text-stone-500 dark:text-stone-400" aria-hidden="true">
               00 &nbsp; 10 &nbsp; 20 &nbsp; 30 &nbsp; 40 &nbsp; 50 &nbsp; 60 &nbsp; 70 &nbsp; 80 &nbsp; 90 &nbsp; 100 &nbsp; 110 &nbsp; 120
             </div>
             <div className="flex items-center gap-2 font-mono-tech text-[10px] sm:text-[11px] uppercase tracking-widest text-stone-700 dark:text-[#FFEDD7]">
-              <span className="w-2.5 h-2.5 rounded-full border border-amber-500 animate-spin border-dashed shrink-0" />
+              <span className="w-2.5 h-2.5 rounded-full border border-amber-500 animate-spin border-dashed shrink-0" aria-hidden="true" />
               <span>Scroll to explore curriculum & archive ↓</span>
             </div>
-            <div className="font-mono-tech text-[10px] tracking-wider hidden sm:block text-stone-400 dark:text-stone-600">
+            <div className="font-mono-tech text-[10px] tracking-wider hidden sm:block text-stone-500 dark:text-stone-400" aria-hidden="true">
               ANTARIKSH.EDU // ESTD.2017
             </div>
           </div>
@@ -841,9 +841,9 @@ export const HomePage: React.FC = () => {
                     alt={slide.title}
                     width="1200"
                     height="480"
-                    loading={idx === 0 ? 'eager' : 'lazy'}
+                    loading="lazy"
                     decoding="async"
-                    fetchPriority={idx === 0 ? 'high' : 'auto'}
+                    fetchPriority="low"
                     className="w-full h-full object-cover transform duration-1000 ease-out group-hover:scale-105"
                   />
 
@@ -895,7 +895,7 @@ export const HomePage: React.FC = () => {
                     key={slide.id}
                     onClick={() => setActiveSlide(idx)}
                     aria-label={`Go to slide ${idx + 1}: ${slide.shortLabel}`}
-                    className={`min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
+                    className={`min-h-[44px] px-2.5 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                       activeSlide === idx
                         ? 'bg-[#F4C76B] text-[#0F172A] shadow-md font-extrabold'
                         : 'bg-[#202B3D] text-[#AAB4C3] hover:text-[#F3F4F6] hover:bg-[#263449]'
@@ -972,10 +972,10 @@ export const HomePage: React.FC = () => {
           {/* Header Tag with Oryzo Telemetry */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 sm:mb-8 pb-3 border-b border-dashed border-stone-300 dark:border-[#FFEDD7]/15">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-              <span className="font-mono-tech text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-amber-700 dark:text-[#F4C76B]">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" aria-hidden="true" />
+              <h2 className="font-mono-tech text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-amber-800 dark:text-[#F4C76B]">
                 ACADEMIC ARCHITECTURE // 4 CORE RIGOR SPECIFICATIONS
-              </span>
+              </h2>
             </div>
             <div className="font-mono-tech text-[10px] text-stone-500 dark:text-[#9E8D7B] tracking-wider hidden sm:block">
               DISCIPLINED BATCH EXECUTION • BIJIPUR CAMPUS
@@ -1097,9 +1097,9 @@ export const HomePage: React.FC = () => {
                   <span className="w-5 h-5 rounded-full bg-slate-100 dark:bg-[#172033] text-[#17365D] dark:text-[#F4C76B] flex items-center justify-center text-[11px] font-stat font-extrabold shrink-0 border border-slate-200 dark:border-[#344054]">
                     {idx + 1}
                   </span>
-                  <h4 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-[#F3F4F6] leading-snug">
+                  <h3 className="font-display font-bold text-xs sm:text-sm text-slate-900 dark:text-[#F3F4F6] leading-snug">
                     {item.parameter}
-                  </h4>
+                  </h3>
                 </div>
 
                 <div className="space-y-2">
@@ -1383,9 +1383,9 @@ export const HomePage: React.FC = () => {
                       />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="font-display text-sm font-bold text-stone-900 dark:text-[#FFEDD7] break-words">
+                      <h3 className="font-display text-sm font-bold text-stone-900 dark:text-[#FFEDD7] break-words">
                         {item.studentName}
-                      </h4>
+                      </h3>
                       <div className="text-xs font-extrabold text-amber-700 dark:text-[#F4C76B] font-stat break-words">
                         {item.scoreOrRank}
                       </div>

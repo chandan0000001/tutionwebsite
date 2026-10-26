@@ -319,7 +319,7 @@ export const Footer: React.FC = () => {
 
               <Link
                 to="/contact"
-                className="w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300 dark:text-slate-200 dark:bg-[#172033] dark:hover:bg-[#202B3D] dark:border-[#344054] transition-colors text-center flex items-center justify-center gap-1.5 min-h-[38px]"
+                className="w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-300 dark:text-slate-200 dark:bg-[#172033] dark:hover:bg-[#202B3D] dark:border-[#344054] transition-colors text-center flex items-center justify-center gap-1.5 min-h-[44px]"
               >
                 <Phone className="w-3.5 h-3.5 text-[#17365D] dark:text-[#38BDF8]" />
                 <span>Campus Visit / Callback</span>

@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /student/dashboard
+Disallow: /student/lectures
+Disallow: /student/profile
+Disallow: /student/change-password
+Disallow: /teacher/
+Disallow: /superadmin/
+
+Sitemap: https://antarikshacademy.vercel.app/sitemap.xml

@@ -24,8 +24,8 @@ export const StairsTransition: React.FC = () => {
   const navigate = useNavigate();
 
   // Status: 'idle' | 'covering' | 'covered' | 'revealing'
-  // On initial site load, reveal the homepage smoothly
-  const [status, setStatus] = useState<'idle' | 'covering' | 'covered' | 'revealing'>('revealing');
+  // Initial page load starts in 'idle' for instant 0ms FCP/LCP paint without overlay obstruction
+  const [status, setStatus] = useState<'idle' | 'covering' | 'covered' | 'revealing'>('idle');
   const isNavigatingRef = useRef(false);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -34,13 +34,7 @@ export const StairsTransition: React.FC = () => {
     timeoutsRef.current = [];
   };
 
-  // Initial site load reveal
   useEffect(() => {
-    const t = setTimeout(() => {
-      setStatus('idle');
-    }, 480);
-    timeoutsRef.current.push(t);
-
     return () => clearAllTimeouts();
   }, []);
 
@@ -149,7 +143,7 @@ export const StairsTransition: React.FC = () => {
     };
 
     // Preload chunk on hover/touch for instant response
-    const handleLinkHover = (e: MouseEvent) => {
+    const handleLinkHover = (e: Event) => {
       const link = (e.target as HTMLElement).closest('a');
       if (!link) return;
       const href = link.getAttribute('href');
@@ -168,11 +162,13 @@ export const StairsTransition: React.FC = () => {
 
     document.addEventListener('click', handleLinkClick, { capture: true });
     document.addEventListener('mouseover', handleLinkHover, { passive: true });
+    document.addEventListener('touchstart', handleLinkHover, { passive: true });
     window.addEventListener('page-transition-navigate', handleCustomNav);
 
     return () => {
       document.removeEventListener('click', handleLinkClick, { capture: true });
       document.removeEventListener('mouseover', handleLinkHover);
+      document.removeEventListener('touchstart', handleLinkHover);
       window.removeEventListener('page-transition-navigate', handleCustomNav);
     };
   }, [location.pathname, startTransition]);

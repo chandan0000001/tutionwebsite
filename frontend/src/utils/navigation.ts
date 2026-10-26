@@ -7,8 +7,21 @@ export const navigateWithTransition = (path: string, state?: unknown) => {
   );
 };
 
-// Route preloader registry for lazy portal routes
-const PORTAL_PRELOADERS: Record<string, () => Promise<unknown>> = {
+// Route preloader registry for all dynamic routes (public pages and portal pages)
+const ROUTE_PRELOADERS: Record<string, () => Promise<unknown>> = {
+  // Public institute pages
+  '/about': () => import('../pages/AboutPage'),
+  '/courses': () => import('../pages/CoursesPage'),
+  '/faculty': () => import('../pages/FacultyPage'),
+  '/results': () => import('../pages/ResultsPage'),
+  '/facilities': () => import('../pages/FacilitiesPage'),
+  '/timetable': () => import('../pages/TimetablePage'),
+  '/consultation': () => import('../pages/ConsultationPage'),
+  '/contact': () => import('../pages/ContactPage'),
+  '/privacy': () => import('../pages/PrivacyPolicyPage'),
+  '/privacy-policy': () => import('../pages/PrivacyPolicyPage'),
+
+  // Portal and auth routes
   '/student/login': () => import('../pages/student/StudentLoginPage'),
   '/login': () => import('../pages/student/StudentLoginPage'),
   '/teacher/login': () => import('../pages/student/StudentLoginPage'),
@@ -34,7 +47,7 @@ const PORTAL_PRELOADERS: Record<string, () => Promise<unknown>> = {
 
 export const preloadRoute = (path: string) => {
   const normalizedPath = path.split('?')[0].split('#')[0];
-  const loader = PORTAL_PRELOADERS[normalizedPath];
+  const loader = ROUTE_PRELOADERS[normalizedPath];
   if (loader) {
     return loader().catch(() => {});
   }
