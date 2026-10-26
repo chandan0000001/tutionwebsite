@@ -145,7 +145,7 @@ export const CallbackSection: React.FC<CallbackSectionProps> = ({
       id="callback"
       className={`${
         isStandalonePage ? 'py-10 sm:py-16' : 'py-12 sm:py-16 md:py-20'
-      } bg-[#F8FAFC] dark:bg-[#111827] text-slate-800 dark:text-white relative overflow-hidden border-b border-slate-200 dark:border-[#344054] transition-colors duration-200`}
+      } bg-[#FAF6F0]/90 dark:bg-[#0D0905]/90 text-[#150F0A] dark:text-[#FFEDD7] relative overflow-hidden border-b border-stone-200/90 dark:border-[#FFEDD7]/10 oryzo-blueprint-grid transition-colors duration-200`}
     >
       {/* Ambient Gradient Glows */}
       <div className="absolute top-0 right-0 w-80 sm:w-96 h-80 sm:h-96 bg-amber-500/5 dark:bg-[#F4C76B]/5 rounded-full blur-3xl pointer-events-none"></div>

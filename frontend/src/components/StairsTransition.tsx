@@ -1,29 +1,23 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { preloadRoute, navigateWithTransition } from '../utils/navigation';
 
-/**
- * Global helper to trigger page navigation through the staircase transition
- */
-export const navigateWithTransition = (path: string, state?: unknown) => {
-  window.dispatchEvent(
-    new CustomEvent('page-transition-navigate', { detail: { path, state } })
-  );
-};
+export { navigateWithTransition, preloadRoute };
 
 /**
  * 🪜 STAIRCASE PAGE TRANSITION LOADER
  *
  * Behavior:
  * 1. User clicks any internal navigation link or calls navigateWithTransition.
- * 2. Current page remains visible as 5 columns cascade down sequentially from top to cover the screen.
- * 3. Once fully covered (status = 'covered'):
+ * 2. Preloading begins immediately at t = 0ms while columns are dropping down.
+ * 3. 5 columns cascade down sequentially from top to cover the screen (480ms).
+ * 4. Once fully covered (status = 'covered'):
+ *    - Route chunk is guaranteed resolved.
  *    - navigate(targetPath) is called to swap the route.
  *    - window.scrollTo({ top: 0, behavior: 'instant' }) resets scroll.
- *    - Because all pages are statically imported, the target page renders synchronously behind the covered screen.
- * 4. A brief layout/paint hold (120ms) ensures the browser has rendered and painted the new page.
+ *    - Double requestAnimationFrame ensures React commits and the browser paints.
  * 5. The 5 columns cascade downwards (status = 'revealing'), unveiling the already-mounted target page!
  * 6. When the cascade reaches the bottom, status resets to 'idle'.
- * 7. Adapts cleanly to Light Mode & Dark Mode with no bulky boxed containers.
  */
 export const StairsTransition: React.FC = () => {
   const location = useLocation();
@@ -53,42 +47,59 @@ export const StairsTransition: React.FC = () => {
   const startTransition = useCallback(
     (targetPath: string, state?: unknown) => {
       if (isNavigatingRef.current) return;
-      if (targetPath === location.pathname) return;
+      const cleanTarget = targetPath.split('#')[0];
+      if (cleanTarget === location.pathname) return;
 
       isNavigatingRef.current = true;
       clearAllTimeouts();
       setStatus('covering');
 
-      // 1. Wait for all 5 columns to cascade down and cover the screen
+      // 1. Immediately kick off preload at t = 0ms while stairs are covering
+      const preloadPromise = preloadRoute(cleanTarget);
+
+      // 2. Wait for all 5 columns to cascade down and cover the screen
       // (Col 0: 0.32s, Col 4: 0.16s delay + 0.32s = 0.48s)
-      const tCover = setTimeout(() => {
-        // Screen is now 100% covered!
+      const tCover = setTimeout(async () => {
         setStatus('covered');
 
-        // 2. WHILE 100% COVERED: Navigate to the target page!
+        // Await chunk preload with fallback so it never hangs
+        try {
+          await Promise.race([
+            preloadPromise,
+            new Promise((resolve) => setTimeout(resolve, 800)),
+          ]);
+        } catch {
+          // Preload errors handled gracefully
+        }
+
+        // 3. WHILE 100% COVERED: Navigate to the target page!
         navigate(targetPath, { state });
         window.scrollTo({ top: 0, behavior: 'instant' });
 
-        // 3. Generous hold (120ms) while completely covered to guarantee React commits and DOM paints
-        const tHold = setTimeout(() => {
-          // 4. Reveal the new page by cascading columns downwards
-          setStatus('revealing');
+        // 4. Double rAF guarantees React 18 has committed new DOM tree and browser has painted
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const tHold = setTimeout(() => {
+              // 5. Reveal the new page by cascading columns downwards
+              setStatus('revealing');
 
-          // 5. Complete reveal animation (0.16s + 0.32s = 0.48s)
-          const tReveal = setTimeout(() => {
-            setStatus('idle');
-            isNavigatingRef.current = false;
-          }, 480);
-          timeoutsRef.current.push(tReveal);
-        }, 120);
-        timeoutsRef.current.push(tHold);
+              // 6. Complete reveal animation (0.16s + 0.32s = 0.48s)
+              const tReveal = setTimeout(() => {
+                setStatus('idle');
+                isNavigatingRef.current = false;
+              }, 480);
+              timeoutsRef.current.push(tReveal);
+            }, 60);
+            timeoutsRef.current.push(tHold);
+          });
+        });
       }, 480);
       timeoutsRef.current.push(tCover);
     },
     [location.pathname, navigate]
   );
 
-  // Intercept all internal navigation link clicks
+  // Intercept all internal navigation link clicks & hover preloading
   useEffect(() => {
     const handleLinkClick = (e: MouseEvent) => {
       const link = (e.target as HTMLElement).closest('a');
@@ -137,6 +148,16 @@ export const StairsTransition: React.FC = () => {
       }
     };
 
+    // Preload chunk on hover/touch for instant response
+    const handleLinkHover = (e: MouseEvent) => {
+      const link = (e.target as HTMLElement).closest('a');
+      if (!link) return;
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('/') && !href.startsWith('//')) {
+        preloadRoute(href);
+      }
+    };
+
     // Custom programmatic navigation event listener
     const handleCustomNav = (e: Event) => {
       const customEvent = e as CustomEvent<{ path: string; state?: unknown }>;
@@ -146,10 +167,12 @@ export const StairsTransition: React.FC = () => {
     };
 
     document.addEventListener('click', handleLinkClick, { capture: true });
+    document.addEventListener('mouseover', handleLinkHover, { passive: true });
     window.addEventListener('page-transition-navigate', handleCustomNav);
 
     return () => {
       document.removeEventListener('click', handleLinkClick, { capture: true });
+      document.removeEventListener('mouseover', handleLinkHover);
       window.removeEventListener('page-transition-navigate', handleCustomNav);
     };
   }, [location.pathname, startTransition]);

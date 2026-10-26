@@ -71,7 +71,7 @@ export const Navbar: React.FC = () => {
       </div>
 
       {/* Main Navigation Bar */}
-      <nav className="w-full bg-white/95 dark:bg-[#111827]/95 backdrop-blur-md py-2.5 sm:py-3 transition-colors duration-200" aria-label="Main Navigation">
+      <nav className="w-full bg-[#FAF6F0]/95 dark:bg-[#0D0905]/95 backdrop-blur-md py-2.5 sm:py-3 border-b border-stone-200/90 dark:border-[#FFEDD7]/10 transition-colors duration-200" aria-label="Main Navigation">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-2 lg:gap-4">
           
           {/* Logo with official Antariksh Academy graphic */}
@@ -89,7 +89,7 @@ export const Navbar: React.FC = () => {
               />
             </div>
             <div className="flex flex-col text-left shrink-0">
-              <span className="font-display font-black text-sm xs:text-base sm:text-xl lg:text-2xl tracking-tight text-[#17365D] dark:text-white group-hover:text-[#854D0E] dark:group-hover:text-[#F4C76B] transition-colors leading-none whitespace-nowrap">
+              <span className="font-cinzel font-black text-sm xs:text-base sm:text-xl lg:text-2xl tracking-[0.06em] text-[#17365D] dark:text-white group-hover:text-[#854D0E] dark:group-hover:text-[#F4C76B] transition-colors leading-none whitespace-nowrap">
                 ANTARIKSH <span className="gold-gradient-text">ACADEMY</span>
               </span>
               <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-300 tracking-wider uppercase font-semibold mt-1 hidden 2xl:block whitespace-nowrap">

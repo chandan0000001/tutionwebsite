@@ -18,10 +18,10 @@ import { ACADEMY_CONFIG } from '../config/academyConfig';
 
 export const PrivacyPolicyPage: React.FC = () => {
   return (
-    <div className="w-full bg-[#F8FAFC] dark:bg-[#111827] text-slate-800 dark:text-[#F3F4F6] transition-colors duration-200">
+    <div className="w-full bg-[#FAF6F0]/90 dark:bg-[#0D0905]/90 text-[#150F0A] dark:text-[#FFEDD7] oryzo-blueprint-grid transition-colors duration-200">
       
       {/* Page Header */}
-      <section className="py-12 sm:py-16 bg-white dark:bg-[#172033] border-b border-slate-200 dark:border-[#344054]">
+      <section className="py-12 sm:py-16 bg-[#FAF6F0]/80 dark:bg-[#140E08]/80 border-b border-stone-200/90 dark:border-[#FFEDD7]/10 oryzo-blueprint-grid">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="mb-6">

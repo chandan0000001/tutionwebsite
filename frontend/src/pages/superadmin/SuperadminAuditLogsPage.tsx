@@ -62,8 +62,7 @@ export const SuperadminAuditLogsPage: React.FC = () => {
         cache: 'no-store',
         headers: {
           Authorization: `Bearer ${token}`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          Pragma: 'no-cache',
+          Accept: 'application/json',
         },
       });
       const data = await res.json();

@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    /* 🏛️ LIGHT THEME (DEFAULT) - Established Academic Prestige Palette */
-    --bg-page: #F8FAFC;
-    --bg-section: #F1F5F9;
+    /* 🏛️ LIGHT THEME - Warm Studio Cream & Burnt Ochre (Oryzo/Lusion Warm Caliber) */
+    --bg-page: #FAF6F0;
+    --bg-section: #F3EDE2;
     --bg-card: #FFFFFF;
-    --bg-card-hover: #F8FAFC;
+    --bg-card-hover: #FFFDF9;
     --bg-card-elevated: #FFFFFF;
-    --border-card: #E2E8F0;
-    --border-subtle: #CBD5E1;
-    --border-input: #CBD5E1;
+    --border-card: #E7DFD3;
+    --border-subtle: #D8CEBE;
+    --border-input: #D8CEBE;
     
-    --text-primary: #0F172A;
-    --text-secondary: #334155;
-    --text-muted: #64748B;
+    --text-primary: #150F0A;
+    --text-secondary: #3D332A;
+    --text-muted: #75675A;
     
     --brand-navy: #17365D;
-    --brand-navy-dark: #102A43;
-    --brand-gold: #C6922E;
-    --brand-gold-hover: #B47E1F;
-    --brand-gold-light: #FEF3C7;
+    --brand-navy-dark: #0F233D;
+    --brand-gold: #C65D1E;
+    --brand-gold-hover: #B04E15;
+    --brand-gold-light: #FDE8D7;
     
     --accent-blue: #0284C7;
     --accent-emerald: #059669;
@@ -32,19 +32,19 @@
   }
 
   .dark {
-    /* 🌌 DARK THEME (OPTIONAL) - Restrained Academic Slate & Gold */
-    --bg-page: #111827;
-    --bg-section: #172033;
-    --bg-card: #202B3D;
-    --bg-card-hover: #26334A;
-    --bg-card-elevated: #26334A;
-    --border-card: #344054;
-    --border-subtle: #243042;
-    --border-input: #344054;
+    /* 🌌 DARK THEME - Deep Espresso Obsidian & Burnished Amber (Oryzo AI Core) */
+    --bg-page: #0D0905;
+    --bg-section: #140E08;
+    --bg-card: #1C140C;
+    --bg-card-hover: #241A10;
+    --bg-card-elevated: #241A10;
+    --border-card: rgba(255, 237, 215, 0.12);
+    --border-subtle: rgba(255, 237, 215, 0.08);
+    --border-input: rgba(255, 237, 215, 0.16);
     
-    --text-primary: #F3F4F6;
-    --text-secondary: #CBD5E1;
-    --text-muted: #AAB4C3;
+    --text-primary: #FFEDD7;
+    --text-secondary: #D4C3AF;
+    --text-muted: #9E8D7B;
     
     --brand-navy: #38BDF8;
     --brand-navy-dark: #7DD3FC;
@@ -105,25 +105,69 @@
   }
 }
 
-/* Multi-Font Business Hierarchy Utilities */
+/* Multi-Font Business Hierarchy Utilities - Envato, Oryzo & Lusion Luxury Suite */
 .font-display {
-  font-family: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Bricolage Grotesque', 'Outfit', system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.font-oryzo-brand {
+  font-family: 'Syne', 'Bricolage Grotesque', sans-serif;
+  letter-spacing: -0.045em;
+}
+
+.font-mono-tech {
+  font-family: 'DM Mono', ui-monospace, SFMono-Regular, monospace;
+  letter-spacing: 0.04em;
+}
+
+.font-serif-luxury {
+  font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  letter-spacing: -0.01em;
+}
+
+.font-serif-literata {
+  font-family: 'Literata', Georgia, 'Times New Roman', serif;
 }
 
 .font-serif-prestige {
-  font-family: 'Playfair Display', Georgia, Cambria, 'Times New Roman', serif;
+  font-family: 'Literata', Georgia, 'Times New Roman', serif;
 }
 
 .font-cinzel {
   font-family: 'Cinzel', Georgia, serif;
+  letter-spacing: 0.12em;
 }
 
 .font-stat {
-  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, monospace;
+  font-family: 'DM Mono', 'Space Grotesk', monospace;
+  font-feature-settings: 'tnum' on, 'zero' on;
 }
 
 .font-body {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Editorial Title Utility with Micro-Tracking */
+.luxury-editorial-heading {
+  font-family: 'Bricolage Grotesque', 'Syne', system-ui, sans-serif;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  text-rendering: optimizeLegibility;
+}
+
+/* Oryzo Blueprint Grid Background (Graph Paper Precision Across Routes) */
+.oryzo-blueprint-grid {
+  background-size: 36px 36px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 237, 215, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 237, 215, 0.055) 1px, transparent 1px);
+}
+
+:root:not(.dark) .oryzo-blueprint-grid {
+  background-image: 
+    linear-gradient(to right, rgba(21, 15, 10, 0.065) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(21, 15, 10, 0.065) 1px, transparent 1px);
 }
 
 /* Academic Theme Typography & Brand Utility Classes */

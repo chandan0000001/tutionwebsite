@@ -14,22 +14,22 @@ import { ACADEMY_CONFIG } from '../config/academyConfig';
 
 export const ContactSection: React.FC = () => {
   return (
-    <section id="contact" className="py-10 sm:py-16 md:py-20 bg-[#F8FAFC] dark:bg-[#111827] border-b border-slate-200 dark:border-[#344054] transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="contact" className="py-10 sm:py-16 md:py-20 bg-[#FAF6F0]/90 dark:bg-[#0D0905]/90 text-[#150F0A] dark:text-[#FFEDD7] border-b border-stone-200/90 dark:border-[#FFEDD7]/10 oryzo-blueprint-grid transition-colors duration-200">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-[#172033] border border-slate-200 dark:border-[#344054] text-[#C6922E] dark:text-[#F4C76B] text-xs font-bold uppercase tracking-wider mb-3">
-            <MapPin className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B]" />
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-14">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-[#18120B]/90 border border-stone-200/90 dark:border-[#FFEDD7]/15 text-[#C65D1E] dark:text-[#F4C76B] text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-3 shadow-xs">
+            <MapPin className="w-3.5 h-3.5 text-[#C65D1E] dark:text-[#F4C76B]" />
             <span>Connect & Visit Us</span>
           </div>
-          <h2 className="font-['Outfit',sans-serif] text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-3">
+          <h2 className="luxury-editorial-heading text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-black text-[#150F0A] dark:text-[#FFEDD7] tracking-tight mb-3 break-words">
             Visit Our Center or{' '}
-            <span className="text-[#17365D] dark:bg-gradient-to-r dark:from-white dark:via-amber-100 dark:to-[#F4C76B] dark:bg-clip-text dark:text-transparent">
+            <span className="font-serif-luxury italic font-normal text-amber-600 dark:text-[#F4C76B]">
               Get in Touch
             </span>
           </h2>
-          <p className="text-slate-600 dark:text-[#AAB4C3] text-sm sm:text-base leading-relaxed">
+          <p className="font-serif-literata text-slate-600 dark:text-[#D4C3AF] text-xs sm:text-base leading-relaxed">
             Conveniently located at Bijipur Big Street, right in the heart of Brahmapur. We welcome students and parents
             for campus counseling and batch inquiries.
           </p>

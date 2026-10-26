@@ -33,7 +33,7 @@ const WhatsAppIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' 
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-slate-100 dark:bg-[#0E1420] text-slate-600 dark:text-[#AAB4C3] border-t border-slate-200 dark:border-[#344054] pt-10 sm:pt-14 pb-8 transition-colors duration-200">
+    <footer className="bg-[#F3EDE2] dark:bg-[#090604] text-stone-600 dark:text-[#9E8D7B] border-t border-stone-200/90 dark:border-[#FFEDD7]/10 oryzo-blueprint-grid pt-10 sm:pt-14 pb-8 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* ============================================================ */}

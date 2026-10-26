@@ -8,21 +8,20 @@ import { StairsTransition } from './components/StairsTransition';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { SoundProvider } from './context/SoundContext';
+import { CosmicBackgroundCanvas } from './components/canvas/CosmicBackgroundCanvas';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
-// Keep HomePage directly imported for instantaneous first paint on mobile & desktop
+// Direct static imports for all public pages to guarantee 0ms instant paint during StairsTransition
 import HomePage from './pages/HomePage';
-
-// Lazy-loaded secondary public pages
-const AboutPage = lazy(() => import('./pages/AboutPage'));
-const CoursesPage = lazy(() => import('./pages/CoursesPage'));
-const FacultyPage = lazy(() => import('./pages/FacultyPage'));
-const ResultsPage = lazy(() => import('./pages/ResultsPage'));
-const FacilitiesPage = lazy(() => import('./pages/FacilitiesPage'));
-const TimetablePage = lazy(() => import('./pages/TimetablePage'));
-const ConsultationPage = lazy(() => import('./pages/ConsultationPage'));
-const ContactPage = lazy(() => import('./pages/ContactPage'));
-const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+import AboutPage from './pages/AboutPage';
+import CoursesPage from './pages/CoursesPage';
+import FacultyPage from './pages/FacultyPage';
+import ResultsPage from './pages/ResultsPage';
+import FacilitiesPage from './pages/FacilitiesPage';
+import TimetablePage from './pages/TimetablePage';
+import ConsultationPage from './pages/ConsultationPage';
+import ContactPage from './pages/ContactPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 
 // Lazy-loaded Student Portal Pages
 const StudentLoginPage = lazy(() => import('./pages/student/StudentLoginPage'));
@@ -69,12 +68,15 @@ export function App() {
           <BrowserRouter>
             <ScrollToTop />
             <StairsTransition />
-            <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#111827] flex flex-col font-['Plus_Jakarta_Sans',sans-serif] text-slate-800 dark:text-[#F3F4F6] antialiased selection:bg-[#C6922E]/20 dark:selection:bg-[#F4C76B]/30 transition-colors duration-200">
+            <div className="min-h-screen bg-[#FAF6F0] dark:bg-[#0D0905] flex flex-col font-['Plus_Jakarta_Sans',sans-serif] text-[#150F0A] dark:text-[#FFEDD7] antialiased selection:bg-[#C65D1E]/20 dark:selection:bg-[#F4C76B]/30 transition-colors duration-200 relative">
+              {/* Cosmic WebGL / Ambient Stardust Depth Layer */}
+              <CosmicBackgroundCanvas />
+
               {/* Sticky Global Navigation */}
               <Navbar />
 
               {/* Dynamic Route Content - Instant swap synchronized with StairsTransition */}
-              <main className="flex-1">
+              <main className="flex-1 oryzo-blueprint-grid w-full overflow-x-hidden">
                 <Suspense fallback={<RouteLoadingFallback />}>
                   <Routes>
                     {/* Public Institute Website Routes */}

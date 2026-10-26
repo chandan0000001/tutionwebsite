@@ -23,22 +23,22 @@ export const Timetable: React.FC<TimetableProps> = ({ onContactForBatch }) => {
   });
 
   return (
-    <section id="timetable" className="py-8 sm:py-16 md:py-20 bg-[#F8FAFC] dark:bg-[#111827] border-b border-slate-200 dark:border-[#344054] transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="timetable" className="py-8 sm:py-16 md:py-20 bg-[#FAF6F0]/90 dark:bg-[#0D0905]/90 text-[#150F0A] dark:text-[#FFEDD7] border-b border-stone-200/90 dark:border-[#FFEDD7]/10 oryzo-blueprint-grid transition-colors duration-200">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-12">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-[#172033] border border-slate-200 dark:border-[#344054] text-[#C6922E] dark:text-[#F4C76B] text-[11px] sm:text-xs font-bold uppercase tracking-wider mb-2 sm:mb-3 shadow-xs">
-            <Clock className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B]" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white/90 dark:bg-[#18120B]/90 border border-stone-200/90 dark:border-[#FFEDD7]/15 text-[#C65D1E] dark:text-[#F4C76B] text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-2 sm:mb-3 shadow-xs">
+            <Clock className="w-3.5 h-3.5 text-[#C65D1E] dark:text-[#F4C76B]" />
             <span>Daily Academic Routine</span>
           </div>
-          <h2 className="font-['Outfit',sans-serif] text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-2 sm:mb-3 leading-tight">
+          <h2 className="luxury-editorial-heading text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-black text-[#150F0A] dark:text-[#FFEDD7] tracking-tight mb-2 sm:mb-3 leading-tight break-words">
             Class Timetable &{' '}
-            <span className="text-[#17365D] dark:bg-gradient-to-r dark:from-white dark:via-amber-100 dark:to-[#F4C76B] dark:bg-clip-text dark:text-transparent">
+            <span className="font-serif-luxury italic font-normal text-amber-600 dark:text-[#F4C76B]">
               Batch Schedules
             </span>
           </h2>
-          <p className="text-slate-600 dark:text-[#AAB4C3] text-xs sm:text-base leading-relaxed max-w-xl mx-auto">
+          <p className="font-serif-literata text-slate-600 dark:text-[#D4C3AF] text-xs sm:text-base leading-relaxed max-w-xl mx-auto">
             3 high-performance shifts with 4 parallel batches in each shift, structured around local college hours in Brahmapur.
           </p>
 
