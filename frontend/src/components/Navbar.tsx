@@ -219,6 +219,7 @@ export const Navbar: React.FC = () => {
               className="min-w-[44px] min-h-[44px] p-2.5 rounded-xl text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#202B3D] border border-slate-200 dark:border-[#344054] focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] cursor-pointer shrink-0 flex items-center justify-center"
               aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={isOpen}
+              aria-controls="mobile-navigation-drawer"
             >
               {isOpen ? (
                 <X className="w-5 h-5 text-[#854D0E] dark:text-[#F4C76B]" />
@@ -233,7 +234,10 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile / Tablet Dropdown Menu Drawer */}
       {isOpen && (
-        <div className="xl:hidden bg-white dark:bg-[#111827] border-t border-slate-200 dark:border-[#344054] shadow-2xl px-4 pt-3 pb-6 max-h-[calc(100vh-4.5rem)] overflow-y-auto animate-in slide-in-from-top-2 duration-200">
+        <div
+          id="mobile-navigation-drawer"
+          className="xl:hidden bg-white dark:bg-[#111827] border-t border-slate-200 dark:border-[#344054] shadow-2xl px-4 pt-3 pb-6 max-h-[calc(100vh-4.5rem)] overflow-y-auto animate-in slide-in-from-top-2 duration-200"
+        >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mb-4">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;

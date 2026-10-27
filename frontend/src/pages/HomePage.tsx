@@ -421,7 +421,7 @@ export const HomePage: React.FC = () => {
               <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 {/* Primary Action: Explore Courses */}
                 <Link to="/courses" className="inline-block flex-1 sm:flex-initial">
-                  <MagneticButton className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-extrabold text-xs text-white bg-gradient-to-r from-[#17365D] to-[#102A43] hover:from-[#102A43] hover:to-[#0A1D30] dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:text-[#0F172A] shadow-lg shadow-[#17365D]/15 dark:shadow-[#F4C76B]/15 hover:brightness-105 transition-all flex items-center justify-center gap-2 text-center font-display min-h-[46px]">
+                  <MagneticButton as="div" className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-extrabold text-xs text-white bg-gradient-to-r from-[#17365D] to-[#102A43] hover:from-[#102A43] hover:to-[#0A1D30] dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:text-[#0F172A] shadow-lg shadow-[#17365D]/15 dark:shadow-[#F4C76B]/15 hover:brightness-105 transition-all flex items-center justify-center gap-2 text-center font-display min-h-[46px]">
                     <BookOpen className="w-4 h-4 shrink-0 text-white dark:text-[#0F172A]" />
                     <span>Explore Academic Programs</span>
                     <ArrowRight className="w-4 h-4 shrink-0 text-white dark:text-[#0F172A]" />
@@ -430,7 +430,7 @@ export const HomePage: React.FC = () => {
 
                 {/* Secondary Action: Consultation Booking */}
                 <a href="#callback-widget" className="inline-block flex-1 sm:flex-initial">
-                  <MagneticButton className="w-full sm:w-auto px-5 py-3.5 rounded-xl font-bold text-xs text-[#17365D] dark:text-[#FFEDD7] hover:text-[#102A43] dark:hover:text-white bg-white/90 dark:bg-[#1C140C]/90 hover:bg-slate-50 dark:hover:bg-[#241A10] border border-stone-300 dark:border-[#FFEDD7]/20 hover:border-amber-500 shadow-sm backdrop-blur-md transition-all flex items-center justify-center gap-2 text-center font-display min-h-[46px]">
+                  <MagneticButton as="div" className="w-full sm:w-auto px-5 py-3.5 rounded-xl font-bold text-xs text-[#17365D] dark:text-[#FFEDD7] hover:text-[#102A43] dark:hover:text-white bg-white/90 dark:bg-[#1C140C]/90 hover:bg-slate-50 dark:hover:bg-[#241A10] border border-stone-300 dark:border-[#FFEDD7]/20 hover:border-amber-500 shadow-sm backdrop-blur-md transition-all flex items-center justify-center gap-2 text-center font-display min-h-[46px]">
                     <Calendar className="w-4 h-4 text-amber-600 dark:text-[#F4C76B] shrink-0" />
                     <span>Request Parent Consultation</span>
                   </MagneticButton>
@@ -499,9 +499,10 @@ export const HomePage: React.FC = () => {
                   </div>
 
                   {/* Preferred Contact Mode Toggle */}
-                  <div className="grid grid-cols-2 gap-2 pb-1">
+                  <div className="grid grid-cols-2 gap-2 pb-1" role="group" aria-label="Preferred Contact Mode">
                     <button
                       type="button"
+                      aria-pressed={heroContactMethod === 'Phone callback'}
                       onClick={() => setHeroContactMethod('Phone callback')}
                       className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
                         heroContactMethod === 'Phone callback'
@@ -514,6 +515,7 @@ export const HomePage: React.FC = () => {
                     </button>
                     <button
                       type="button"
+                      aria-pressed={heroContactMethod === 'Parents meeting at the academy'}
                       onClick={() => setHeroContactMethod('Parents meeting at the academy')}
                       className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
                         heroContactMethod === 'Parents meeting at the academy'
@@ -546,7 +548,7 @@ export const HomePage: React.FC = () => {
                       10-Digit Mobile Number <span className="text-amber-600 dark:text-[#F4C76B]">*</span>
                     </label>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-xs sm:text-sm font-bold text-slate-400 dark:text-[#8592A3]">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-300">
                         +91
                       </div>
                       <input
@@ -560,9 +562,9 @@ export const HomePage: React.FC = () => {
                         placeholder="90901 60793"
                         value={heroPhone}
                         onChange={(e) => setHeroPhone(sanitizeMobileInput(e.target.value))}
-                        className="w-full pl-11 pr-14 py-2.5 rounded-xl bg-slate-50 dark:bg-[#172033] border border-slate-300 dark:border-[#344054] text-base sm:text-sm text-slate-900 dark:text-[#F3F4F6] placeholder-slate-400 dark:placeholder-[#8592A3] focus:border-[#17365D] dark:focus:border-[#F4C76B] focus:ring-1 focus:ring-[#17365D] dark:focus:ring-[#F4C76B] focus:outline-none font-stat tracking-wider transition-all min-h-[44px]"
+                        className="w-full pl-11 pr-14 py-2.5 rounded-xl bg-slate-50 dark:bg-[#172033] border border-slate-300 dark:border-[#344054] text-base sm:text-sm text-slate-900 dark:text-[#F3F4F6] placeholder-slate-500 dark:placeholder-[#8592A3] focus:border-[#17365D] dark:focus:border-[#F4C76B] focus:ring-1 focus:ring-[#17365D] dark:focus:ring-[#F4C76B] focus:outline-none font-stat tracking-wider transition-all min-h-[44px]"
                       />
-                      <span className="absolute right-3 top-3 text-[10px] font-semibold text-slate-400 dark:text-[#8592A3] pointer-events-none font-stat">
+                      <span className="absolute right-3 top-3 text-[10px] font-semibold text-slate-600 dark:text-slate-300 pointer-events-none font-stat">
                         {heroPhone.length}/10
                       </span>
                     </div>
@@ -951,7 +953,7 @@ export const HomePage: React.FC = () => {
               <span className="text-slate-300 dark:text-[#344054]">•</span>
               <Link
                 to="/facilities"
-                className="font-bold text-[#0284C7] hover:text-[#0369A1] dark:text-[#38BDF8] dark:hover:text-cyan-300 flex items-center gap-1 transition-colors"
+                className="font-bold text-[#0369A1] hover:text-[#075985] dark:text-[#38BDF8] dark:hover:text-cyan-300 flex items-center gap-1 transition-colors"
               >
                 <span>View Campus & Classrooms</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -1327,7 +1329,7 @@ export const HomePage: React.FC = () => {
               </div>
               <h2 className="luxury-editorial-heading text-2xl sm:text-4xl lg:text-5xl font-extrabold text-stone-900 dark:text-[#FFEDD7] tracking-tight">
                 A Decade of Proven{' '}
-                <span className="font-serif-luxury italic font-normal text-amber-600 dark:text-[#F4C76B] text-[1.12em]">
+                <span className="font-serif-luxury italic font-normal text-amber-700 dark:text-[#F4C76B] text-[1.12em]">
                   Academic Excellence
                 </span>
               </h2>
@@ -1507,7 +1509,7 @@ export const HomePage: React.FC = () => {
                         <Star key={i} className="w-3.5 h-3.5 fill-[#C6922E] dark:fill-[#F4C76B]" />
                       ))}
                     </div>
-                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-slate-100 dark:bg-[#172033] text-[#0284C7] dark:text-[#38BDF8] border border-slate-200 dark:border-[#344054] font-cinzel">
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-slate-100 dark:bg-[#172033] text-[#0369A1] dark:text-[#38BDF8] border border-slate-200 dark:border-[#344054] font-cinzel">
                       {item.authorType} Voice
                     </span>
                   </div>

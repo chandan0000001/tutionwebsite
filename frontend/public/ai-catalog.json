@@ -1,0 +1,37 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Antariksh Academy",
+    "identifier": "https://antarikshacademy.vercel.app/",
+    "documentationUrl": "https://antarikshacademy.vercel.app/llms.txt",
+    "logoUrl": "https://antarikshacademy.vercel.app/logo.png"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:antarikshacademy.vercel.app:curriculum:summary",
+      "displayName": "Antariksh Academy Knowledge Base (LLMs)",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://antarikshacademy.vercel.app/llms.txt",
+      "description": "Comprehensive institutional profile, pedagogical model, Class 11 & 12 (+2 Science CHSE) curriculum, entrance exam preparation (JEE, NEET, OUAT, ICAR), and admissions contacts.",
+      "tags": ["education", "coaching", "chse-odisha", "jee", "neet", "berhampur"],
+      "representativeQueries": [
+        "+2 Science CHSE coaching in Brahmapur",
+        "Best JEE NEET institute in South Odisha",
+        "Antariksh Academy courses fee and admissions"
+      ]
+    },
+    {
+      "identifier": "urn:air:antarikshacademy.vercel.app:curriculum:full",
+      "displayName": "Antariksh Academy Complete Agent Knowledge Base",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://antarikshacademy.vercel.app/llms-full.txt",
+      "description": "Exhaustive details on courses, batch sizes, faculty specializations, contact points, and admissions procedures.",
+      "tags": ["education", "curriculum", "faculty", "admissions"],
+      "representativeQueries": [
+        "Antariksh Academy faculty and syllabus",
+        "Class 11 and 12 entrance preparation schedule",
+        "Hostel and laboratory facilities Brahmapur"
+      ]
+    }
+  ]
+}
