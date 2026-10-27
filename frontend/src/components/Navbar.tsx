@@ -31,9 +31,9 @@ export const Navbar: React.FC = () => {
     { label: 'Home', path: '/' },
     { label: 'About Us', path: '/about' },
     { label: 'Courses', path: '/courses' },
-    { label: 'Our Teachers', path: '/faculty' },
+    { label: 'Faculty', path: '/faculty' },
     { label: 'Results', path: '/results' },
-    { label: 'Campus & Classrooms', path: '/facilities' },
+    { label: 'Campus', path: '/facilities' },
     { label: 'Timetable', path: '/timetable' },
     { label: 'Contact', path: '/contact' },
   ];
@@ -42,7 +42,7 @@ export const Navbar: React.FC = () => {
     <header className="sticky top-0 z-50 w-full bg-white dark:bg-[#111827] shadow-sm dark:shadow-xl border-b border-slate-200 dark:border-[#344054] transition-colors duration-200">
       {/* Top Notification Bar */}
       <div className="bg-slate-900 text-slate-300 dark:bg-[#0E1420] dark:text-slate-300 text-[11px] sm:text-xs py-1.5 px-4 hidden md:block border-b border-slate-800 dark:border-[#243042]">
-        <div className="max-w-[1400px] mx-auto flex items-center justify-between">
+        <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3 lg:gap-4">
             <span className="flex items-center gap-1.5 text-slate-200 font-medium">
               <MapPin className="w-3.5 h-3.5 text-[#C6922E] dark:text-[#F4C76B] shrink-0" />
@@ -72,14 +72,14 @@ export const Navbar: React.FC = () => {
 
       {/* Main Navigation Bar */}
       <nav className="w-full bg-[#FAF6F0]/95 dark:bg-[#0D0905]/95 backdrop-blur-md py-2.5 sm:py-3 border-b border-stone-200/90 dark:border-[#FFEDD7]/10 transition-colors duration-200" aria-label="Main Navigation">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-2 lg:gap-4">
+        <div className="max-w-7xl 2xl:max-w-[1440px] mx-auto px-3 sm:px-6 2xl:px-8 flex items-center justify-between gap-2 xl:gap-3 2xl:gap-4">
           
           {/* Logo with official Antariksh Academy graphic */}
           <Link
             to="/"
-            className="flex items-center gap-2 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] rounded-lg shrink-0"
+            className="flex items-center gap-2 sm:gap-2.5 group focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] rounded-lg shrink-0"
           >
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-100 dark:bg-[#202B3D] p-1 flex items-center justify-center border-2 border-[#C6922E]/40 dark:border-[#F4C76B]/40 shadow-xs group-hover:scale-105 transition-transform shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 2xl:w-10 2xl:h-10 rounded-full bg-slate-100 dark:bg-[#202B3D] p-1 flex items-center justify-center border-2 border-[#C6922E]/40 dark:border-[#F4C76B]/40 shadow-xs group-hover:scale-105 transition-transform shrink-0">
               <img
                 src="/logo_transparent.png"
                 alt="Antariksh Academy Logo"
@@ -89,24 +89,24 @@ export const Navbar: React.FC = () => {
               />
             </div>
             <div className="flex flex-col text-left shrink-0">
-              <span className="font-cinzel font-black text-sm xs:text-base sm:text-xl lg:text-2xl tracking-[0.06em] text-[#17365D] dark:text-white group-hover:text-[#854D0E] dark:group-hover:text-[#F4C76B] transition-colors leading-none whitespace-nowrap">
+              <span className="font-cinzel font-black text-sm xs:text-base sm:text-lg xl:text-xl 2xl:text-2xl tracking-[0.04em] 2xl:tracking-[0.06em] text-[#17365D] dark:text-white group-hover:text-[#854D0E] dark:group-hover:text-[#F4C76B] transition-colors leading-none whitespace-nowrap">
                 ANTARIKSH <span className="gold-gradient-text">ACADEMY</span>
               </span>
-              <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-300 tracking-wider uppercase font-semibold mt-1 hidden 2xl:block whitespace-nowrap">
-                Bijipur, Brahmapur • +2 Science & Entrances
+              <span className="text-[9px] text-slate-500 dark:text-slate-400 tracking-wider uppercase font-semibold mt-0.5 hidden 2xl:block whitespace-nowrap">
+                Bijipur, Brahmapur
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden xl:flex items-center gap-0.5 2xl:gap-1 shrink-0">
+          <div className="hidden xl:flex items-center gap-0.5 2xl:gap-1.5 shrink min-w-0">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (
                 <NavLink
                   key={link.path}
                   to={link.path}
-                  className={`px-2 2xl:px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  className={`px-1.5 2xl:px-2.5 py-1.5 rounded-lg text-[11px] 2xl:text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                     isActive
                       ? 'text-[#17365D] dark:text-white bg-slate-100 dark:bg-[#202B3D] border border-[#C6922E]/40 dark:border-[#F4C76B]/40 font-extrabold shadow-xs'
                       : 'text-slate-600 hover:text-[#17365D] hover:bg-slate-100/80 dark:text-slate-300 dark:hover:text-white dark:hover:bg-[#172033]'
@@ -124,7 +124,7 @@ export const Navbar: React.FC = () => {
             <button
               type="button"
               onClick={toggleTheme}
-              className="min-w-[40px] min-h-[40px] p-2 rounded-xl text-slate-600 hover:text-[#17365D] hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-[#202B3D] border border-slate-200 dark:border-[#344054] transition-colors focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] cursor-pointer flex items-center justify-center"
+              className="min-w-[38px] min-h-[38px] 2xl:min-w-[40px] 2xl:min-h-[40px] p-2 rounded-xl text-slate-600 hover:text-[#17365D] hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-[#202B3D] border border-slate-200 dark:border-[#344054] transition-colors focus:outline-none focus:ring-2 focus:ring-[#C6922E] dark:focus:ring-[#F4C76B] cursor-pointer flex items-center justify-center"
               aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
@@ -145,7 +145,7 @@ export const Navbar: React.FC = () => {
                     ? '/teacher/dashboard'
                     : '/student/dashboard'
                 }
-                className="px-2.5 py-1.5 2xl:px-3 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 dark:text-[#0B1120] dark:bg-[#F4C76B] dark:hover:bg-[#E5B555] rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
+                className="px-2.5 py-1.5 2xl:px-3 text-[11px] 2xl:text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 dark:text-[#0B1120] dark:bg-[#F4C76B] dark:hover:bg-[#E5B555] rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
                 title={`${role === 'superadmin' ? 'Superadmin Console' : role === 'teacher' ? 'Teacher Desk' : 'Student Portal'}: ${user.name}`}
               >
                 {role === 'superadmin' ? (
@@ -166,30 +166,23 @@ export const Navbar: React.FC = () => {
             ) : (
               <Link
                 to="/student/login"
-                className="px-2.5 py-1.5 2xl:px-3 text-xs font-bold text-slate-700 hover:text-[#17365D] bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-[#1E293B] dark:hover:bg-[#2A374D] border border-slate-300 dark:border-slate-700 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+                className="px-2 py-1.5 2xl:px-3 text-[11px] 2xl:text-xs font-bold text-slate-700 hover:text-[#17365D] bg-slate-100 hover:bg-slate-200 dark:text-slate-200 dark:bg-[#1E293B] dark:hover:bg-[#2A374D] border border-slate-300 dark:border-slate-700 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                 title="Portal Login"
               >
                 <GraduationCap className="w-3.5 h-3.5 text-[#854D0E] dark:text-[#F4C76B] shrink-0" />
-                <span>Portal Login</span>
+                <span className="hidden 2xl:inline">Portal Login</span>
+                <span className="2xl:hidden">Portal</span>
               </Link>
             )}
-
-            {/* Option B: Manual callback - shown on large desktop (2xl:), while top bar already provides callback for 1280-1440px laptops */}
-            <Link
-              to="/contact"
-              className="hidden 2xl:flex px-3 py-1.5 2xl:px-3.5 2xl:py-2 text-xs font-bold text-slate-700 hover:text-[#17365D] bg-white hover:bg-slate-50 dark:text-slate-200 dark:hover:text-white dark:bg-[#202B3D] dark:hover:bg-[#26334A] border border-slate-300 dark:border-[#344054] hover:border-[#17365D]/40 dark:hover:border-[#F4C76B]/40 rounded-xl transition-all items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
-            >
-              <Phone className="w-3.5 h-3.5 text-[#0284C7] dark:text-[#38BDF8] shrink-0" />
-              <span>Request Callback</span>
-            </Link>
 
             {/* Option A: 30-min Google Meet Booking */}
             <Link
               to="/consultation"
-              className="px-3 py-1.5 2xl:px-4 2xl:py-2 text-xs font-extrabold text-white bg-gradient-to-r from-[#17365D] via-[#1E4273] to-[#17365D] hover:brightness-105 border border-[#17365D] shadow-sm dark:text-[#0F172A] dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:border-[#F4C76B]/40 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap transform hover:-translate-y-0.5"
+              className="px-2.5 py-1.5 2xl:px-4 2xl:py-2 text-[11px] 2xl:text-xs font-extrabold text-white bg-gradient-to-r from-[#17365D] via-[#1E4273] to-[#17365D] hover:brightness-105 border border-[#17365D] shadow-sm dark:text-[#0F172A] dark:from-[#F4C76B] dark:via-[#E5B555] dark:to-[#D4A33B] dark:border-[#F4C76B]/40 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap transform hover:-translate-y-0.5"
             >
               <Calendar className="w-3.5 h-3.5 text-[#FDE68A] dark:text-[#0F172A] shrink-0" />
-              <span>Book Free Consultation</span>
+              <span className="hidden 2xl:inline">Book Free Consultation</span>
+              <span className="2xl:hidden">Book Consultation</span>
             </Link>
           </div>
 
