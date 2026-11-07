@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js",
+    "dev": "nodemon",
+    "dev:watch": "node --watch src/server.js",
     "seed": "node scripts/seed.js",
     "seed:staff": "node scripts/seedStaff.js",
     "seed:students": "node scripts/seedStudents.js",
@@ -23,5 +24,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.6",
     "multer": "^2.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

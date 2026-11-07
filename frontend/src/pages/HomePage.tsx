@@ -702,57 +702,77 @@ export const HomePage: React.FC = () => {
 
       {/* 3. EXECUTIVE CREDENTIALS & METRICS STRIP (ORYZO HARDWARE SPECULARITY) */}
       <section className="bg-[#F3EDE2]/80 dark:bg-[#140E08]/80 backdrop-blur-md text-[#150F0A] dark:text-[#FFEDD7] py-6 sm:py-10 border-b border-stone-200/90 dark:border-[#FFEDD7]/10 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-5 text-center">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4 lg:gap-3 xl:gap-5 text-center">
             
-            <SpecularCard glowColor="gold" tilt={true} className="p-3.5 sm:p-5 text-center">
-              <span className="block text-2xl sm:text-4xl font-extrabold text-[#C65D1E] dark:text-[#F4C76B] font-stat mb-0.5 sm:mb-1">
-                10+
+            <SpecularCard glowColor="gold" tilt={true} className="px-2 py-3.5 sm:px-4 sm:py-5 lg:px-2 lg:py-4 xl:px-4 xl:py-5 text-center flex flex-col justify-between h-full">
+              <div>
+                <span className="block text-2xl sm:text-3xl lg:text-[1.65rem] xl:text-3xl 2xl:text-4xl font-extrabold text-[#C65D1E] dark:text-[#F4C76B] font-stat mb-1 tracking-tight whitespace-nowrap">
+                  10<span className="text-[0.75em] font-bold ml-0.5">+</span>
+                </span>
+                <span className="font-display text-[10px] sm:text-[11px] xl:text-xs font-bold text-stone-900 dark:text-[#FFEDD7] block uppercase tracking-wide leading-snug">
+                  Years of Excellence
+                </span>
+              </div>
+              <span className="text-[9px] sm:text-[9.5px] xl:text-[10.5px] font-mono-tech text-stone-500 dark:text-[#9E8D7B] mt-1.5 block leading-tight">
+                ESTD. 2017 BRAHMAPUR
               </span>
-              <span className="font-display text-[11px] sm:text-xs font-bold text-stone-900 dark:text-[#FFEDD7] block uppercase tracking-wider">
-                Years of Excellence
-              </span>
-              <span className="text-[10px] sm:text-[11px] font-mono-tech text-stone-500 dark:text-[#9E8D7B] mt-0.5 block">ESTD. 2017 BRAHMAPUR</span>
             </SpecularCard>
 
-            <SpecularCard glowColor="blue" tilt={true} className="p-3.5 sm:p-5 text-center">
-              <span className="block text-2xl sm:text-4xl font-extrabold text-[#0284C7] dark:text-[#38BDF8] font-stat mb-0.5 sm:mb-1">
-                99.4%ile
+            <SpecularCard glowColor="blue" tilt={true} className="px-2 py-3.5 sm:px-4 sm:py-5 lg:px-2 lg:py-4 xl:px-4 xl:py-5 text-center flex flex-col justify-between h-full">
+              <div>
+                <span className="block text-2xl sm:text-3xl lg:text-[1.65rem] xl:text-3xl 2xl:text-4xl font-extrabold text-[#0284C7] dark:text-[#38BDF8] font-stat mb-1 tracking-tight whitespace-nowrap">
+                  99.4<span className="text-[0.62em] font-bold tracking-normal ml-0.5 opacity-90">%ile</span>
+                </span>
+                <span className="font-display text-[10px] sm:text-[11px] xl:text-xs font-bold text-stone-900 dark:text-[#FFEDD7] block uppercase tracking-wide leading-snug">
+                  Top JEE Percentile
+                </span>
+              </div>
+              <span className="text-[9px] sm:text-[9.5px] xl:text-[10.5px] font-mono-tech text-stone-500 dark:text-[#9E8D7B] mt-1.5 block leading-tight">
+                IIT & NIT SELECTIONS
               </span>
-              <span className="font-display text-[11px] sm:text-xs font-bold text-stone-900 dark:text-[#FFEDD7] block uppercase tracking-wider">
-                Top JEE Percentile
-              </span>
-              <span className="text-[10px] sm:text-[11px] font-mono-tech text-stone-500 dark:text-[#9E8D7B] mt-0.5 block">IIT & NIT SELECTIONS</span>
             </SpecularCard>
 
-            <SpecularCard glowColor="emerald" tilt={true} className="p-3.5 sm:p-5 text-center">
-              <span className="block text-2xl sm:text-4xl font-extrabold text-emerald-600 dark:text-emerald-400 font-stat mb-0.5 sm:mb-1">
-                678 / 720
+            <SpecularCard glowColor="emerald" tilt={true} className="px-2 py-3.5 sm:px-4 sm:py-5 lg:px-2 lg:py-4 xl:px-4 xl:py-5 text-center flex flex-col justify-between h-full">
+              <div>
+                <span className="block text-2xl sm:text-3xl lg:text-[1.45rem] xl:text-[1.65rem] 2xl:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 font-stat mb-1 tracking-tight whitespace-nowrap">
+                  678<span className="text-[0.6em] font-semibold text-emerald-700/60 dark:text-emerald-300/60 mx-0.5 font-sans">/</span><span className="text-[0.85em] opacity-90">720</span>
+                </span>
+                <span className="font-display text-[10px] sm:text-[11px] xl:text-xs font-bold text-stone-900 dark:text-[#FFEDD7] block uppercase tracking-wide leading-snug">
+                  Top NEET-UG Score
+                </span>
+              </div>
+              <span className="text-[9px] sm:text-[9.5px] xl:text-[10.5px] font-mono-tech text-stone-500 dark:text-[#9E8D7B] mt-1.5 block leading-tight">
+                GOVT MEDICAL ALLOTMENTS
               </span>
-              <span className="font-display text-[11px] sm:text-xs font-bold text-stone-900 dark:text-[#FFEDD7] block uppercase tracking-wider">
-                Top NEET-UG Score
-              </span>
-              <span className="text-[10px] sm:text-[11px] font-mono-tech text-stone-500 dark:text-[#9E8D7B] mt-0.5 block">GOVT MEDICAL ALLOTMENTS</span>
             </SpecularCard>
 
-            <SpecularCard glowColor="gold" tilt={true} className="p-3.5 sm:p-5 text-center">
-              <span className="block text-2xl sm:text-4xl font-extrabold text-[#C65D1E] dark:text-[#F4C76B] font-stat mb-0.5 sm:mb-1">
-                100%
+            <SpecularCard glowColor="gold" tilt={true} className="px-2 py-3.5 sm:px-4 sm:py-5 lg:px-2 lg:py-4 xl:px-4 xl:py-5 text-center flex flex-col justify-between h-full">
+              <div>
+                <span className="block text-2xl sm:text-3xl lg:text-[1.65rem] xl:text-3xl 2xl:text-4xl font-extrabold text-[#C65D1E] dark:text-[#F4C76B] font-stat mb-1 tracking-tight whitespace-nowrap">
+                  100<span className="text-[0.75em] font-bold ml-0.5">%</span>
+                </span>
+                <span className="font-display text-[10px] sm:text-[11px] xl:text-xs font-bold text-stone-900 dark:text-[#FFEDD7] block uppercase tracking-wide leading-snug">
+                  CHSE Board Pass Rate
+                </span>
+              </div>
+              <span className="text-[9px] sm:text-[9.5px] xl:text-[10.5px] font-mono-tech text-stone-500 dark:text-[#9E8D7B] mt-1.5 block leading-tight">
+                10 CONSECUTIVE YEARS
               </span>
-              <span className="font-display text-[11px] sm:text-xs font-bold text-stone-900 dark:text-[#FFEDD7] block uppercase tracking-wider">
-                CHSE Board Pass Rate
-              </span>
-              <span className="text-[10px] sm:text-[11px] font-mono-tech text-stone-500 dark:text-[#9E8D7B] mt-0.5 block">10 CONSECUTIVE YEARS</span>
             </SpecularCard>
 
-            <SpecularCard glowColor="blue" tilt={true} className="col-span-2 sm:col-span-1 p-3.5 sm:p-5 text-center">
-              <span className="block text-2xl sm:text-4xl font-extrabold text-amber-600 dark:text-[#FDE68A] font-stat mb-0.5 sm:mb-1">
-                1,200+
+            <SpecularCard glowColor="blue" tilt={true} className="col-span-2 sm:col-span-1 px-2 py-3.5 sm:px-4 sm:py-5 lg:px-2 lg:py-4 xl:px-4 xl:py-5 text-center flex flex-col justify-between h-full">
+              <div>
+                <span className="block text-2xl sm:text-3xl lg:text-[1.65rem] xl:text-3xl 2xl:text-4xl font-extrabold text-amber-600 dark:text-[#FDE68A] font-stat mb-1 tracking-tight whitespace-nowrap">
+                  1,200<span className="text-[0.75em] font-bold ml-0.5">+</span>
+                </span>
+                <span className="font-display text-[10px] sm:text-[11px] xl:text-xs font-bold text-stone-900 dark:text-[#FFEDD7] block uppercase tracking-wide leading-snug">
+                  Alumni Impact
+                </span>
+              </div>
+              <span className="text-[9px] sm:text-[9.5px] xl:text-[10.5px] font-mono-tech text-stone-500 dark:text-[#9E8D7B] mt-1.5 block leading-tight">
+                ENGINEERS & DOCTORS
               </span>
-              <span className="font-display text-[11px] sm:text-xs font-bold text-stone-900 dark:text-[#FFEDD7] block uppercase tracking-wider">
-                Alumni Impact
-              </span>
-              <span className="text-[10px] sm:text-[11px] font-mono-tech text-stone-500 dark:text-[#9E8D7B] mt-0.5 block">ENGINEERS & DOCTORS</span>
             </SpecularCard>
 
           </div>
