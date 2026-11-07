@@ -1,12 +1,18 @@
 import app from './app.js';
 import { ENV } from './config/env.js';
 import { connectDB, disconnectDB } from './config/db.js';
+import { connectRedis, disconnectRedis } from './config/redis.js';
 import { migrateStudentBatches } from './utils/batchMigration.js';
 
 let server;
 
 async function startServer() {
   try {
+    // Attempt Redis connection (non-fatal, falls back gracefully if unavailable)
+    await connectRedis().catch((err) => {
+      console.warn('[REDIS WARNING]', err.message);
+    });
+
     // Attempt database connection
     await connectDB().then(async () => {
       await migrateStudentBatches().catch((err) => {
@@ -35,6 +41,7 @@ async function shutdown(signal) {
   if (server) {
     server.close(async () => {
       console.log('[SERVER] HTTP server closed.');
+      await disconnectRedis().catch(() => {});
       await disconnectDB();
       process.exit(0);
     });
@@ -45,6 +52,7 @@ async function shutdown(signal) {
       process.exit(1);
     }, 10000).unref();
   } else {
+    await disconnectRedis().catch(() => {});
     await disconnectDB();
     process.exit(0);
   }

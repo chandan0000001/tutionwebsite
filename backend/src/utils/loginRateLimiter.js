@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 import { LoginRateLimit } from '../models/LoginRateLimit.js';
+import { getRedis, isRedisConnected } from '../config/redis.js';
 
 /**
- * Distributed MongoDB-backed login rate limiter with proxy-safe IP detection
+ * Distributed Login Rate Limiter
+ * Combines ultra-low latency Redis atomic operations with MongoDB persistence
  * and bounded in-memory fallback.
  *
  * Prevents:
@@ -11,7 +13,7 @@ import { LoginRateLimit } from '../models/LoginRateLimit.js';
  * 3. Distributed botnet credential attacks (per-username abuse tracking across IPs)
  * 4. Global volumetric denial-of-service (global attempts safety limiter)
  * 5. IP spoofing attacks (relies exclusively on Express req.ip derived from configured trust proxy)
- * 6. Memory exhaustion (bounded in-memory fallback and MongoDB TTL indexes)
+ * 6. Memory exhaustion (bounded in-memory fallback, Redis TTLs, and MongoDB TTL indexes)
  */
 
 const MAX_FAILED_ATTEMPTS_PER_IP_USER = parseInt(process.env.LOGIN_MAX_ATTEMPTS_PER_IP_USER || '10', 10);
@@ -73,6 +75,35 @@ export async function checkLoginRateLimit(req, username = '') {
   const ip = getClientIp(req);
   const cleanUsername = String(username || '').trim().toLowerCase();
   const currentMinute = Math.floor(Date.now() / 60000);
+
+  // 1. Redis fast-path check
+  if (isRedisConnected()) {
+    try {
+      const redis = getRedis();
+      const redisLockKeys = [
+        `rl:lock:ip:${ip}`,
+        `rl:lock:global:${currentMinute}`,
+      ];
+      if (cleanUsername) {
+        redisLockKeys.push(`rl:lock:ipuser:${ip}:${cleanUsername}`);
+        redisLockKeys.push(`rl:lock:user:${cleanUsername}`);
+      }
+
+      const pipeline = redis.multi();
+      redisLockKeys.forEach((k) => pipeline.ttl(k));
+      const results = await pipeline.exec();
+
+      for (let i = 0; i < results.length; i++) {
+        const ttl = results[i];
+        if (typeof ttl === 'number' && ttl > 0) {
+          return { isLocked: true, remainingSeconds: ttl };
+        }
+      }
+      return { isLocked: false };
+    } catch (redisErr) {
+      console.warn('[RATE LIMITER] Redis checkLoginRateLimit error, falling back:', redisErr.message);
+    }
+  }
 
   const keysToCheck = [`ip:${ip}`, `global:${currentMinute}`];
   if (cleanUsername) {
@@ -138,6 +169,94 @@ export async function recordFailedLogin(req, username = '') {
   const nowMs = now.getTime();
   const cleanUsername = String(username || '').trim().toLowerCase();
   const currentMinute = Math.floor(nowMs / 60000);
+
+  // 1. Redis atomic pipeline fast path
+  if (isRedisConnected()) {
+    try {
+      const redis = getRedis();
+      const pipeline = redis.multi();
+      const redisIpUserKey = cleanUsername ? `rl:count:ipuser:${ip}:${cleanUsername}` : null;
+      const redisUserKey = cleanUsername ? `rl:count:user:${cleanUsername}` : null;
+      const redisIpKey = `rl:count:ip:${ip}`;
+      const redisGlobalKey = `rl:count:global:${currentMinute}`;
+
+      if (redisIpUserKey) {
+        pipeline.incr(redisIpUserKey);
+        pipeline.expire(redisIpUserKey, Math.floor(WINDOW_DURATION_MS / 1000));
+      }
+      if (redisUserKey) {
+        pipeline.incr(redisUserKey);
+        pipeline.expire(redisUserKey, Math.floor(WINDOW_DURATION_MS / 1000));
+      }
+      pipeline.incr(redisIpKey);
+      pipeline.expire(redisIpKey, Math.floor(WINDOW_DURATION_MS / 1000));
+      pipeline.incr(redisGlobalKey);
+      pipeline.expire(redisGlobalKey, 120);
+
+      const results = await pipeline.exec();
+
+      let redisLockedNow = false;
+      let redisRemainingAttempts = MAX_FAILED_ATTEMPTS_PER_IP_USER;
+      let idx = 0;
+
+      if (redisIpUserKey) {
+        const ipUserCount = results[idx];
+        idx += 2;
+        if (ipUserCount >= MAX_FAILED_ATTEMPTS_PER_IP_USER) {
+          await redis.set(`rl:lock:ipuser:${ip}:${cleanUsername}`, '1', {
+            EX: Math.ceil(LOCKOUT_DURATION_MS / 1000),
+          });
+          redisLockedNow = true;
+        } else {
+          redisRemainingAttempts = Math.min(
+            redisRemainingAttempts,
+            MAX_FAILED_ATTEMPTS_PER_IP_USER - ipUserCount
+          );
+        }
+      }
+
+      if (redisUserKey) {
+        const userCount = results[idx];
+        idx += 2;
+        if (userCount >= MAX_FAILED_ATTEMPTS_PER_USER_GLOBAL) {
+          await redis.set(`rl:lock:user:${cleanUsername}`, '1', {
+            EX: Math.ceil(LOCKOUT_DURATION_MS / 1000),
+          });
+          redisLockedNow = true;
+        }
+      }
+
+      const ipCount = results[idx];
+      idx += 2;
+      if (ipCount >= MAX_FAILED_ATTEMPTS_PER_IP) {
+        await redis.set(`rl:lock:ip:${ip}`, '1', {
+          EX: Math.ceil(LOCKOUT_DURATION_MS / 1000),
+        });
+        redisLockedNow = true;
+      }
+
+      const globalCount = results[idx];
+      if (globalCount >= MAX_GLOBAL_ATTEMPTS_PER_MINUTE) {
+        await redis.set(`rl:lock:global:${currentMinute}`, '1', { EX: 60 });
+        redisLockedNow = true;
+      }
+
+      if (redisLockedNow) {
+        return {
+          lockedNow: true,
+          remainingSeconds: Math.ceil(LOCKOUT_DURATION_MS / 1000),
+          attemptsRemaining: 0,
+        };
+      }
+
+      return {
+        lockedNow: false,
+        attemptsRemaining: Math.max(1, redisRemainingAttempts),
+      };
+    } catch (redisErr) {
+      console.warn('[RATE LIMITER] Redis recordFailedLogin error, falling back:', redisErr.message);
+    }
+  }
 
   const ipKey = `ip:${ip}`;
   const ipUserKey = cleanUsername ? `ip_user:${ip}:${cleanUsername}` : null;
@@ -360,6 +479,23 @@ export async function recordSuccessfulLogin(req, username = '') {
   const ip = getClientIp(req);
   const cleanUsername = String(username || '').trim().toLowerCase();
 
+  if (isRedisConnected()) {
+    try {
+      const redis = getRedis();
+      const pipeline = redis.multi();
+      if (cleanUsername) {
+        pipeline.del(`rl:count:ipuser:${ip}:${cleanUsername}`);
+        pipeline.del(`rl:lock:ipuser:${ip}:${cleanUsername}`);
+        pipeline.del(`rl:count:user:${cleanUsername}`);
+        pipeline.del(`rl:lock:user:${cleanUsername}`);
+      }
+      pipeline.del(`rl:count:ip:${ip}`);
+      await pipeline.exec();
+    } catch (redisErr) {
+      console.warn('[RATE LIMITER] Redis recordSuccessfulLogin error:', redisErr.message);
+    }
+  }
+
   if (cleanUsername) {
     const ipUserKey = `ip_user:${ip}:${cleanUsername}`;
     const userKey = `user:${cleanUsername}`;
@@ -379,6 +515,18 @@ export async function recordSuccessfulLogin(req, username = '') {
  * Clear all rate limits (for testing or administrative reset)
  */
 export async function resetAllRateLimits() {
+  if (isRedisConnected()) {
+    try {
+      const redis = getRedis();
+      for await (const chunk of redis.scanIterator({ MATCH: 'rl:*', COUNT: 100 })) {
+        const keys = Array.isArray(chunk) ? chunk : [chunk];
+        if (keys.length > 0) await redis.del(keys);
+      }
+    } catch (redisErr) {
+      console.warn('[RATE LIMITER] Redis resetAllRateLimits error:', redisErr.message);
+    }
+  }
+
   memoryFallbackStore.clear();
   if (isMongoConnected()) {
     try {

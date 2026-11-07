@@ -16,6 +16,7 @@ import {
 } from '../middleware/validateRequest.js';
 
 import { ENV } from '../config/env.js';
+import { createAdaptiveRateLimitStore } from '../config/redis.js';
 
 const router = express.Router();
 
@@ -23,6 +24,7 @@ const router = express.Router();
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: ENV.isProduction ? 30 : 500,
+  store: createAdaptiveRateLimitStore('rl_express:login:'),
   message: {
     success: false,
     message: 'Too many login attempts from this IP. Please try again after 15 minutes.',
@@ -35,6 +37,7 @@ const loginLimiter = rateLimit({
 const passwordChangeLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: ENV.isProduction ? 5 : 100,
+  store: createAdaptiveRateLimitStore('rl_express:pwchange:'),
   message: {
     success: false,
     message: 'Too many password change attempts. Please try again later.',

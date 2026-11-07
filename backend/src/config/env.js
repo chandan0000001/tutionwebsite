@@ -135,6 +135,7 @@ export const ENV = {
   isDevelopment,
   isTest,
   PORT: parseInt(process.env.PORT || '5000', 10),
+  REDIS_URL: stripQuotes(process.env.REDIS_URL) || null,
   MONGODB_URI: rawMongoUri || 'mongodb://127.0.0.1:27017/antariksh_academy',
   JWT_SECRET: isProduction ? rawJwtSecret : devJwtSecret,
   JWT_EXPIRES_IN: stripQuotes(process.env.JWT_EXPIRES_IN) || '1d',

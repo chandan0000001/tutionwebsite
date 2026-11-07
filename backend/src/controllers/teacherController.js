@@ -11,6 +11,12 @@ import { formatStudentUsername } from '../utils/usernameGenerator.js';
 import { createSafeSearchRegex } from '../utils/sanitizeSearch.js';
 import { validateYouTubeUrl } from '../utils/youtube.js';
 import { revokeAllUserSessions } from '../utils/sessionManager.js';
+import {
+  invalidateDashboardCache,
+  invalidateBatchesCache,
+  invalidateLectureCache,
+  invalidateBatchSubjectsCache,
+} from '../config/redis.js';
 
 // Helper: Generate student username (e.g. "Swati Biswal" -> "swati.biswal")
 function generateStudentUsername(name, batch, sequence = 0) {
@@ -259,6 +265,9 @@ export async function createStudent(req, res, next) {
 
     const safeStudent = newStudent.toSafeObject();
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+
     return res.status(201).json({
       success: true,
       message: 'Student created successfully.',
@@ -357,6 +366,9 @@ export async function updateStudent(req, res, next) {
       details: { name: student.name, username: student.username, batchCode: rawBatch },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+
     return res.status(200).json({
       success: true,
       message: 'Student details updated successfully.',
@@ -416,6 +428,9 @@ export async function toggleStudentStatus(req, res, next) {
       details: { name: student.name, username: student.username, isActive: student.isActive },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+
     return res.status(200).json({
       success: true,
       message: `Student account has been ${student.isActive ? 'reactivated' : 'deactivated'}.`,
@@ -470,6 +485,9 @@ export async function deleteStudent(req, res, next) {
       targetId: id,
       details: { name: student.name, username: student.username, batchCode: rawBatch },
     });
+
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
 
     return res.status(200).json({
       success: true,
@@ -615,6 +633,9 @@ export async function bulkImportStudents(req, res, next) {
       },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+
     return res.status(200).json({
       success: true,
       message: `Excel import processed: ${importedCount} created, ${skippedCount} skipped, ${parseResult.invalidRows.length} invalid.`,
@@ -718,6 +739,11 @@ export async function createLecture(req, res, next) {
       details: { topicName: lecture.topicName, slNo: lecture.slNo, batchCode: rawBatch },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+    await invalidateLectureCache(rawBatch);
+    await invalidateBatchSubjectsCache(rawBatch);
+
     return res.status(201).json({
       success: true,
       message: 'Lecture published successfully.',
@@ -801,6 +827,11 @@ export async function updateLecture(req, res, next) {
       },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+    await invalidateLectureCache(rawBatch);
+    await invalidateBatchSubjectsCache(rawBatch);
+
     return res.status(200).json({
       success: true,
       message: 'Lecture updated successfully.',
@@ -840,6 +871,11 @@ export async function deleteLecture(req, res, next) {
       targetId: lectureId,
       details: { topicName: lecture.topicName, slNo: lecture.slNo, batchCode: rawBatch },
     });
+
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+    await invalidateLectureCache(rawBatch);
+    await invalidateBatchSubjectsCache(rawBatch);
 
     return res.status(200).json({
       success: true,

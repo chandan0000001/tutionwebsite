@@ -1,8 +1,10 @@
+import crypto from 'crypto';
 import mongoose from 'mongoose';
 import { Lecture } from '../models/Lecture.js';
 import { Batch } from '../models/Batch.js';
 import { extractYouTubeId, getYouTubeEmbedUrl } from '../utils/youtube.js';
 import { createSafeSearchRegex } from '../utils/sanitizeSearch.js';
+import { getRedis, isRedisConnected } from '../config/redis.js';
 
 const PAGE_SIZE = 10;
 
@@ -109,6 +111,29 @@ export async function getLectures(req, res, next) {
       limit = PAGE_SIZE;
     }
 
+    const subjectParam = (req.query.subject || '').trim();
+    const searchParam = (req.query.search || '').trim();
+    const subjectPart = subjectParam ? subjectParam.toUpperCase() : 'ALL';
+    const searchPart = searchParam
+      ? crypto.createHash('sha256').update(searchParam).digest('hex').slice(0, 8)
+      : 'NONE';
+    const cacheKey = `cache:lectures:${selectedBatchCode}:${page}:${limit}:${subjectPart}:${searchPart}`;
+
+    if (isRedisConnected()) {
+      try {
+        const cached = await getRedis().get(cacheKey);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          return res.status(200).json({
+            ...parsed,
+            enrolledBatches: enrolledBatchDocs,
+          });
+        }
+      } catch (redisErr) {
+        console.warn('[REDIS CACHE] Error reading lecture cache:', redisErr.message);
+      }
+    }
+
     // Filter criteria: ONLY selected authorized batch & isPublished: true
     const filter = {
       $or: [
@@ -158,11 +183,10 @@ export async function getLectures(req, res, next) {
       embedUrl: getYouTubeEmbedUrl(item.ytVideoLink),
     }));
 
-    return res.status(200).json({
+    const payload = {
       success: true,
       batch: academicYear,
       batchCode: selectedBatchCode,
-      enrolledBatches: enrolledBatchDocs,
       pagination: {
         totalRecords,
         totalPages,
@@ -172,6 +196,19 @@ export async function getLectures(req, res, next) {
         hasPrevPage: page > 1,
       },
       data: lectures,
+    };
+
+    if (isRedisConnected()) {
+      try {
+        await getRedis().set(cacheKey, JSON.stringify(payload), { EX: 300 });
+      } catch (redisErr) {
+        console.warn('[REDIS CACHE] Error setting lecture cache:', redisErr.message);
+      }
+    }
+
+    return res.status(200).json({
+      ...payload,
+      enrolledBatches: enrolledBatchDocs,
     });
   } catch (error) {
     next(error);
@@ -253,6 +290,23 @@ export async function getBatchSubjects(req, res, next) {
       targetCodes = [requestedBatch, `BATCH-${requestedBatch}`, requestedBatch.replace('BATCH-', '')];
     }
 
+    const batchKeyPart = requestedBatch || targetCodes.slice().sort().join('_');
+    const cacheKey = `cache:subjects:${batchKeyPart}`;
+
+    if (isRedisConnected()) {
+      try {
+        const cached = await getRedis().get(cacheKey);
+        if (cached) {
+          return res.status(200).json({
+            success: true,
+            data: JSON.parse(cached),
+          });
+        }
+      } catch (redisErr) {
+        console.warn('[REDIS CACHE] Error reading batch subjects cache:', redisErr.message);
+      }
+    }
+
     const subjects = await Lecture.distinct('subject', {
       $or: [
         { batchCode: { $in: targetCodes } },
@@ -261,9 +315,19 @@ export async function getBatchSubjects(req, res, next) {
       isPublished: true,
     });
 
+    const sortedSubjects = subjects.filter(Boolean).sort();
+
+    if (isRedisConnected()) {
+      try {
+        await getRedis().set(cacheKey, JSON.stringify(sortedSubjects), { EX: 600 });
+      } catch (redisErr) {
+        console.warn('[REDIS CACHE] Error setting batch subjects cache:', redisErr.message);
+      }
+    }
+
     return res.status(200).json({
       success: true,
-      data: subjects.filter(Boolean).sort(),
+      data: sortedSubjects,
     });
   } catch (error) {
     next(error);

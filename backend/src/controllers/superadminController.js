@@ -13,6 +13,14 @@ import { formatStudentUsername } from '../utils/usernameGenerator.js';
 import { createSafeSearchRegex } from '../utils/sanitizeSearch.js';
 import { validateYouTubeUrl } from '../utils/youtube.js';
 import { revokeAllUserSessions } from '../utils/sessionManager.js';
+import {
+  getRedis,
+  isRedisConnected,
+  invalidateDashboardCache,
+  invalidateBatchesCache,
+  invalidateLectureCache,
+  invalidateBatchSubjectsCache,
+} from '../config/redis.js';
 
 // Helper: Generate teacher username
 function generateTeacherUsername(name, sequence = 0) {
@@ -44,6 +52,18 @@ export async function getDashboardStats(req, res, next) {
     res.setHeader('Expires', '0');
     res.setHeader('Surrogate-Control', 'no-store');
 
+    // Redis fast-path cache check (TTL: 60s)
+    if (isRedisConnected()) {
+      try {
+        const cached = await getRedis().get('cache:dashboard');
+        if (cached) {
+          return res.status(200).json({ success: true, ...JSON.parse(cached) });
+        }
+      } catch (redisErr) {
+        console.warn('[REDIS CACHE] Error reading dashboard cache:', redisErr.message);
+      }
+    }
+
     const [
       totalStudents,
       activeStudents,
@@ -70,8 +90,7 @@ export async function getDashboardStats(req, res, next) {
       Student.find().sort({ createdAt: -1 }).limit(5).select('-passwordHash').lean(),
     ]);
 
-    return res.status(200).json({
-      success: true,
+    const payload = {
       data: {
         counts: {
           students: { total: totalStudents, active: activeStudents, inactive: inactiveStudents },
@@ -82,6 +101,19 @@ export async function getDashboardStats(req, res, next) {
         recentActivity: recentAuditLogs,
         recentStudents,
       },
+    };
+
+    if (isRedisConnected()) {
+      try {
+        await getRedis().set('cache:dashboard', JSON.stringify(payload), { EX: 60 });
+      } catch (redisErr) {
+        console.warn('[REDIS CACHE] Error setting dashboard cache:', redisErr.message);
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      ...payload,
     });
   } catch (error) {
     next(error);
@@ -94,6 +126,18 @@ export async function getDashboardStats(req, res, next) {
 
 export async function getBatches(req, res, next) {
   try {
+    // Redis fast-path cache check (TTL: 120s)
+    if (isRedisConnected()) {
+      try {
+        const cached = await getRedis().get('cache:batches');
+        if (cached) {
+          return res.status(200).json({ success: true, data: JSON.parse(cached) });
+        }
+      } catch (redisErr) {
+        console.warn('[REDIS CACHE] Error reading batches cache:', redisErr.message);
+      }
+    }
+
     const batches = await Batch.find().sort({ academicYear: -1, code: 1 }).lean();
 
     const batchesWithCounts = await Promise.all(
@@ -124,6 +168,14 @@ export async function getBatches(req, res, next) {
         };
       })
     );
+
+    if (isRedisConnected()) {
+      try {
+        await getRedis().set('cache:batches', JSON.stringify(batchesWithCounts), { EX: 120 });
+      } catch (redisErr) {
+        console.warn('[REDIS CACHE] Error setting batches cache:', redisErr.message);
+      }
+    }
 
     return res.status(200).json({
       success: true,
@@ -170,6 +222,9 @@ export async function createBatch(req, res, next) {
       details: { name: batch.name, code: batch.code, academicYear: batch.academicYear },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+
     return res.status(201).json({
       success: true,
       message: 'Batch created successfully.',
@@ -207,6 +262,9 @@ export async function updateBatch(req, res, next) {
       targetId: batch._id,
       details: { name: batch.name, code: batch.code, isActive: batch.isActive },
     });
+
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
 
     return res.status(200).json({
       success: true,
@@ -309,6 +367,9 @@ export async function createTeacher(req, res, next) {
       details: { name: teacher.name, username: teacher.username, assignedBatches: safeBatches },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+
     return res.status(201).json({
       success: true,
       message: 'Teacher profile created successfully.',
@@ -371,6 +432,9 @@ export async function updateTeacher(req, res, next) {
       details: { name: teacher.name, username: teacher.username, assignedBatches: teacher.assignedBatches },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+
     return res.status(200).json({
       success: true,
       message: 'Teacher profile updated successfully.',
@@ -406,6 +470,9 @@ export async function toggleTeacherStatus(req, res, next) {
       targetId: teacher._id,
       details: { name: teacher.name, username: teacher.username, isActive: teacher.isActive },
     });
+
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
 
     return res.status(200).json({
       success: true,
@@ -610,6 +677,9 @@ export async function createStudent(req, res, next) {
       details: { name: newStudent.name, username: newStudent.username, batchCode: cleanBatch },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+
     return res.status(201).json({
       success: true,
       message: 'Student created successfully.',
@@ -703,6 +773,9 @@ export async function updateStudent(req, res, next) {
       details: { name: student.name, username: student.username, batchCode: student.batchCode },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+
     return res.status(200).json({
       success: true,
       message: 'Student updated successfully.',
@@ -738,6 +811,9 @@ export async function toggleStudentStatus(req, res, next) {
       targetId: student._id,
       details: { name: student.name, username: student.username, isActive: student.isActive },
     });
+
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
 
     return res.status(200).json({
       success: true,
@@ -907,6 +983,9 @@ export async function bulkImportStudents(req, res, next) {
       },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+
     return res.status(200).json({
       success: true,
       message: `Bulk import completed: ${importedCount} created, ${skippedCount} skipped, ${parseResult.invalidRows.length} invalid.`,
@@ -1005,6 +1084,11 @@ export async function createLecture(req, res, next) {
       details: { topicName: lecture.topicName, slNo: lecture.slNo, batchCode: cleanBatch },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+    await invalidateLectureCache(cleanBatch);
+    await invalidateBatchSubjectsCache(cleanBatch);
+
     return res.status(201).json({
       success: true,
       message: 'Lecture created successfully.',
@@ -1081,6 +1165,11 @@ export async function updateLecture(req, res, next) {
       },
     });
 
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+    await invalidateLectureCache(lecture.batchCode);
+    await invalidateBatchSubjectsCache(lecture.batchCode);
+
     return res.status(200).json({
       success: true,
       message: 'Lecture updated successfully.',
@@ -1109,6 +1198,11 @@ export async function deleteLecture(req, res, next) {
       targetId: id,
       details: { topicName: lecture.topicName, slNo: lecture.slNo },
     });
+
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
+    await invalidateLectureCache(lecture.batchCode || lecture.batch);
+    await invalidateBatchSubjectsCache(lecture.batchCode || lecture.batch);
 
     return res.status(200).json({
       success: true,
@@ -1191,6 +1285,9 @@ export async function deleteStudent(req, res, next) {
       targetId: id,
       details: { name: student.name, username: student.username, batchCode: student.batchCode },
     });
+
+    await invalidateDashboardCache();
+    await invalidateBatchesCache();
 
     return res.status(200).json({
       success: true,
