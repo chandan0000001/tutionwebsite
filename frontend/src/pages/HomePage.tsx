@@ -23,6 +23,9 @@ import {
   Pause,
   Play,
   MapPin,
+  GraduationCap,
+  Target,
+  Layers,
 } from 'lucide-react';
 import { COURSES_DATA } from '../data/coursesData';
 import { RESULTS_DATA } from '../data/resultsData';
@@ -984,106 +987,126 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 4.5 ARCHITECTURAL PEDAGOGY SPECIFICATIONS (Boxy Gradient Blueprint Bridge) */}
-      <section className="py-10 sm:py-14 bg-gradient-to-b from-[#FAF6F0] via-[#F3EDE2]/70 to-[#FAF6F0] dark:from-[#0D0905] dark:via-[#140E08]/80 dark:to-[#0D0905] border-b border-stone-200/90 dark:border-[#FFEDD7]/10 oryzo-blueprint-grid relative overflow-hidden">
+      {/* 4.5 FOUR CORNERSTONES OF CLASSROOM RIGOR */}
+      <section className="py-12 sm:py-16 bg-[#FAF6F0] dark:bg-[#0D0905] border-b border-stone-200/90 dark:border-[#FFEDD7]/10 relative overflow-hidden">
         {/* Ambient Subtle Radial Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gradient-to-r from-amber-500/10 via-sky-500/5 to-amber-500/10 blur-3xl rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gradient-to-r from-amber-500/5 via-stone-400/5 to-amber-500/5 blur-3xl rounded-full pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
-          {/* Header Tag with Oryzo Telemetry */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 sm:mb-8 pb-3 border-b border-dashed border-stone-300 dark:border-[#FFEDD7]/15">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" aria-hidden="true" />
-              <h2 className="font-mono-tech text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-amber-800 dark:text-[#F4C76B]">
-                ACADEMIC ARCHITECTURE // 4 CORE RIGOR SPECIFICATIONS
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-10 pb-4 border-b border-stone-200/90 dark:border-[#FFEDD7]/10">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 dark:bg-[#F4C76B]/10 border border-amber-500/20 text-amber-800 dark:text-[#F4C76B] text-[11px] font-bold uppercase tracking-wider mb-2">
+                <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-[#F4C76B]" />
+                <span>The Antariksh Pedagogy</span>
+              </div>
+              <h2 className="font-display text-xl sm:text-2xl lg:text-3xl font-extrabold text-stone-900 dark:text-[#FFEDD7] tracking-tight">
+                Four Cornerstones of Classroom Rigor
               </h2>
             </div>
-            <div className="font-mono-tech text-[10px] text-stone-500 dark:text-[#9E8D7B] tracking-wider hidden sm:block">
-              DISCIPLINED BATCH EXECUTION • BIJIPUR CAMPUS
+            <div className="text-xs font-medium text-stone-500 dark:text-[#9E8D7B] flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-amber-600 dark:text-[#F4C76B]" />
+              <span>Bijipur Main Campus • Dedicated Faculty Mentorship</span>
             </div>
           </div>
 
-          {/* 4 Boxy Blueprint Gradient Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {/* 4 Pedagogical Pillar Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             
             {/* Box 1: Council Blackboard Derivations */}
-            <div className="group relative rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-amber-500/[0.08] via-white/80 to-white/40 dark:from-amber-500/[0.12] dark:via-[#18120B]/90 dark:to-[#18120B]/60 backdrop-blur-md border border-amber-500/30 dark:border-amber-500/30 shadow-sm hover:shadow-md hover:border-amber-500/60 transition-all">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-mono-tech text-[9px] uppercase tracking-wider text-amber-700 dark:text-[#F4C76B] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
-                  SPEC // 01
-                </span>
-                <span className="text-xs font-mono-tech font-bold text-amber-700 dark:text-[#F4C76B]">CHSE COUNCIL</span>
+            <div className="group relative rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#18120B]/90 backdrop-blur-md border border-stone-200/90 dark:border-[#FFEDD7]/15 shadow-sm hover:shadow-xl hover:border-amber-500/40 dark:hover:border-amber-500/40 transition-all flex flex-col justify-between h-full">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-[#F4C76B] flex items-center justify-center shadow-xs">
+                    <GraduationCap className="w-5 h-5" />
+                  </div>
+                  <span className="text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-800 dark:text-[#F4C76B] border border-amber-500/20 font-display">
+                    Council Depth
+                  </span>
+                </div>
+                <h3 className="font-display font-extrabold text-base sm:text-lg text-stone-900 dark:text-[#FFEDD7] mb-2 group-hover:text-amber-800 dark:group-hover:text-[#F4C76B] transition-colors">
+                  Blackboard Derivations
+                </h3>
+                <p className="text-xs sm:text-[13px] text-stone-600 dark:text-[#D4C3AF] leading-relaxed mb-4">
+                  Live step-by-step mathematical proofs and theory worked out on blackboards—checking every student's notebook rather than rushing digital slides.
+                </p>
               </div>
-              <h3 className="font-display font-extrabold text-sm sm:text-base text-stone-900 dark:text-[#FFEDD7] mb-1 group-hover:text-amber-700 dark:group-hover:text-[#F4C76B] transition-colors">
-                Blackboard Derivations
-              </h3>
-              <p className="font-serif-literata text-xs text-stone-600 dark:text-[#D4C3AF] leading-relaxed mb-3">
-                Live step-by-step mathematical proofs and theory worked out on blackboards—checking every notebook rather than rushing digital slides.
-              </p>
-              <div className="pt-2 border-t border-dashed border-stone-200 dark:border-white/10 flex items-center justify-between text-[10px] font-mono-tech text-stone-500 dark:text-[#9E8D7B]">
-                <span>100% Subjective Depth</span>
-                <span className="text-amber-700 dark:text-[#F4C76B] font-bold">First Class</span>
+              <div className="pt-3 border-t border-stone-200/80 dark:border-white/10 flex items-center justify-between gap-2 text-xs">
+                <span className="text-stone-500 dark:text-[#9E8D7B] font-medium">Subjective Proofs</span>
+                <span className="text-amber-800 dark:text-[#F4C76B] font-bold shrink-0">100% Board Pass</span>
               </div>
             </div>
 
             {/* Box 2: Daily DPP Speed Drills */}
-            <div className="group relative rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-sky-500/[0.08] via-white/80 to-white/40 dark:from-sky-500/[0.12] dark:via-[#18120B]/90 dark:to-[#18120B]/60 backdrop-blur-md border border-sky-500/30 dark:border-sky-500/30 shadow-sm hover:shadow-md hover:border-sky-500/60 transition-all">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-mono-tech text-[9px] uppercase tracking-wider text-sky-700 dark:text-[#38BDF8] font-bold px-2 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/20">
-                  SPEC // 02
-                </span>
-                <span className="text-xs font-mono-tech font-bold text-sky-700 dark:text-[#38BDF8]">SPEED & ACCURACY</span>
+            <div className="group relative rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#18120B]/90 backdrop-blur-md border border-stone-200/90 dark:border-[#FFEDD7]/15 shadow-sm hover:shadow-xl hover:border-sky-500/40 dark:hover:border-sky-500/40 transition-all flex flex-col justify-between h-full">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-sky-500/10 dark:bg-sky-500/20 text-sky-700 dark:text-[#38BDF8] flex items-center justify-center shadow-xs">
+                    <Target className="w-5 h-5" />
+                  </div>
+                  <span className="text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-800 dark:text-[#38BDF8] border border-sky-500/20 font-display">
+                    Speed & Accuracy
+                  </span>
+                </div>
+                <h3 className="font-display font-extrabold text-base sm:text-lg text-stone-900 dark:text-[#FFEDD7] mb-2 group-hover:text-sky-700 dark:group-hover:text-[#38BDF8] transition-colors">
+                  Daily Practice Drills
+                </h3>
+                <p className="text-xs sm:text-[13px] text-stone-600 dark:text-[#D4C3AF] leading-relaxed mb-4">
+                  30 targeted problem sets every session with negative-marking audits and shortcut drills to build entrance examination speed and stamina.
+                </p>
               </div>
-              <h3 className="font-display font-extrabold text-sm sm:text-base text-stone-900 dark:text-[#FFEDD7] mb-1 group-hover:text-sky-700 dark:group-hover:text-[#38BDF8] transition-colors">
-                Daily DPP Practice Drills
-              </h3>
-              <p className="font-serif-literata text-xs text-stone-600 dark:text-[#D4C3AF] leading-relaxed mb-3">
-                30 targeted problem sets every session with negative-marking audits and shortcut drills to build entrance examination stamina.
-              </p>
-              <div className="pt-2 border-t border-dashed border-stone-200 dark:border-white/10 flex items-center justify-between text-[10px] font-mono-tech text-stone-500 dark:text-[#9E8D7B]">
-                <span>Negative Marking Control</span>
-                <span className="text-sky-700 dark:text-[#38BDF8] font-bold">JEE & NEET</span>
+              <div className="pt-3 border-t border-stone-200/80 dark:border-white/10 flex items-center justify-between gap-2 text-xs">
+                <span className="text-stone-500 dark:text-[#9E8D7B] font-medium">Speed Audits</span>
+                <span className="text-sky-700 dark:text-[#38BDF8] font-bold shrink-0">JEE & NEET Focus</span>
               </div>
             </div>
 
             {/* Box 3: 1-on-1 Evening Doubt Desks */}
-            <div className="group relative rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-emerald-500/[0.08] via-white/80 to-white/40 dark:from-emerald-500/[0.12] dark:via-[#18120B]/90 dark:to-[#18120B]/60 backdrop-blur-md border border-emerald-500/30 dark:border-emerald-500/30 shadow-sm hover:shadow-md hover:border-emerald-500/60 transition-all">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-mono-tech text-[9px] uppercase tracking-wider text-emerald-700 dark:text-[#34D399] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                  SPEC // 03
-                </span>
-                <span className="text-xs font-mono-tech font-bold text-emerald-700 dark:text-[#34D399]">1-ON-1 DESKS</span>
+            <div className="group relative rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#18120B]/90 backdrop-blur-md border border-stone-200/90 dark:border-[#FFEDD7]/15 shadow-sm hover:shadow-xl hover:border-emerald-500/40 dark:hover:border-emerald-500/40 transition-all flex flex-col justify-between h-full">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-[#34D399] flex items-center justify-center shadow-xs">
+                    <Users className="w-5 h-5" />
+                  </div>
+                  <span className="text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-800 dark:text-[#34D399] border border-emerald-500/20 font-display">
+                    1-on-1 Faculty
+                  </span>
+                </div>
+                <h3 className="font-display font-extrabold text-base sm:text-lg text-stone-900 dark:text-[#FFEDD7] mb-2 group-hover:text-emerald-700 dark:group-hover:text-[#34D399] transition-colors">
+                  Personalized Doubt Desks
+                </h3>
+                <p className="text-xs sm:text-[13px] text-stone-600 dark:text-[#D4C3AF] leading-relaxed mb-4">
+                  Faculty remain on campus until evening. Students sit directly across from teachers to clear every stumbling block before heading home.
+                </p>
               </div>
-              <h3 className="font-display font-extrabold text-sm sm:text-base text-stone-900 dark:text-[#FFEDD7] mb-1 group-hover:text-emerald-700 dark:group-hover:text-[#34D399] transition-colors">
-                Personalized Doubt Desks
-              </h3>
-              <p className="font-serif-literata text-xs text-stone-600 dark:text-[#D4C3AF] leading-relaxed mb-3">
-                Faculty stay on campus until evening. Students sit directly across from teachers to clear stumbling blocks before heading home.
-              </p>
-              <div className="pt-2 border-t border-dashed border-stone-200 dark:border-white/10 flex items-center justify-between text-[10px] font-mono-tech text-stone-500 dark:text-[#9E8D7B]">
-                <span>Zero Unresolved Doubts</span>
-                <span className="text-emerald-700 dark:text-[#34D399] font-bold">Daily 7:00 PM</span>
+              <div className="pt-3 border-t border-stone-200/80 dark:border-white/10 flex items-center justify-between gap-2 text-xs">
+                <span className="text-stone-500 dark:text-[#9E8D7B] font-medium">Evening Help Desk</span>
+                <span className="text-emerald-700 dark:text-[#34D399] font-bold shrink-0">Till 7:00 PM</span>
               </div>
             </div>
 
             {/* Box 4: Synchronized Dual-Track Curriculum */}
-            <div className="group relative rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-amber-600/[0.08] via-white/80 to-white/40 dark:from-amber-600/[0.12] dark:via-[#18120B]/90 dark:to-[#18120B]/60 backdrop-blur-md border border-amber-600/30 dark:border-amber-600/30 shadow-sm hover:shadow-md hover:border-amber-600/60 transition-all">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-mono-tech text-[9px] uppercase tracking-wider text-amber-800 dark:text-[#F4C76B] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
-                  SPEC // 04
-                </span>
-                <span className="text-xs font-mono-tech font-bold text-amber-800 dark:text-[#F4C76B]">DUAL TRACK</span>
+            <div className="group relative rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#18120B]/90 backdrop-blur-md border border-stone-200/90 dark:border-[#FFEDD7]/15 shadow-sm hover:shadow-xl hover:border-amber-600/40 dark:hover:border-amber-600/40 transition-all flex flex-col justify-between h-full">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-amber-600/10 dark:bg-amber-600/20 text-amber-800 dark:text-[#F4C76B] flex items-center justify-center shadow-xs">
+                    <Layers className="w-5 h-5" />
+                  </div>
+                  <span className="text-[11px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-800 dark:text-[#F4C76B] border border-amber-500/20 font-display">
+                    Dual Track
+                  </span>
+                </div>
+                <h3 className="font-display font-extrabold text-base sm:text-lg text-stone-900 dark:text-[#FFEDD7] mb-2 group-hover:text-amber-800 dark:group-hover:text-[#F4C76B] transition-colors">
+                  Synchronized Curriculum
+                </h3>
+                <p className="text-xs sm:text-[13px] text-stone-600 dark:text-[#D4C3AF] leading-relaxed mb-4">
+                  Council theory and competitive entrance questions taught concurrently in unified chapters—eliminating disjointed multi-coaching fatigue.
+                </p>
               </div>
-              <h3 className="font-display font-extrabold text-sm sm:text-base text-stone-900 dark:text-[#FFEDD7] mb-1 group-hover:text-amber-800 dark:group-hover:text-[#F4C76B] transition-colors">
-                Synchronized Curriculum
-              </h3>
-              <p className="font-serif-literata text-xs text-stone-600 dark:text-[#D4C3AF] leading-relaxed mb-3">
-                Council theory and competitive entrance questions taught concurrently in unified chapters—eliminating disjointed multi-coaching fatigue.
-              </p>
-              <div className="pt-2 border-t border-dashed border-stone-200 dark:border-white/10 flex items-center justify-between text-[10px] font-mono-tech text-stone-500 dark:text-[#9E8D7B]">
-                <span>No Duplicate Tuitions</span>
-                <span className="text-amber-800 dark:text-[#F4C76B] font-bold">Zero Burnout</span>
+              <div className="pt-3 border-t border-stone-200/80 dark:border-white/10 flex items-center justify-between gap-2 text-xs">
+                <span className="text-stone-500 dark:text-[#9E8D7B] font-medium">Integrated Syllabus</span>
+                <span className="text-amber-800 dark:text-[#F4C76B] font-bold shrink-0">Zero Clashing</span>
               </div>
             </div>
 
