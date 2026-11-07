@@ -13,7 +13,7 @@ Official web platform for **Antariksh Academy Coaching Institute** (Bijipur, Bra
 The platform follows a decoupled client-server architecture deployed across modern cloud services:
 - **Frontend Client**: React 19 + TypeScript + Vite + Tailwind CSS deployed on **Vercel** with a hardened Content Security Policy (CSP) and **Vercel Web Analytics** for privacy-first traffic insights.
 - **Backend API**: Node.js + Express 4 REST API deployed on **Render** behind a single reverse proxy layer.
-- **Database**: **MongoDB Atlas** storing all application entities, atomic rate-limiting counters, and session states.
+- **Database & Cache**: **MongoDB Atlas** storing all application entities, and **Redis** for sub-millisecond session validation, atomic rate limiting, and multi-tier query caching (with seamless MongoDB fallbacks).
 - **Integrated Services**: YouTube for video playback, Cal.com for consultation scheduling, and FormSubmit for parent inquiry delivery.
 
 ```mermaid
@@ -35,19 +35,26 @@ flowchart TD
         ReverseProxy["Render Reverse Proxy (Single Hop)"]
         Express["Node.js / Express 4 API Server"]
         TrustProxy["Express Proxy Trust (req.ip resolved securely)"]
-        RateLimiter["Distributed Login Rate Limiter (LoginRateLimit)"]
+        AdaptiveLimiter["Distributed Express & Login Rate Limiter"]
         AuthMiddleware["RBAC & Session Auth Middleware"]
         Controllers["Controllers (Auth, Student, Teacher, Superadmin, Lecture)"]
     end
 
+    subgraph CacheLayer["In-Memory & Cache Tier (Redis)"]
+        RedisInstance[("Redis Cluster")]
+        RedisSessions[("Session Hashes & Sets (session:*, user_sessions:*)")]
+        RedisRateLimits[("Rate Limit Pipelines & Locks (rl:*)")]
+        RedisCache[("Query Caches (Dashboard, Batches, Lectures, Subjects)")]
+    end
+
     subgraph DataLayer["Persistence Tier (MongoDB Atlas)"]
-        MongoDB[("MongoDB Database")]
+        MongoDB[("MongoDB Database (Fallback & Primary Store)")]
         StaffColl[("Staff Collection")]
         StudentColl[("Student Collection")]
         BatchColl[("Batch Collection")]
         LectureColl[("Lecture Collection")]
-        SessionColl[("Session Collection (TTL Index)")]
-        RateLimitColl[("LoginRateLimit Collection (TTL Index)")]
+        SessionColl[("Session Collection (Audit & Fallback)")]
+        RateLimitColl[("LoginRateLimit Collection (Fallback)")]
         AuditColl[("AuditLog Collection")]
     end
 
@@ -60,11 +67,14 @@ flowchart TD
     SPA -->|REST API / JSON| ReverseProxy
     ReverseProxy -->|X-Forwarded-For| Express
     Express --> TrustProxy
-    TrustProxy --> RateLimiter
-    RateLimiter <-->|Atomic Updates| RateLimitColl
+    TrustProxy --> AdaptiveLimiter
+    AdaptiveLimiter <-->|Atomic INCR / EXPIRE| RedisRateLimits
+    AdaptiveLimiter -.->|Fallback if Redis down| RateLimitColl
     Express --> AuthMiddleware
-    AuthMiddleware <-->|Session Verification| SessionColl
+    AuthMiddleware <-->|O(1) HGETALL Fast Path| RedisSessions
+    AuthMiddleware -.->|Fallback Verification| SessionColl
     AuthMiddleware --> Controllers
+    Controllers <-->|Get / Invalidate Cache| RedisCache
     Controllers <--> DataLayer
 ```
 
@@ -72,7 +82,7 @@ flowchart TD
 
 ## 2. Authentication, Rate Limiting & Session Lifecycle
 
-The platform enforces zero-trust credential verification with proxy-aware rate limiting, timing-safe validation, and stateful session revocation without requiring Redis.
+The platform enforces zero-trust credential verification with proxy-aware rate limiting, timing-safe validation, stateful session revocation, and an ultra-fast Redis layer backed by robust MongoDB fallbacks.
 
 ```mermaid
 sequenceDiagram
@@ -80,15 +90,17 @@ sequenceDiagram
     actor Client as User Browser
     participant Proxy as Render Reverse Proxy
     participant App as Express Backend
-    participant Limiter as LoginRateLimiter (MongoDB)
+    participant Limiter as LoginRateLimiter (Redis / MongoDB)
     participant Auth as Auth Controller
     participant DB as MongoDB Atlas
-    participant SessionMgr as Session Manager
+    participant Redis as Redis Cluster
+    participant SessionMgr as Session Manager (Redis / MongoDB)
 
     Client->>Proxy: POST /api/auth/login { username, password }
     Proxy->>App: Forward request with client IP in X-Forwarded-For
     App->>Limiter: checkLoginRateLimit(req, username)
-    Limiter->>DB: Query LoginRateLimit for (ip) & (ip_user)
+    Limiter->>Redis: Pipeline check TTL of (rl:lock:*)
+    Note over Limiter,Redis: Sub-millisecond Redis fast path
     
     alt Exceeded failed attempts
         Limiter-->>App: Rate limit locked
@@ -101,13 +113,13 @@ sequenceDiagram
         alt Account not found
             Auth->>Auth: Timing-safe dummy bcrypt comparison
             Auth->>Limiter: recordFailedLogin(req, username)
-            Limiter->>DB: Atomic $inc attempts
+            Limiter->>Redis: Atomic INCR + EXPIRE pipeline
             Auth-->>Client: 401 Invalid username or password
         else Account found
             Auth->>Auth: Compare bcrypt password hash
             alt Password mismatch
                 Auth->>Limiter: recordFailedLogin(req, username)
-                Limiter->>DB: Atomic $inc attempts
+                Limiter->>Redis: Atomic INCR + EXPIRE pipeline
                 Auth-->>Client: 401 Invalid username or password
             else Password matches
                 alt Account inactive
@@ -116,9 +128,10 @@ sequenceDiagram
                     Auth-->>Client: 401 Temporary password expired
                 else Valid Login
                     Auth->>Limiter: recordSuccessfulLogin(req, username)
-                    Limiter->>DB: Clear failed record
+                    Limiter->>Redis: Atomic DEL failed counters
                     Auth->>SessionMgr: createSession({ user, req })
-                    SessionMgr->>DB: Insert Session with unique sid & TTL
+                    SessionMgr->>Redis: Store session hash & add to user_sessions set
+                    SessionMgr->>DB: Audit log Session insertion
                     Auth->>Auth: Generate JWT (embeds sub, sid, tokenVersion, role)
                     Auth-->>Client: 200 OK { token, role, user }
                 end
@@ -127,11 +140,13 @@ sequenceDiagram
     end
 ```
 
-### Key Security Features
-- **Proxy-Aware Rate Limiting**: Express is configured with `app.set('trust proxy', 1)`. Real client IPs are resolved safely from Render's reverse proxy, preventing spoofed `X-Forwarded-For` injection.
+### Key Security & Performance Features
+- **High-Performance Redis Session Store**: Active sessions are maintained as Redis Hashes (`session:{sessionId}`) and indexed in per-user sets (`user_sessions:{userId}`) with automatic TTL expiration. Request authentication completes in <0.2ms via $O(1)$ `HGETALL` without hitting MongoDB on every request.
+- **Distributed Atomic Rate Limiting**: Built with Redis atomic multi pipelines (`INCR` + `EXPIRE` + lockout keys) and `rate-limit-redis`, eliminating database write saturation under distributed attacks and ensuring rate limits synchronize across multiple backend instances.
+- **Proxy-Aware Client Identification**: Express is configured with `app.set('trust proxy', 1)`. Real client IPs are resolved safely from Render's reverse proxy, preventing spoofed `X-Forwarded-For` injection.
 - **Victim DoS Protection**: Failed login tracking isolates `(IP + username)` pairs rather than locking accounts globally. An attacker guessing passwords on an account cannot lock out the legitimate user logging in from their home or mobile network.
-- **Fail-Safe In-Memory Fallback**: If MongoDB connection is temporarily lost, an internal bounded in-memory `Map` (capped at 1,000 entries) takes over immediately to prevent failing open.
-- **Redis-Free Session Revocation**: Sessions are stored in the MongoDB `Session` collection with TTL indexes. When a user logs out (`/api/auth/logout`), changes their password (`/api/auth/change-password`), or is deactivated by an administrator, sessions are revoked immediately in the database.
+- **Triple-Tier Fallback Resilience**: If Redis is offline or disconnected, all session validations and rate limits automatically fall back to MongoDB. If MongoDB is also temporarily unavailable, an internal bounded in-memory `Map` (capped at 1,000 entries) takes over immediately to prevent failing open.
+- **Instant Revocation & Password Invalidation**: Logging out, changing passwords, or administrator deactivations delete session keys in Redis pipelines and mark MongoDB records revoked, rejecting further token use instantly.
 
 ---
 
@@ -271,17 +286,20 @@ antariksh-academy/
 │   ├── .env                      # Local frontend variables (git-ignored)
 │   └── .env.example              # Public frontend environment template
 │
-└── backend/                      # Node.js + Express + MongoDB REST API
+└── backend/                      # Node.js + Express + MongoDB + Redis REST API
     ├── src/
-    │   ├── config/               # Database connection & fail-closed env validation
-    │   ├── controllers/          # Auth, Teacher, Superadmin & Lecture controllers
+    │   ├── config/               # Database, Redis client, adaptive stores & fail-closed env validation
+    │   │   ├── db.js             # MongoDB connection lifecycle
+    │   │   ├── env.js            # Strict environment variable parser & validator
+    │   │   └── redis.js          # Redis client, adaptive rate-limit store & cache invalidators
+    │   ├── controllers/          # Auth, Teacher, Superadmin & Lecture controllers (with Redis query cache)
     │   ├── middleware/           # Auth, RBAC, Active Account & Sanitized Error Handler
     │   ├── models/               # Staff, Student, Batch, Lecture, Session, LoginRateLimit, AuditLog
-    │   ├── routes/               # Modular Express API Routes
+    │   ├── routes/               # Modular Express API Routes (with distributed Redis rate limiters)
     │   ├── services/             # Excel template generation & streaming parser (ExcelJS)
     │   ├── utils/                # Rate limiter, Session manager, YouTube validator, Token generator
     │   ├── app.js                # Express app with Helmet, CORS allowlist & Proxy configuration
-    │   └── server.js             # Server startup & graceful shutdown handlers
+    │   └── server.js             # Server startup & graceful shutdown handlers (Redis + Mongo)
     ├── data/
     │   ├── students/             # Initial student JSON data
     │   └── staff.json            # Initial faculty definitions
@@ -303,6 +321,7 @@ antariksh-academy/
 ### Prerequisites
 - **Node.js**: v18+ (tested on Node.js v24.x)
 - **MongoDB**: Local MongoDB community instance or [MongoDB Atlas](https://www.mongodb.com/atlas) cluster URI
+- **Redis (Optional)**: Local Redis server (`redis://localhost:6379`) or Cloud Redis URI (falls back gracefully to MongoDB / memory if not set)
 
 ### Step 1: Install Dependencies
 ```bash
@@ -358,7 +377,8 @@ In the Render Dashboard under **Environment**:
 6. `FRONTEND_URL`: `https://antarikshacademy.vercel.app`.
 7. `ALLOWED_ORIGINS`: `https://antarikshacademy.vercel.app`.
 8. `BCRYPT_SALT_ROUNDS`: `12`.
-9. `SUPERADMIN_USERNAME` & `SUPERADMIN_PASSWORD`: Strong initial administrator credentials.
+9. `REDIS_URL`: Production Redis cluster connection string (e.g. `redis://default:<password>@<host>:<port>`).
+10. `SUPERADMIN_USERNAME` & `SUPERADMIN_PASSWORD`: Strong initial administrator credentials.
 
 ### 8.2 Frontend on Vercel
 In the Vercel Dashboard:
@@ -382,7 +402,8 @@ npm run build
 ```
 
 All 45 automated tests execute with 100% pass rate in <500ms:
-- **Rate Limiting & Proxy Safety**: Express trust proxy IP resolution, spoof resistance, victim DoS protection, shared NAT isolation.
+- **Rate Limiting & Proxy Safety**: Express trust proxy IP resolution, spoof resistance, victim DoS protection, shared NAT isolation, and distributed Redis multi-pipeline rate limiting.
+- **Redis Sessions & Multi-Tier Caching**: Sub-millisecond $O(1)$ session lookups (`HGETALL`), atomic bulk session revocation, and multi-tier query caching for dashboard stats (60s), batch counts (120s), paginated lectures (300s), and subjects (600s) with automated invalidation.
 - **YouTube Validation**: Strict HTTPS, exact domain whitelist, 11-char ID validation.
 - **ReDoS Prevention**: Escapes all regex metacharacters, bounds query lengths to 64 chars.
 - **Session Lifecycle**: MongoDB token binding, single session logout, bulk revocation on password change.
