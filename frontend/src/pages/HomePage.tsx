@@ -35,6 +35,7 @@ import { sanitizeMobileInput, getMobileValidationError } from '../utils/validati
 import { ACADEMY_CONFIG } from '../config/academyConfig';
 import { SpecularCard } from '../components/common/SpecularCard';
 import { MagneticButton } from '../components/common/MagneticButton';
+import { SEO } from '../components/SEO';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -281,6 +282,11 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full font-body overflow-x-hidden bg-[#FAF6F0] dark:bg-[#0D0905] text-[#150F0A] dark:text-[#FFEDD7]">
+      <SEO
+        title="Antariksh Academy | Coaching for +2 Science, JEE Main & Advanced, NEET, OUAT & ICAR | Berhampur"
+        description="Premier coaching institute in Bijipur, Brahmapur (Berhampur), Odisha for Class 11 & 12 (+2 Science CHSE Odisha), JEE Main & Advanced, NEET-UG, and OUAT & ICAR. Disciplined 30-student cohorts with experienced senior faculty."
+        canonicalPath="/"
+      />
       
       {/* 1. TOP URGENT ANNOUNCEMENT TICKER (Hidden on mobile to save vertical height) */}
       <div className="hidden sm:block bg-[#F3EDE2] dark:bg-[#140E08] text-stone-700 dark:text-[#D4C3AF] py-2 px-3 sm:px-4 border-b border-stone-200/90 dark:border-[#FFEDD7]/10 text-xs">

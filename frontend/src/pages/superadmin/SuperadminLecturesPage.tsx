@@ -769,7 +769,7 @@ export const SuperadminLecturesPage: React.FC = () => {
                     <div className="mt-2 p-2 rounded-xl bg-slate-100 dark:bg-[#1E293B] flex items-center gap-3">
                       <img
                         src={`https://img.youtube.com/vi/${previewYtId}/mqdefault.jpg`}
-                        alt="Thumbnail"
+                        alt="YouTube video thumbnail preview"
                         width="80"
                         height="48"
                         loading="lazy"

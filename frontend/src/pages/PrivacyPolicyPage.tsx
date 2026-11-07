@@ -15,10 +15,16 @@ import {
   Clock,
 } from 'lucide-react';
 import { ACADEMY_CONFIG } from '../config/academyConfig';
+import { SEO } from '../components/SEO';
 
 export const PrivacyPolicyPage: React.FC = () => {
   return (
     <div className="w-full bg-[#FAF6F0]/90 dark:bg-[#0D0905]/90 text-[#150F0A] dark:text-[#FFEDD7] oryzo-blueprint-grid transition-colors duration-200">
+      <SEO
+        title="Privacy Policy & Student Data Protection"
+        description="Read Antariksh Academy's privacy policy, personal data protection standards, consultation confidentiality, and academic record governance."
+        canonicalPath="/privacy"
+      />
       
       {/* Page Header */}
       <section className="py-12 sm:py-16 bg-[#FAF6F0]/80 dark:bg-[#140E08]/80 border-b border-stone-200/90 dark:border-[#FFEDD7]/10 oryzo-blueprint-grid">

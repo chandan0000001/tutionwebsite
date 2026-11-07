@@ -24,6 +24,7 @@ const TimetablePage = lazy(() => import('./pages/TimetablePage'));
 const ConsultationPage = lazy(() => import('./pages/ConsultationPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // Lazy-loaded Student Portal Pages
 const StudentLoginPage = lazy(() => import('./pages/student/StudentLoginPage'));
@@ -245,8 +246,8 @@ export function App() {
                     }
                   />
 
-                  {/* Catch-all route defaults back to Home */}
-                  <Route path="*" element={<HomePage />} />
+                  {/* Catch-all route renders Custom 404 page */}
+                  <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </Suspense>
             </main>

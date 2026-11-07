@@ -4,6 +4,7 @@ import { LogIn, User, Lock, Eye, EyeOff, ArrowLeft, ShieldCheck } from 'lucide-r
 import { useAuth } from '../../context/AuthContext';
 import { LoadingButton } from '../../components/common/LoadingButton';
 import { NotificationBanner } from '../../components/common/NotificationBanner';
+import { SEO } from '../../components/SEO';
 
 export const StudentLoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -64,6 +65,11 @@ export const StudentLoginPage: React.FC = () => {
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-200">
+      <SEO
+        title="Portal Login (Student, Faculty & Administration)"
+        description="Secure sign-in portal for Antariksh Academy enrolled students, faculty mentors, and administration. Access recorded video lectures, DPPs, and batch records."
+        canonicalPath="/student/login"
+      />
       <div className="w-full max-w-md">
         {/* Header / Brand Badge */}
         <div className="text-center mb-8">
