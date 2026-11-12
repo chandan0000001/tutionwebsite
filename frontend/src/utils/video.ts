@@ -268,3 +268,125 @@ export function parseDocumentUrl(rawInput: string): DocumentInfo {
     previewUrl: trimmed,
   };
 }
+
+/**
+ * Smart external media click handler.
+ * - On Desktop: opens in a new tab/window without modifying browser behavior.
+ * - On Mobile (Android / iOS): intercepts click and attempts deep-linking directly into
+ *   the native mobile application (YouTube App, Google Drive App, Google Docs/Sheets),
+ *   with fallback to the webpage if the app is unavailable.
+ */
+export function handleExternalMediaClick(rawUrl: string, e?: React.MouseEvent): void {
+  if (!rawUrl || typeof rawUrl !== 'string') return;
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return;
+
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return;
+  }
+
+  const ua = navigator.userAgent || '';
+  const isAndroid = /Android/i.test(ua);
+  const isIOS = /iPhone|iPad|iPod/i.test(ua);
+  const isMobile = isAndroid || isIOS;
+
+  if (!isMobile) {
+    // On desktop, the standard <a> tag with target="_blank" and rel="noopener noreferrer"
+    // naturally opens in a fresh browser tab/page. If called programmatically without an event,
+    // open via window.open.
+    if (!e) {
+      window.open(trimmed, '_blank', 'noopener,noreferrer');
+    }
+    return;
+  }
+
+  // Prevent default new tab spawn in mobile browser to allow OS app intent dispatch
+  if (e) {
+    e.preventDefault();
+  }
+
+  // 1. YouTube Video
+  if (trimmed.includes('youtube.com') || trimmed.includes('youtu.be')) {
+    const video = parseVideoUrl(trimmed);
+    const videoId = video.videoId;
+
+    if (isAndroid && videoId) {
+      // Android Intent scheme specifically triggers the native YouTube app
+      // and falls back gracefully to https:// in browser if uninstalled.
+      window.location.href = `intent://www.youtube.com/watch?v=${videoId}#Intent;package=com.google.android.youtube;scheme=https;end`;
+      return;
+    }
+
+    if (isIOS && videoId) {
+      // iOS YouTube app URL scheme
+      window.location.href = `vnd.youtube://${videoId}`;
+      setTimeout(() => {
+        window.location.href = `https://www.youtube.com/watch?v=${videoId}`;
+      }, 500);
+      return;
+    }
+
+    window.location.href = trimmed;
+    return;
+  }
+
+  // 2. Google Drive Link
+  if (trimmed.includes('drive.google.com')) {
+    const fileMatch = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    const fileId = fileMatch ? fileMatch[1] : '';
+
+    if (isAndroid) {
+      const intentUrl = fileId
+        ? `intent://drive.google.com/file/d/${fileId}/view#Intent;package=com.google.android.apps.docs;scheme=https;end`
+        : `intent://${trimmed.replace(/^https?:\/\//, '')}#Intent;package=com.google.android.apps.docs;scheme=https;end`;
+      window.location.href = intentUrl;
+      return;
+    }
+
+    if (isIOS) {
+      if (fileId) {
+        window.location.href = `googledrive://drive.google.com/file/d/${fileId}/view`;
+        setTimeout(() => {
+          window.location.href = trimmed;
+        }, 500);
+        return;
+      }
+    }
+
+    window.location.href = trimmed;
+    return;
+  }
+
+  // 3. Google Docs / Sheets / Slides
+  if (trimmed.includes('docs.google.com')) {
+    if (isAndroid) {
+      let pkg = 'com.google.android.apps.docs';
+      if (trimmed.includes('/document/')) pkg = 'com.google.android.apps.docs.editors.docs';
+      else if (trimmed.includes('/spreadsheets/')) pkg = 'com.google.android.apps.docs.editors.sheets';
+      else if (trimmed.includes('/presentation/')) pkg = 'com.google.android.apps.docs.editors.slides';
+
+      window.location.href = `intent://${trimmed.replace(/^https?:\/\//, '')}#Intent;package=${pkg};scheme=https;end`;
+      return;
+    }
+
+    if (isIOS) {
+      if (trimmed.includes('/document/')) {
+        window.location.href = `googledocs://${trimmed.replace(/^https?:\/\//, '')}`;
+      } else if (trimmed.includes('/spreadsheets/')) {
+        window.location.href = `googlesheets://${trimmed.replace(/^https?:\/\//, '')}`;
+      } else if (trimmed.includes('/presentation/')) {
+        window.location.href = `googleslides://${trimmed.replace(/^https?:\/\//, '')}`;
+      }
+      setTimeout(() => {
+        window.location.href = trimmed;
+      }, 500);
+      return;
+    }
+
+    window.location.href = trimmed;
+    return;
+  }
+
+  // 4. Default: Open in new window or navigate
+  window.open(trimmed, '_blank', 'noopener,noreferrer');
+}

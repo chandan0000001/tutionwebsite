@@ -19,7 +19,7 @@ import { LoadingButton } from '../../components/common/LoadingButton';
 import { TableSkeleton, CardSkeleton } from '../../components/common/SkeletonLoader';
 import { NotificationBanner } from '../../components/common/NotificationBanner';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
-import { parseVideoUrl, parseDocumentUrl } from '../../utils/video';
+import { parseVideoUrl, parseDocumentUrl, handleExternalMediaClick } from '../../utils/video';
 
 interface LectureItem {
   _id: string;
@@ -515,6 +515,7 @@ export const SuperadminLecturesPage: React.FC = () => {
                               href={lec.ytVideoLink}
                               target="_blank"
                               rel="noopener noreferrer"
+                              onClick={(e) => handleExternalMediaClick(lec.ytVideoLink, e)}
                               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] shadow-xs transition-colors"
                             >
                               <ExternalLink className="w-3 h-3" />
@@ -525,6 +526,7 @@ export const SuperadminLecturesPage: React.FC = () => {
                               href={lec.ytVideoLink}
                               target="_blank"
                               rel="noopener noreferrer"
+                              onClick={(e) => handleExternalMediaClick(lec.ytVideoLink, e)}
                               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] shadow-xs transition-colors"
                             >
                               <ExternalLink className="w-3 h-3" />
@@ -536,6 +538,7 @@ export const SuperadminLecturesPage: React.FC = () => {
                               href={lec.notesUrl}
                               target="_blank"
                               rel="noopener noreferrer"
+                              onClick={(e) => handleExternalMediaClick(lec.notesUrl!, e)}
                               className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[10px] border border-emerald-500/20 transition-colors"
                               title={lec.notesTitle || 'Study Notes / Document'}
                             >
@@ -661,6 +664,7 @@ export const SuperadminLecturesPage: React.FC = () => {
                           href={lec.ytVideoLink}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={(e) => handleExternalMediaClick(lec.ytVideoLink, e)}
                           className="px-2.5 py-1 rounded-lg text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 flex items-center gap-1 shadow-xs"
                         >
                           <ExternalLink className="w-3 h-3" />
@@ -671,6 +675,7 @@ export const SuperadminLecturesPage: React.FC = () => {
                           href={lec.ytVideoLink}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={(e) => handleExternalMediaClick(lec.ytVideoLink, e)}
                           className="px-2.5 py-1 rounded-lg text-xs font-bold text-white bg-red-600 hover:bg-red-700 flex items-center gap-1 shadow-xs"
                         >
                           <ExternalLink className="w-3 h-3" />
@@ -682,6 +687,7 @@ export const SuperadminLecturesPage: React.FC = () => {
                           href={lec.notesUrl}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={(e) => handleExternalMediaClick(lec.notesUrl!, e)}
                           className="px-2 py-1 rounded-lg text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-1"
                           title={lec.notesTitle || 'Study Notes / Document'}
                         >
