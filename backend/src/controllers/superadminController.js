@@ -11,7 +11,7 @@ import { ENV } from '../config/env.js';
 import { normalizeIndianPhone } from '../utils/phone.js';
 import { formatStudentUsername } from '../utils/usernameGenerator.js';
 import { createSafeSearchRegex } from '../utils/sanitizeSearch.js';
-import { validateYouTubeUrl } from '../utils/youtube.js';
+import { validateYouTubeUrl, validateVideoUrl, validateDocumentUrl } from '../utils/youtube.js';
 import { revokeAllUserSessions } from '../utils/sessionManager.js';
 import {
   getRedis,
@@ -1031,21 +1031,47 @@ export async function getAllLectures(req, res, next) {
 
 export async function createLecture(req, res, next) {
   try {
-    const { slNo, topicName, ytVideoLink, subject, description, isPublished, batchCode } = req.body;
+    const {
+      slNo,
+      topicName,
+      ytVideoLink,
+      videoUrl,
+      subject,
+      description,
+      isPublished,
+      batchCode,
+      notesUrl,
+      notesTitle,
+    } = req.body;
+    const rawVideoInput = videoUrl || ytVideoLink;
 
-    if (!slNo || !topicName || !ytVideoLink || !subject || !batchCode) {
+    if (!slNo || !topicName || !rawVideoInput || !subject || !batchCode) {
       return res.status(400).json({
         success: false,
-        message: 'Serial number, topic name, subject, YouTube link, and batch selection are required.',
+        message: 'Serial number, topic name, subject, video link (YouTube or Streamable), and batch selection are required.',
       });
     }
 
-    const ytValidation = validateYouTubeUrl(ytVideoLink);
-    if (!ytValidation.isValid) {
+    const videoValidation = validateVideoUrl(rawVideoInput);
+    if (!videoValidation.isValid) {
       return res.status(400).json({
         success: false,
-        message: ytValidation.error || 'Invalid YouTube video URL.',
+        message: videoValidation.error || 'Invalid video URL. Please provide a valid YouTube or Streamable link.',
       });
+    }
+
+    let validNotesUrl = '';
+    let validNotesTitle = '';
+    if (notesUrl && typeof notesUrl === 'string' && notesUrl.trim()) {
+      const docValidation = validateDocumentUrl(notesUrl);
+      if (!docValidation.isValid) {
+        return res.status(400).json({
+          success: false,
+          message: docValidation.error || 'Invalid document/notes URL.',
+        });
+      }
+      validNotesUrl = docValidation.canonicalUrl;
+      validNotesTitle = (notesTitle && typeof notesTitle === 'string') ? notesTitle.trim().slice(0, 200) : '';
     }
 
     const cleanBatch = batchCode.trim().toUpperCase();
@@ -1066,7 +1092,10 @@ export async function createLecture(req, res, next) {
     const lecture = await Lecture.create({
       slNo: Number(slNo),
       topicName: topicName.trim(),
-      ytVideoLink: ytValidation.canonicalUrl,
+      ytVideoLink: videoValidation.canonicalUrl,
+      videoProvider: videoValidation.provider,
+      notesUrl: validNotesUrl,
+      notesTitle: validNotesTitle,
       subject: subject.trim(),
       description: description ? description.trim() : '',
       batch: academicYear,
@@ -1110,7 +1139,18 @@ export async function updateLecture(req, res, next) {
       });
     }
 
-    const { slNo, topicName, ytVideoLink, subject, description, isPublished, batchCode } = req.body;
+    const {
+      slNo,
+      topicName,
+      ytVideoLink,
+      videoUrl,
+      subject,
+      description,
+      isPublished,
+      batchCode,
+      notesUrl,
+      notesTitle,
+    } = req.body;
 
     if (batchCode) {
       lecture.batchCode = batchCode.trim().toUpperCase();
@@ -1136,16 +1176,41 @@ export async function updateLecture(req, res, next) {
     }
 
     if (topicName) lecture.topicName = topicName.trim();
-    if (ytVideoLink) {
-      const ytValidation = validateYouTubeUrl(ytVideoLink);
-      if (!ytValidation.isValid) {
+
+    const incomingVideo = videoUrl || ytVideoLink;
+    if (incomingVideo) {
+      const videoValidation = validateVideoUrl(incomingVideo);
+      if (!videoValidation.isValid) {
         return res.status(400).json({
           success: false,
-          message: ytValidation.error || 'Invalid YouTube video URL.',
+          message: videoValidation.error || 'Invalid video URL. Please provide a valid YouTube or Streamable link.',
         });
       }
-      lecture.ytVideoLink = ytValidation.canonicalUrl;
+      lecture.ytVideoLink = videoValidation.canonicalUrl;
+      lecture.videoProvider = videoValidation.provider;
     }
+
+    if (notesUrl !== undefined) {
+      if (!notesUrl || (typeof notesUrl === 'string' && !notesUrl.trim())) {
+        lecture.notesUrl = '';
+        lecture.notesTitle = '';
+      } else {
+        const docValidation = validateDocumentUrl(notesUrl);
+        if (!docValidation.isValid) {
+          return res.status(400).json({
+            success: false,
+            message: docValidation.error || 'Invalid document/notes URL.',
+          });
+        }
+        lecture.notesUrl = docValidation.canonicalUrl;
+        if (notesTitle !== undefined) {
+          lecture.notesTitle = String(notesTitle).trim().slice(0, 200);
+        }
+      }
+    } else if (notesTitle !== undefined) {
+      lecture.notesTitle = String(notesTitle).trim().slice(0, 200);
+    }
+
     if (subject) lecture.subject = subject.trim();
     if (description !== undefined) lecture.description = String(description).trim();
     if (isPublished !== undefined) lecture.isPublished = Boolean(isPublished);

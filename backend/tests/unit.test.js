@@ -1,6 +1,13 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { extractYouTubeId, getYouTubeEmbedUrl } from '../src/utils/youtube.js';
+import {
+  extractYouTubeId,
+  getYouTubeEmbedUrl,
+  validateStreamableUrl,
+  validateVideoUrl,
+  extractVideoMetadata,
+  validateDocumentUrl,
+} from '../src/utils/youtube.js';
 import { generateToken, verifyToken } from '../src/utils/token.js';
 
 describe('YouTube Utilities', () => {
@@ -329,6 +336,103 @@ describe('AuditLog Model & Audit Logger Resilience', () => {
     }
   });
 });
+
+describe('Streamable Utilities & Validation', () => {
+  test('validates standard Streamable URL and returns canonical and embed links', () => {
+    const res = validateStreamableUrl('https://streamable.com/moo9au');
+    assert.equal(res.isValid, true);
+    assert.equal(res.videoId, 'moo9au');
+    assert.equal(res.canonicalUrl, 'https://streamable.com/moo9au');
+    assert.equal(res.embedUrl, 'https://streamable.com/e/moo9au');
+  });
+
+  test('validates embed Streamable URL format', () => {
+    const res = validateStreamableUrl('https://streamable.com/e/moo9au');
+    assert.equal(res.isValid, true);
+    assert.equal(res.videoId, 'moo9au');
+    assert.equal(res.embedUrl, 'https://streamable.com/e/moo9au');
+  });
+
+  test('validates direct Streamable shortcode', () => {
+    const res = validateStreamableUrl('moo9au');
+    assert.equal(res.isValid, true);
+    assert.equal(res.videoId, 'moo9au');
+    assert.equal(res.canonicalUrl, 'https://streamable.com/moo9au');
+  });
+
+  test('rejects HTTP protocol and arbitrary domains for Streamable', () => {
+    const httpRes = validateStreamableUrl('http://streamable.com/moo9au');
+    assert.equal(httpRes.isValid, false);
+
+    const fakeRes = validateStreamableUrl('https://notstreamable.com/moo9au');
+    assert.equal(fakeRes.isValid, false);
+  });
+});
+
+describe('Unified Video Utilities (YouTube + Streamable)', () => {
+  test('correctly identifies and formats YouTube links', () => {
+    const res = validateVideoUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+    assert.equal(res.isValid, true);
+    assert.equal(res.provider, 'youtube');
+    assert.equal(res.videoId, 'dQw4w9WgXcQ');
+    assert.ok(res.embedUrl.includes('youtube-nocookie.com'));
+  });
+
+  test('correctly identifies and formats Streamable links', () => {
+    const res = validateVideoUrl('https://streamable.com/abc123');
+    assert.equal(res.isValid, true);
+    assert.equal(res.provider, 'streamable');
+    assert.equal(res.videoId, 'abc123');
+    assert.equal(res.embedUrl, 'https://streamable.com/e/abc123');
+  });
+
+  test('extractVideoMetadata gracefully extracts metadata for both providers', () => {
+    const ytMeta = extractVideoMetadata('https://youtu.be/dQw4w9WgXcQ');
+    assert.equal(ytMeta.provider, 'youtube');
+    assert.equal(ytMeta.videoId, 'dQw4w9WgXcQ');
+
+    const streamableMeta = extractVideoMetadata('https://streamable.com/moo9au');
+    assert.equal(streamableMeta.provider, 'streamable');
+    assert.equal(streamableMeta.videoId, 'moo9au');
+    assert.equal(streamableMeta.embedUrl, 'https://streamable.com/e/moo9au');
+  });
+});
+
+describe('Document & Study Notes URL Validation (Google Drive, Docs, PDFs)', () => {
+  test('converts Google Drive file sharing view link to preview embed format', () => {
+    const driveUrl = 'https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I/view?usp=sharing';
+    const res = validateDocumentUrl(driveUrl);
+    assert.equal(res.isValid, true);
+    assert.equal(res.type, 'google_drive');
+    assert.equal(res.canonicalUrl, 'https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I/view');
+    assert.equal(res.previewUrl, 'https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I/preview');
+  });
+
+  test('converts Google Docs document edit link to preview link', () => {
+    const docUrl = 'https://docs.google.com/document/d/1A2B3C4D5E6F7G8H9I/edit';
+    const res = validateDocumentUrl(docUrl);
+    assert.equal(res.isValid, true);
+    assert.equal(res.type, 'google_docs');
+    assert.equal(res.canonicalUrl, 'https://docs.google.com/document/d/1A2B3C4D5E6F7G8H9I/edit');
+    assert.equal(res.previewUrl, 'https://docs.google.com/document/d/1A2B3C4D5E6F7G8H9I/preview');
+  });
+
+  test('validates external HTTPS PDF document link', () => {
+    const pdfUrl = 'https://example.com/notes/physics-chapter1.pdf';
+    const res = validateDocumentUrl(pdfUrl);
+    assert.equal(res.isValid, true);
+    assert.equal(res.type, 'external');
+    assert.equal(res.canonicalUrl, pdfUrl);
+  });
+
+  test('rejects non-HTTPS and malicious protocols in document links', () => {
+    assert.equal(validateDocumentUrl('http://drive.google.com/file/d/123/view').isValid, false);
+    assert.equal(validateDocumentUrl('javascript:alert(1)').isValid, false);
+    assert.equal(validateDocumentUrl('data:text/html,test').isValid, false);
+    assert.equal(validateDocumentUrl('').isValid, false);
+  });
+});
+
 
 
 

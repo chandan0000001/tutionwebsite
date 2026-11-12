@@ -15,8 +15,24 @@ const lectureSchema = new mongoose.Schema(
     },
     ytVideoLink: {
       type: String,
-      required: [true, 'YouTube video link or embed URL is required'],
+      required: [true, 'Video link or embed URL is required'],
       trim: true,
+    },
+    videoProvider: {
+      type: String,
+      enum: ['youtube', 'streamable'],
+      default: 'youtube',
+    },
+    notesUrl: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    notesTitle: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: [200, 'Notes title cannot exceed 200 characters'],
     },
     batch: {
       type: String,
@@ -60,13 +76,18 @@ const lectureSchema = new mongoose.Schema(
   }
 );
 
-// Pre-save hook to synchronize batch and batchCode
+// Pre-save hook to synchronize batch, batchCode, and videoProvider
 lectureSchema.pre('save', function (next) {
   if (!this.batchCode && this.batch) {
     this.batchCode = this.batch.startsWith('BATCH-') ? this.batch.toUpperCase() : `BATCH-${this.batch}`.toUpperCase();
   }
   if (!this.batch && this.batchCode) {
     this.batch = this.batchCode.replace('BATCH-', '');
+  }
+  if (this.ytVideoLink && this.ytVideoLink.toLowerCase().includes('streamable.com')) {
+    this.videoProvider = 'streamable';
+  } else if (!this.videoProvider) {
+    this.videoProvider = 'youtube';
   }
   next();
 });

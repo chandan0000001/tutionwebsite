@@ -14,7 +14,7 @@ The platform follows a decoupled client-server architecture deployed across mode
 - **Frontend Client**: React 19 + TypeScript + Vite + Tailwind CSS deployed on **Vercel** with a hardened Content Security Policy (CSP) and **Vercel Web Analytics** for privacy-first traffic insights.
 - **Backend API**: Node.js + Express 4 REST API deployed on **Render** behind a single reverse proxy layer.
 - **Database & Cache**: **MongoDB Atlas** storing all application entities, and **Redis** for sub-millisecond session validation, atomic rate limiting, and multi-tier query caching (with seamless MongoDB fallbacks).
-- **Integrated Services**: YouTube for video playback, Cal.com for consultation scheduling, and FormSubmit for parent inquiry delivery.
+- **Integrated Services**: YouTube & Streamable for video hosting and playback, Google Drive & Docs for study notes and PDF documents, Cal.com for consultation scheduling, and FormSubmit for parent inquiry delivery.
 
 ```mermaid
 flowchart TD
@@ -401,10 +401,11 @@ cd ../frontend
 npm run build
 ```
 
-All 45 automated tests execute with 100% pass rate in <500ms:
+All 56 automated tests execute with 100% pass rate in <500ms:
 - **Rate Limiting & Proxy Safety**: Express trust proxy IP resolution, spoof resistance, victim DoS protection, shared NAT isolation, and distributed Redis multi-pipeline rate limiting.
 - **Redis Sessions & Multi-Tier Caching**: Sub-millisecond $O(1)$ session lookups (`HGETALL`), atomic bulk session revocation, and multi-tier query caching for dashboard stats (60s), batch counts (120s), paginated lectures (300s), and subjects (600s) with automated invalidation.
-- **YouTube Validation**: Strict HTTPS, exact domain whitelist, 11-char ID validation.
+- **Multi-Provider Video Hosting (YouTube & Streamable)**: Strict HTTPS protocol enforcement, whitelist domain verification (`youtube.com`, `youtu.be`, `streamable.com`), shortcode and video ID extraction, canonicalization, and privacy-enhanced embed URL generation.
+- **Document & Study Notes Integration**: Google Drive preview generation (`/view` to `/preview`), Google Docs preview conversion, external HTTPS document validation, and protocol restriction.
 - **ReDoS Prevention**: Escapes all regex metacharacters, bounds query lengths to 64 chars.
 - **Session Lifecycle**: MongoDB token binding, single session logout, bulk revocation on password change.
 - **Sanitized Errors**: Zero stack traces or internal database leaks in production responses.

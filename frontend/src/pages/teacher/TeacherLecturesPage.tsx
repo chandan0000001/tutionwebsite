@@ -9,6 +9,7 @@ import {
   EyeOff,
   X,
   ExternalLink,
+  FileText,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../config/apiConfig';
@@ -18,12 +19,16 @@ import { LoadingButton } from '../../components/common/LoadingButton';
 import { TableSkeleton, CardSkeleton } from '../../components/common/SkeletonLoader';
 import { NotificationBanner } from '../../components/common/NotificationBanner';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
+import { parseVideoUrl, parseDocumentUrl } from '../../utils/video';
 
 interface LectureItem {
   _id: string;
   slNo: number;
   topicName: string;
   ytVideoLink: string;
+  videoProvider?: 'youtube' | 'streamable';
+  notesUrl?: string;
+  notesTitle?: string;
   subject: string;
   description?: string;
   batch: string;
@@ -37,13 +42,6 @@ interface LectureItem {
 interface BatchOption {
   code: string;
   name: string;
-}
-
-function getYouTubeId(url: string) {
-  if (!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
-  return match && match[2].length === 11 ? match[2] : null;
 }
 
 export const TeacherLecturesPage: React.FC = () => {
@@ -91,6 +89,8 @@ export const TeacherLecturesPage: React.FC = () => {
     subject: 'Physics',
     description: '',
     isPublished: true,
+    notesUrl: '',
+    notesTitle: '',
   });
 
   // 1. Fetch Teacher Batches
@@ -164,9 +164,17 @@ export const TeacherLecturesPage: React.FC = () => {
       setModalError('Please enter a valid serial number (1 or greater).');
       return;
     }
-    if (!formData.ytVideoLink.trim() || !getYouTubeId(formData.ytVideoLink)) {
-      setModalError('Please provide a valid YouTube video URL.');
+    const videoParsed = parseVideoUrl(formData.ytVideoLink);
+    if (!videoParsed.isValid) {
+      setModalError(videoParsed.error || 'Please provide a valid YouTube or Streamable URL.');
       return;
+    }
+    if (formData.notesUrl.trim()) {
+      const docParsed = parseDocumentUrl(formData.notesUrl);
+      if (!docParsed.isValid) {
+        setModalError(docParsed.error || 'Please provide a valid HTTPS link for notes (Google Drive, Docs, PDF).');
+        return;
+      }
     }
 
     setIsAddingLecture(true);
@@ -198,6 +206,8 @@ export const TeacherLecturesPage: React.FC = () => {
           subject: 'Physics',
           description: '',
           isPublished: true,
+          notesUrl: '',
+          notesTitle: '',
         });
         setSuccessMessage('Lecture added and published successfully.');
         fetchLectures();
@@ -222,6 +232,8 @@ export const TeacherLecturesPage: React.FC = () => {
       subject: lec.subject,
       description: lec.description || '',
       isPublished: lec.isPublished,
+      notesUrl: lec.notesUrl || '',
+      notesTitle: lec.notesTitle || '',
     });
     setShowEditModal(true);
   };
@@ -240,9 +252,17 @@ export const TeacherLecturesPage: React.FC = () => {
       setModalError('Please enter a valid serial number (1 or greater).');
       return;
     }
-    if (!formData.ytVideoLink.trim() || !getYouTubeId(formData.ytVideoLink)) {
-      setModalError('Please provide a valid YouTube video URL.');
+    const videoParsed = parseVideoUrl(formData.ytVideoLink);
+    if (!videoParsed.isValid) {
+      setModalError(videoParsed.error || 'Please provide a valid YouTube or Streamable URL.');
       return;
+    }
+    if (formData.notesUrl.trim()) {
+      const docParsed = parseDocumentUrl(formData.notesUrl);
+      if (!docParsed.isValid) {
+        setModalError(docParsed.error || 'Please provide a valid HTTPS link for notes (Google Drive, Docs, PDF).');
+        return;
+      }
     }
 
     setIsUpdatingLecture(true);
@@ -355,7 +375,7 @@ export const TeacherLecturesPage: React.FC = () => {
     });
   };
 
-  const previewYtId = getYouTubeId(formData.ytVideoLink);
+  const previewVideo = parseVideoUrl(formData.ytVideoLink);
 
   return (
     <div className="w-full min-h-[85vh] bg-[#F8FAFC] dark:bg-[#0B1120] pb-12 transition-colors duration-200">
@@ -384,6 +404,8 @@ export const TeacherLecturesPage: React.FC = () => {
                 subject: 'Physics',
                 description: '',
                 isPublished: true,
+                notesUrl: '',
+                notesTitle: '',
               });
               setShowAddModal(true);
             }}
@@ -504,15 +526,41 @@ export const TeacherLecturesPage: React.FC = () => {
                         )}
                       </td>
                       <td className="py-3 px-4">
-                        <a
-                          href={lec.ytVideoLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] shadow-xs transition-colors"
-                        >
-                          <ExternalLink className="w-3 h-3" />
-                          <span>YouTube ↗</span>
-                        </a>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {lec.videoProvider === 'streamable' || (lec.ytVideoLink && lec.ytVideoLink.includes('streamable.com')) ? (
+                            <a
+                              href={lec.ytVideoLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] shadow-xs transition-colors"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              <span>Streamable ↗</span>
+                            </a>
+                          ) : (
+                            <a
+                              href={lec.ytVideoLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] shadow-xs transition-colors"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              <span>YouTube ↗</span>
+                            </a>
+                          )}
+                          {lec.notesUrl && (
+                            <a
+                              href={lec.notesUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[10px] border border-emerald-500/20 transition-colors"
+                              title={lec.notesTitle || 'Study Notes / Document'}
+                            >
+                              <FileText className="w-3 h-3" />
+                              <span>Notes</span>
+                            </a>
+                          )}
+                        </div>
                       </td>
                       <td className="py-3 px-4">
                         <button
@@ -623,18 +671,44 @@ export const TeacherLecturesPage: React.FC = () => {
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
-                    <a
-                      href={lec.ytVideoLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-2.5 py-1 rounded-lg text-xs font-bold text-white bg-red-600 hover:bg-red-700 flex items-center gap-1 shadow-xs"
-                    >
-                      <ExternalLink className="w-3 h-3" />
-                      <span>YouTube ↗</span>
-                    </a>
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 gap-2">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {lec.videoProvider === 'streamable' || (lec.ytVideoLink && lec.ytVideoLink.includes('streamable.com')) ? (
+                        <a
+                          href={lec.ytVideoLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 rounded-lg text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 flex items-center gap-1 shadow-xs"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          <span>Streamable ↗</span>
+                        </a>
+                      ) : (
+                        <a
+                          href={lec.ytVideoLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 rounded-lg text-xs font-bold text-white bg-red-600 hover:bg-red-700 flex items-center gap-1 shadow-xs"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          <span>YouTube ↗</span>
+                        </a>
+                      )}
+                      {lec.notesUrl && (
+                        <a
+                          href={lec.notesUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2 py-1 rounded-lg text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-1"
+                          title={lec.notesTitle || 'Study Notes / Document'}
+                        >
+                          <FileText className="w-3 h-3" />
+                          <span>Notes</span>
+                        </a>
+                      )}
+                    </div>
 
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       <button
                         onClick={() => openEdit(lec)}
                         className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 dark:bg-slate-800"
@@ -740,34 +814,80 @@ export const TeacherLecturesPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
-                    YouTube Video URL *
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300">
+                      Video URL (YouTube or Streamable) *
+                    </label>
+                    <span className="text-[11px] text-slate-400">YouTube & Streamable</span>
+                  </div>
                   <input
                     type="url"
                     required
                     disabled={isAddingLecture}
                     value={formData.ytVideoLink}
                     onChange={(e) => setFormData({ ...formData, ytVideoLink: e.target.value })}
-                    placeholder="https://www.youtube.com/watch?v=VIDEO_ID"
+                    placeholder="https://www.youtube.com/watch?v=... or https://streamable.com/..."
                     className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                   />
-                  {previewYtId && (
+                  {previewVideo.isValid && (
                     <div className="mt-2 p-2 rounded-xl bg-slate-100 dark:bg-[#1E293B] flex items-center gap-3">
-                      <img
-                        src={`https://img.youtube.com/vi/${previewYtId}/mqdefault.jpg`}
-                        alt="YouTube video thumbnail preview"
-                        width="80"
-                        height="48"
-                        loading="lazy"
-                        decoding="async"
-                        className="w-20 h-12 object-cover rounded-lg border border-slate-300 dark:border-slate-700"
-                      />
-                      <span className="text-[11px] text-emerald-600 font-bold">
-                        Valid YouTube Video ID: {previewYtId}
-                      </span>
+                      {previewVideo.provider === 'youtube' && previewVideo.videoId ? (
+                        <img
+                          src={`https://img.youtube.com/vi/${previewVideo.videoId}/mqdefault.jpg`}
+                          alt="YouTube video thumbnail preview"
+                          width="80"
+                          height="48"
+                          loading="lazy"
+                          decoding="async"
+                          className="w-20 h-12 object-cover rounded-lg border border-slate-300 dark:border-slate-700"
+                        />
+                      ) : (
+                        <div className="w-20 h-12 rounded-lg bg-blue-600/20 text-blue-500 font-bold text-[10px] flex items-center justify-center border border-blue-500/30">
+                          Streamable
+                        </div>
+                      )}
+                      <div className="flex flex-col">
+                        <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1.5">
+                          ✓ Valid {previewVideo.provider === 'streamable' ? 'Streamable' : 'YouTube'} Video
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-mono">
+                          ID/Code: {previewVideo.videoId}
+                        </span>
+                      </div>
                     </div>
                   )}
+                </div>
+
+                {/* Lecture Notes & Study Material (Google Drive / Docs / PDF) */}
+                <div className="p-3 rounded-xl bg-slate-100/70 dark:bg-[#1E293B]/60 border border-slate-200 dark:border-slate-800 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold uppercase text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                      <span>Study Notes / Materials Link (Optional)</span>
+                    </label>
+                    <span className="text-[10px] text-slate-400">Google Drive, Docs, PDFs</span>
+                  </div>
+                  <div>
+                    <input
+                      type="url"
+                      disabled={isAddingLecture}
+                      value={formData.notesUrl}
+                      onChange={(e) => setFormData({ ...formData, notesUrl: e.target.value })}
+                      placeholder="https://drive.google.com/file/d/.../view or https://docs.google.com/..."
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0B1120] text-xs focus:ring-2 focus:ring-emerald-500 disabled:opacity-60"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      disabled={isAddingLecture}
+                      value={formData.notesTitle}
+                      onChange={(e) => setFormData({ ...formData, notesTitle: e.target.value })}
+                      placeholder="Notes Title (e.g. Chapter Formula Sheet & DPP Solutions)"
+                      maxLength={200}
+                      className="w-full py-1.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0B1120] text-xs focus:ring-2 focus:ring-emerald-500 disabled:opacity-60"
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -906,9 +1026,12 @@ export const TeacherLecturesPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
-                    YouTube Video URL *
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300">
+                      Video URL (YouTube or Streamable) *
+                    </label>
+                    <span className="text-[11px] text-slate-400">YouTube & Streamable</span>
+                  </div>
                   <input
                     type="url"
                     required
@@ -917,6 +1040,65 @@ export const TeacherLecturesPage: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, ytVideoLink: e.target.value })}
                     className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1E293B] text-xs focus:ring-2 focus:ring-[#C6922E] disabled:opacity-60"
                   />
+                  {previewVideo.isValid && (
+                    <div className="mt-2 p-2 rounded-xl bg-slate-100 dark:bg-[#1E293B] flex items-center gap-3">
+                      {previewVideo.provider === 'youtube' && previewVideo.videoId ? (
+                        <img
+                          src={`https://img.youtube.com/vi/${previewVideo.videoId}/mqdefault.jpg`}
+                          alt="YouTube video thumbnail preview"
+                          width="80"
+                          height="48"
+                          loading="lazy"
+                          decoding="async"
+                          className="w-20 h-12 object-cover rounded-lg border border-slate-300 dark:border-slate-700"
+                        />
+                      ) : (
+                        <div className="w-20 h-12 rounded-lg bg-blue-600/20 text-blue-500 font-bold text-[10px] flex items-center justify-center border border-blue-500/30">
+                          Streamable
+                        </div>
+                      )}
+                      <div className="flex flex-col">
+                        <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1.5">
+                          ✓ Valid {previewVideo.provider === 'streamable' ? 'Streamable' : 'YouTube'} Video
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-mono">
+                          ID/Code: {previewVideo.videoId}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Lecture Notes & Study Material (Google Drive / Docs / PDF) */}
+                <div className="p-3 rounded-xl bg-slate-100/70 dark:bg-[#1E293B]/60 border border-slate-200 dark:border-slate-800 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold uppercase text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                      <span>Study Notes / Materials Link (Optional)</span>
+                    </label>
+                    <span className="text-[10px] text-slate-400">Google Drive, Docs, PDFs</span>
+                  </div>
+                  <div>
+                    <input
+                      type="url"
+                      disabled={isUpdatingLecture}
+                      value={formData.notesUrl}
+                      onChange={(e) => setFormData({ ...formData, notesUrl: e.target.value })}
+                      placeholder="https://drive.google.com/file/d/.../view or https://docs.google.com/..."
+                      className="w-full py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0B1120] text-xs focus:ring-2 focus:ring-emerald-500 disabled:opacity-60"
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      disabled={isUpdatingLecture}
+                      value={formData.notesTitle}
+                      onChange={(e) => setFormData({ ...formData, notesTitle: e.target.value })}
+                      placeholder="Notes Title (e.g. Chapter Formula Sheet & DPP Solutions)"
+                      maxLength={200}
+                      className="w-full py-1.5 px-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0B1120] text-xs focus:ring-2 focus:ring-emerald-500 disabled:opacity-60"
+                    />
+                  </div>
                 </div>
 
                 <div>

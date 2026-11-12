@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import mongoose from 'mongoose';
 import { Lecture } from '../models/Lecture.js';
 import { Batch } from '../models/Batch.js';
-import { extractYouTubeId, getYouTubeEmbedUrl } from '../utils/youtube.js';
+import { extractYouTubeId, getYouTubeEmbedUrl, extractVideoMetadata } from '../utils/youtube.js';
 import { createSafeSearchRegex } from '../utils/sanitizeSearch.js';
 import { getRedis, isRedisConnected } from '../config/redis.js';
 
@@ -176,12 +176,18 @@ export async function getLectures(req, res, next) {
       .limit(limit)
       .lean();
 
-    // Enhance lectures with safe video metadata
-    const lectures = rawLectures.map((item) => ({
-      ...item,
-      videoId: extractYouTubeId(item.ytVideoLink),
-      embedUrl: getYouTubeEmbedUrl(item.ytVideoLink),
-    }));
+    // Enhance lectures with safe video metadata and document links
+    const lectures = rawLectures.map((item) => {
+      const meta = extractVideoMetadata(item.ytVideoLink);
+      return {
+        ...item,
+        videoProvider: item.videoProvider || meta.provider,
+        videoId: meta.videoId,
+        embedUrl: meta.embedUrl,
+        notesUrl: item.notesUrl || '',
+        notesTitle: item.notesTitle || '',
+      };
+    });
 
     const payload = {
       success: true,
@@ -254,12 +260,16 @@ export async function getLectureById(req, res, next) {
       });
     }
 
+    const meta = extractVideoMetadata(lecture.ytVideoLink);
     return res.status(200).json({
       success: true,
       data: {
         ...lecture,
-        videoId: extractYouTubeId(lecture.ytVideoLink),
-        embedUrl: getYouTubeEmbedUrl(lecture.ytVideoLink),
+        videoProvider: lecture.videoProvider || meta.provider,
+        videoId: meta.videoId,
+        embedUrl: meta.embedUrl,
+        notesUrl: lecture.notesUrl || '',
+        notesTitle: lecture.notesTitle || '',
       },
     });
   } catch (error) {
