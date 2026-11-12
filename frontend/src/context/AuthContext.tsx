@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { API_BASE_URL } from '../config/apiConfig';
 
 export type UserRole = 'student' | 'teacher' | 'superadmin';
@@ -70,7 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const clearError = () => setError(null);
+  const clearError = useCallback(() => setError(null), []);
 
   const logout = useCallback(async () => {
     const currentToken =
@@ -143,7 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     refreshProfile();
   }, [refreshProfile]);
 
-  const login = async (username: string, password: string) => {
+  const login = useCallback(async (username: string, password: string) => {
     setIsLoading(true);
     setError(null);
 
@@ -189,9 +189,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
       return { success: false, message: errorMsg };
     }
-  };
+  }, []);
 
-  const changePassword = async (
+  const changePassword = useCallback(async (
     currentPassword: string,
     newPassword: string,
     confirmPassword?: string
@@ -245,28 +245,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
       return { success: false, message: errorMsg };
     }
-  };
+  }, [token, user?.role]);
 
   const role = user?.role || null;
   const student = role === 'student' ? user : null;
+  const isAuthenticated = !!token && !!user;
+
+  const contextValue = useMemo<AuthContextType>(
+    () => ({
+      user,
+      student,
+      role,
+      token,
+      isAuthenticated,
+      isLoading,
+      error,
+      login,
+      changePassword,
+      logout,
+      refreshProfile,
+      clearError,
+    }),
+    [
+      user,
+      student,
+      role,
+      token,
+      isAuthenticated,
+      isLoading,
+      error,
+      login,
+      changePassword,
+      logout,
+      refreshProfile,
+      clearError,
+    ]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        student,
-        role,
-        token,
-        isAuthenticated: !!token && !!user,
-        isLoading,
-        error,
-        login,
-        changePassword,
-        logout,
-        refreshProfile,
-        clearError,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

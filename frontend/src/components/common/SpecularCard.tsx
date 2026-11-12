@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 
 interface SpecularCardProps {
   children: React.ReactNode;
@@ -9,7 +9,7 @@ interface SpecularCardProps {
   'data-sound'?: string;
 }
 
-export const SpecularCard: React.FC<SpecularCardProps> = ({
+export const SpecularCard: React.FC<SpecularCardProps> = React.memo(({
   children,
   className = '',
   glowColor = 'gold',
@@ -18,8 +18,7 @@ export const SpecularCard: React.FC<SpecularCardProps> = ({
   'data-sound': dataSound,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [coords, setCoords] = useState({ x: 0, y: 0, opacity: 0 });
-  const [transform, setTransform] = useState('');
+  const glowRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = cardRef.current;
@@ -29,37 +28,45 @@ export const SpecularCard: React.FC<SpecularCardProps> = ({
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    setCoords({ x, y, opacity: 1 });
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+
+    if (glowRef.current) {
+      glowRef.current.style.opacity = '1';
+    }
 
     if (tilt) {
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
-      // Max 4 degrees tilt for subtle Apple luxury feel (not exaggerated)
+      // Max 4 degrees tilt for subtle luxury feel
       const rotateX = ((y - centerY) / centerY) * -3.5;
       const rotateY = ((x - centerX) / centerX) * 3.5;
 
-      setTransform(
-        `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.01, 1.01, 1.01)`
-      );
+      card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.01, 1.01, 1.01)`;
     }
   };
 
   const handleMouseLeave = () => {
-    setCoords((prev) => ({ ...prev, opacity: 0 }));
+    const card = cardRef.current;
+    if (!card) return;
+
+    if (glowRef.current) {
+      glowRef.current.style.opacity = '0';
+    }
     if (tilt) {
-      setTransform('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
     }
   };
 
   const getGlowGradient = () => {
     switch (glowColor) {
       case 'blue':
-        return 'radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), rgba(56, 189, 248, 0.16), transparent 70%)';
+        return 'radial-gradient(400px circle at var(--mouse-x, -1000px) var(--mouse-y, -1000px), rgba(56, 189, 248, 0.16), transparent 70%)';
       case 'emerald':
-        return 'radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), rgba(52, 211, 153, 0.16), transparent 70%)';
+        return 'radial-gradient(400px circle at var(--mouse-x, -1000px) var(--mouse-y, -1000px), rgba(52, 211, 153, 0.16), transparent 70%)';
       case 'gold':
       default:
-        return 'radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), rgba(244, 199, 107, 0.18), transparent 70%)';
+        return 'radial-gradient(400px circle at var(--mouse-x, -1000px) var(--mouse-y, -1000px), rgba(244, 199, 107, 0.18), transparent 70%)';
     }
   };
 
@@ -72,9 +79,7 @@ export const SpecularCard: React.FC<SpecularCardProps> = ({
       data-sound={dataSound}
       style={
         {
-          transform,
-          '--mouse-x': `${coords.x}px`,
-          '--mouse-y': `${coords.y}px`,
+          transform: tilt ? 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)' : undefined,
           transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease',
         } as React.CSSProperties
       }
@@ -82,9 +87,9 @@ export const SpecularCard: React.FC<SpecularCardProps> = ({
     >
       {/* Specular Interactive Glow Layer */}
       <div
-        className="pointer-events-none absolute -inset-px rounded-3xl transition-opacity duration-300"
+        ref={glowRef}
+        className="pointer-events-none absolute -inset-px rounded-3xl transition-opacity duration-300 opacity-0"
         style={{
-          opacity: coords.opacity,
           background: getGlowGradient(),
         }}
         aria-hidden="true"
@@ -94,4 +99,7 @@ export const SpecularCard: React.FC<SpecularCardProps> = ({
       <div className="relative z-10">{children}</div>
     </div>
   );
-};
+});
+
+SpecularCard.displayName = 'SpecularCard';
+

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 interface SEOProps {
@@ -14,74 +14,54 @@ const DEFAULT_OG_IMAGE = 'https://antarikshacademy.vercel.app/og-image.png';
 const BASE_URL = 'https://antarikshacademy.vercel.app';
 const SITE_NAME = 'Antariksh Academy';
 
-export function SEO({
+export const SEO: React.FC<SEOProps> = React.memo(({
   title,
   description,
   keywords,
   canonicalPath,
   ogImage = DEFAULT_OG_IMAGE,
   ogType = 'website',
-}: SEOProps) {
+}) => {
   const location = useLocation();
 
+  const formattedTitle = title.includes(SITE_NAME)
+    ? title
+    : `${title} | ${SITE_NAME} Berhampur`;
+
+  const targetCanonical = canonicalPath
+    ? `${BASE_URL}${canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`}`
+    : `${BASE_URL}${location.pathname}`;
+
   useEffect(() => {
-    // 1. Update Document Title
-    const formattedTitle = title.includes(SITE_NAME)
-      ? title
-      : `${title} | ${SITE_NAME} Berhampur`;
     document.title = formattedTitle;
+  }, [formattedTitle]);
 
-    // Helper: set or create a meta tag
-    const setMetaTag = (attrName: string, attrVal: string, content: string) => {
-      let element = document.querySelector(`meta[${attrName}="${attrVal}"]`) as HTMLMetaElement | null;
-      if (!element) {
-        element = document.createElement('meta');
-        element.setAttribute(attrName, attrVal);
-        document.head.appendChild(element);
-      }
-      element.setAttribute('content', content);
-    };
+  return (
+    <>
+      <title>{formattedTitle}</title>
+      <meta name="description" content={description} />
+      <meta name="title" content={formattedTitle} />
+      {keywords ? <meta name="keywords" content={keywords} /> : null}
+      <link rel="canonical" href={targetCanonical} />
 
-    // Helper: set or create link tag (canonical)
-    const setLinkTag = (rel: string, href: string) => {
-      let element = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement | null;
-      if (!element) {
-        element = document.createElement('link');
-        element.setAttribute('rel', rel);
-        document.head.appendChild(element);
-      }
-      element.setAttribute('href', href);
-    };
+      {/* Open Graph Tags */}
+      <meta property="og:title" content={formattedTitle} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={targetCanonical} />
+      <meta property="og:type" content={ogType} />
+      <meta property="og:image" content={ogImage} />
+      <meta property="og:site_name" content={SITE_NAME} />
 
-    // 2. Standard Meta Tags
-    setMetaTag('name', 'description', description);
-    setMetaTag('name', 'title', formattedTitle);
-    if (keywords) {
-      setMetaTag('name', 'keywords', keywords);
-    }
+      {/* Twitter Card Tags */}
+      <meta property="twitter:title" content={formattedTitle} />
+      <meta property="twitter:description" content={description} />
+      <meta property="twitter:url" content={targetCanonical} />
+      <meta property="twitter:image" content={ogImage} />
+    </>
+  );
+});
 
-    // 3. Canonical Link
-    const targetCanonical = canonicalPath
-      ? `${BASE_URL}${canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`}`
-      : `${BASE_URL}${location.pathname}`;
-    setLinkTag('canonical', targetCanonical);
-
-    // 4. Open Graph Tags
-    setMetaTag('property', 'og:title', formattedTitle);
-    setMetaTag('property', 'og:description', description);
-    setMetaTag('property', 'og:url', targetCanonical);
-    setMetaTag('property', 'og:type', ogType);
-    setMetaTag('property', 'og:image', ogImage);
-    setMetaTag('property', 'og:site_name', SITE_NAME);
-
-    // 5. Twitter Card Tags
-    setMetaTag('property', 'twitter:title', formattedTitle);
-    setMetaTag('property', 'twitter:description', description);
-    setMetaTag('property', 'twitter:url', targetCanonical);
-    setMetaTag('property', 'twitter:image', ogImage);
-  }, [title, description, keywords, canonicalPath, ogImage, ogType, location.pathname]);
-
-  return null;
-}
+SEO.displayName = 'SEO';
 
 export default SEO;
+

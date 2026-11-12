@@ -5,7 +5,7 @@ interface CosmicBackgroundCanvasProps {
   density?: number;
 }
 
-export const CosmicBackgroundCanvas: React.FC<CosmicBackgroundCanvasProps> = ({
+export const CosmicBackgroundCanvas: React.FC<CosmicBackgroundCanvasProps> = React.memo(({
   className = '',
   density = 65,
 }) => {
@@ -202,4 +202,6 @@ export const CosmicBackgroundCanvas: React.FC<CosmicBackgroundCanvasProps> = ({
       aria-hidden="true"
     />
   );
-};
+});
+
+CosmicBackgroundCanvas.displayName = 'CosmicBackgroundCanvas';

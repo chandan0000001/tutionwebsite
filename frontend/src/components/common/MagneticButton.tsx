@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 
 interface MagneticButtonProps {
   children: React.ReactNode;
@@ -10,7 +10,7 @@ interface MagneticButtonProps {
   as?: 'button' | 'div' | 'span';
 }
 
-export const MagneticButton: React.FC<MagneticButtonProps> = ({
+export const MagneticButton: React.FC<MagneticButtonProps> = React.memo(({
   children,
   className = '',
   onClick,
@@ -20,7 +20,6 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
   as = 'button',
 }) => {
   const elementRef = useRef<HTMLElement>(null);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (disabled) return;
@@ -34,16 +33,21 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
     const deltaX = (e.clientX - centerX) * 0.22;
     const deltaY = (e.clientY - centerY) * 0.22;
 
-    setOffset({ x: deltaX, y: deltaY });
+    elem.style.transform = `translate3d(${deltaX.toFixed(2)}px, ${deltaY.toFixed(2)}px, 0)`;
+    elem.style.transition = 'transform 0.08s ease-out';
   };
 
   const handleMouseLeave = () => {
-    setOffset({ x: 0, y: 0 });
+    const elem = elementRef.current;
+    if (!elem) return;
+
+    elem.style.transform = 'translate3d(0px, 0px, 0)';
+    elem.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
   };
 
-  const sharedStyle = {
-    transform: `translate3d(${offset.x}px, ${offset.y}px, 0)`,
-    transition: offset.x === 0 && offset.y === 0 ? 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)' : 'transform 0.08s ease-out',
+  const sharedStyle: React.CSSProperties = {
+    transform: 'translate3d(0px, 0px, 0)',
+    transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
   };
 
   const sharedClass = `relative inline-flex items-center justify-center cursor-pointer select-none transition-shadow ${className}`;
@@ -95,4 +99,7 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
       {children}
     </button>
   );
-};
+});
+
+MagneticButton.displayName = 'MagneticButton';
+
