@@ -24,7 +24,7 @@ import { TESTIMONIALS_DATA } from '../data/testimonialsData';
 import { ACADEMY_CONFIG } from '../config/academyConfig';
 import { SpecularCard } from '../components/common/SpecularCard';
 import { MagneticButton } from '../components/common/MagneticButton';
-import { SEO } from '../components/SEO';
+import { SEO } from '../components/seo/SEO';
 import { HeroLeadForm } from '../components/home/HeroLeadForm';
 import { CampusCarousel } from '../components/home/CampusCarousel';
 import { FaqSection } from '../components/home/FaqSection';

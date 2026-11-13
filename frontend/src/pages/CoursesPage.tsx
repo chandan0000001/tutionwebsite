@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Courses } from '../components/Courses';
-import { CourseModal } from '../components/CourseModal';
-import { navigateWithTransition } from '../components/StairsTransition';
-import { SEO } from '../components/SEO';
+import { CoursesSection } from '../components/sections/CoursesSection';
+import { CourseModal } from '../components/modals/CourseModal';
+import { navigateWithTransition } from '../components/layout/StairsTransition';
+import { SEO } from '../components/seo/SEO';
 import type { Course } from '../data/coursesData';
 
 export const CoursesPage: React.FC = () => {
@@ -25,7 +25,7 @@ export const CoursesPage: React.FC = () => {
         description="Explore Antariksh Academy's specialized courses: +2 Science CHSE Odisha Board, JEE Main & Advanced, NEET-UG Medical, and OUAT & ICAR preparation with rigorous DPPs and personalized doubt clearing."
         canonicalPath="/courses"
       />
-      <Courses
+      <CoursesSection
         onSelectCourseForEnquiry={handleSelectCourseForEnquiry}
         onViewCourseDetails={handleViewCourseDetails}
       />

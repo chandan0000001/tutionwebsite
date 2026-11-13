@@ -1,8 +1,8 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { ContactSection } from '../components/ContactSection';
-import { CallbackSection } from '../components/CallbackSection';
-import { SEO } from '../components/SEO';
+import { ContactSection } from '../components/sections/ContactSection';
+import { CallbackSection } from '../components/sections/CallbackSection';
+import { SEO } from '../components/seo/SEO';
 
 export const ContactPage: React.FC = () => {
   const location = useLocation();

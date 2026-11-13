@@ -4,7 +4,7 @@ import { LogIn, User, Lock, Eye, EyeOff, ArrowLeft, ShieldCheck } from 'lucide-r
 import { useAuth } from '../../context/AuthContext';
 import { LoadingButton } from '../../components/common/LoadingButton';
 import { NotificationBanner } from '../../components/common/NotificationBanner';
-import { SEO } from '../../components/SEO';
+import { SEO } from '../../components/seo/SEO';
 
 export const StudentLoginPage: React.FC = () => {
   const [username, setUsername] = useState('');

@@ -1,12 +1,5 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-
-export function ScrollToTop() {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [pathname]);
-
-  return null;
-}
+/**
+ * @file ScrollToTop.tsx
+ * Re-exported from components/layout/ScrollToTop.tsx for backward compatibility.
+ */
+export * from './layout/ScrollToTop';

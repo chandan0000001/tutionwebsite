@@ -1,7 +1,7 @@
 import React from 'react';
-import { Timetable } from '../components/Timetable';
-import { navigateWithTransition } from '../components/StairsTransition';
-import { SEO } from '../components/SEO';
+import { TimetableSection } from '../components/sections/TimetableSection';
+import { navigateWithTransition } from '../components/layout/StairsTransition';
+import { SEO } from '../components/seo/SEO';
 
 export const TimetablePage: React.FC = () => {
   return (
@@ -11,7 +11,7 @@ export const TimetablePage: React.FC = () => {
         description="Check Antariksh Academy's daily lecture schedules, laboratory batches, test series timings, and evening 1-on-1 doubt clearing desk hours."
         canonicalPath="/timetable"
       />
-      <Timetable onContactForBatch={() => navigateWithTransition('/contact')} />
+      <TimetableSection onContactForBatch={() => navigateWithTransition('/contact')} />
     </div>
   );
 };

@@ -15,7 +15,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { ACADEMY_CONFIG } from '../config/academyConfig';
-import { SEO } from '../components/SEO';
+import { SEO } from '../components/seo/SEO';
 
 export const PrivacyPolicyPage: React.FC = () => {
   return (

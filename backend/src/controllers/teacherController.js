@@ -9,7 +9,7 @@ import { ENV } from '../config/env.js';
 import { normalizeIndianPhone } from '../utils/phone.js';
 import { formatStudentUsername } from '../utils/usernameGenerator.js';
 import { createSafeSearchRegex } from '../utils/sanitizeSearch.js';
-import { validateYouTubeUrl, validateVideoUrl, validateDocumentUrl } from '../utils/youtube.js';
+import { validateYouTubeUrl, validateVideoUrl, validateDocumentUrl } from '../utils/mediaValidator.js';
 import { revokeAllUserSessions } from '../utils/sessionManager.js';
 import {
   invalidateDashboardCache,

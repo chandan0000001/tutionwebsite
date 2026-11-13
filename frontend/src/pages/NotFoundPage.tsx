@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Home, BookOpen, Calendar, PhoneCall, Compass, GraduationCap, ArrowRight } from 'lucide-react';
-import { SEO } from '../components/SEO';
+import { SEO } from '../components/seo/SEO';
 import { MagneticButton } from '../components/common/MagneticButton';
 
 export function NotFoundPage() {

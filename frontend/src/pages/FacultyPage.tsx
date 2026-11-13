@@ -1,6 +1,6 @@
 import React from 'react';
-import { Teachers } from '../components/Teachers';
-import { SEO } from '../components/SEO';
+import { FacultySection } from '../components/sections/FacultySection';
+import { SEO } from '../components/seo/SEO';
 
 export const FacultyPage: React.FC = () => {
   return (
@@ -10,7 +10,7 @@ export const FacultyPage: React.FC = () => {
         description="Meet Antariksh Academy's distinguished faculty team in Physics, Chemistry, Mathematics, and Biology. Highly experienced educators dedicated to personal student mentorship and concept mastery."
         canonicalPath="/faculty"
       />
-      <Teachers />
+      <FacultySection />
     </div>
   );
 };

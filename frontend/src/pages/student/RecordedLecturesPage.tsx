@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../config/apiConfig';
-import { handleExternalMediaClick } from '../../utils/video';
+import { handleExternalMediaClick } from '../../utils/mediaUtils';
 
 interface LectureItem {
   _id: string;

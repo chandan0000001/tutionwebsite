@@ -1,6 +1,6 @@
 import React from 'react';
-import { Results } from '../components/Results';
-import { SEO } from '../components/SEO';
+import { ResultsSection } from '../components/sections/ResultsSection';
+import { SEO } from '../components/seo/SEO';
 
 export const ResultsPage: React.FC = () => {
   return (
@@ -10,7 +10,7 @@ export const ResultsPage: React.FC = () => {
         description="View Antariksh Academy's verifiable track record of top percentiles in JEE Main & Advanced (99.4%ile), NEET-UG medical allotments (678/720), and 100% first-class CHSE board passes."
         canonicalPath="/results"
       />
-      <Results />
+      <ResultsSection />
     </div>
   );
 };

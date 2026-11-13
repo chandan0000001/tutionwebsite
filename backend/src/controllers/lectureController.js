@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import mongoose from 'mongoose';
 import { Lecture } from '../models/Lecture.js';
 import { Batch } from '../models/Batch.js';
-import { extractYouTubeId, getYouTubeEmbedUrl, extractVideoMetadata } from '../utils/youtube.js';
+import { extractYouTubeId, getYouTubeEmbedUrl, extractVideoMetadata } from '../utils/mediaValidator.js';
 import { createSafeSearchRegex } from '../utils/sanitizeSearch.js';
 import { getRedis, isRedisConnected } from '../config/redis.js';
 

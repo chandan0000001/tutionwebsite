@@ -1,10 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
-import { Navbar } from './components/Navbar';
-import { Footer } from './components/Footer';
-import { ScrollToTop } from './components/ScrollToTop';
-import { StairsTransition } from './components/StairsTransition';
+import { Navbar, Footer, ScrollToTop, StairsTransition } from './components/layout';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { SoundProvider } from './context/SoundContext';

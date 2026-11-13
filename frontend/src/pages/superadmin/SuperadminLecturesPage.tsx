@@ -19,7 +19,7 @@ import { LoadingButton } from '../../components/common/LoadingButton';
 import { TableSkeleton, CardSkeleton } from '../../components/common/SkeletonLoader';
 import { NotificationBanner } from '../../components/common/NotificationBanner';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
-import { parseVideoUrl, parseDocumentUrl, handleExternalMediaClick } from '../../utils/video';
+import { parseVideoUrl, parseDocumentUrl, handleExternalMediaClick } from '../../utils/mediaUtils';
 
 interface LectureItem {
   _id: string;

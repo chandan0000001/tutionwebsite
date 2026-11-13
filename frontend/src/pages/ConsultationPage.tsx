@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { ConsultationSection } from '../components/ConsultationSection';
-import { SEO } from '../components/SEO';
+import { ConsultationSection } from '../components/sections/ConsultationSection';
+import { SEO } from '../components/seo/SEO';
 
 export const ConsultationPage: React.FC = () => {
   const location = useLocation();

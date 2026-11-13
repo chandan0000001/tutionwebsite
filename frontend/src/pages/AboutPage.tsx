@@ -1,7 +1,7 @@
 import React from 'react';
-import { About } from '../components/About';
-import { navigateWithTransition } from '../components/StairsTransition';
-import { SEO } from '../components/SEO';
+import { AboutSection } from '../components/sections/AboutSection';
+import { navigateWithTransition } from '../components/layout/StairsTransition';
+import { SEO } from '../components/seo/SEO';
 
 export const AboutPage: React.FC = () => {
   return (
@@ -11,7 +11,7 @@ export const AboutPage: React.FC = () => {
         description="Learn about Antariksh Academy's history, disciplined 30-student cohort pedagogy, senior faculty mentorship, and 10+ years of +2 Science, JEE, and NEET excellence in Brahmapur, Odisha."
         canonicalPath="/about"
       />
-      <About
+      <AboutSection
         onLearnMoreCourses={() => navigateWithTransition('/courses')}
         onOpenConsultation={() => navigateWithTransition('/consultation')}
       />
